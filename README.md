@@ -1,1 +1,2 @@
-# GAQET2
+# GAQET
+Genome Annotation Quality Evaluation Tools
