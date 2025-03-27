@@ -1,8 +1,8 @@
 import subprocess
 from pathlib import Path
 
-def run_gffread(arguments):
-    outdir = arguments["output"] / "input_sequences"
+def run_gffread(config):
+    outdir = basedir / "input_sequences"
     if not outdir.exists():
         outdir.mkdir(parents=True, exist_ok=True)
     outfile = outdir / "{}.proteins.fasta".format(Path(arguments["ref_assembly"]).stem)

@@ -1,0 +1,18 @@
+ID: "Arabidopsis thaliana"
+Assembly: "/path/to/assembly.fasta"
+Annotation: "/path/to/annotation.gff"
+Basedir: "/path/to/outdir"
+Analysis:
+  - AGAT
+  - BUSCO
+  - PSAURON
+  - DETENGA
+  - PROTHOMOLOGY
+BUSCO_lineages:
+  -  viridiplantae_odb10
+  -  embryophyta_odb10
+OMARK_taxid: ""
+PROTHOMOLOGY_tags:
+  - TREMBL: ""
+  - SWISSPROT: ""
+Threads: 1

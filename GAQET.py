@@ -1,59 +1,87 @@
 import argparse
+from argparse import RawTextHelpFormatter
+from pathlib import Path
 import sys
 
 from csv import DictReader
 from pathlib import Path
+from yaml import safe_load as load_yaml
+
 
 from src.agat import run_agat
 from src.busco import run_busco, run_gffread
 from src.LTR_retriever import create_outdir, run_suffixerator, run_harvest, run_finder, concatenate_outputs, run_LTR_retriever, run_LAI
 from src.stringtie import run_stringtie, run_gffcompare, calculate_annotation_scores
+from src.YAML import report_yaml_file
+
+from pathlib import Path
 
 
-#Function to create arguments and help
+
 def parse_arguments():
-    description = 'Tool with four modules to summarise the metrics and evaluate the quality of a genome annotation'
-    parser = argparse.ArgumentParser(description=description)
+    description = '''\t\t\t###############\n\t\t\t##   GAQET   ##\n\t\t\t###############\n
+            Genome Annotation Quality Evaluation Tools\n
+            
+            Needs a YAML configuration file to work.'''
+    parser = argparse.ArgumentParser(description=description, formatter_class=RawTextHelpFormatter)
 
-    help_input = "(Required) Input File of Files"
-    parser.add_argument("--input", "-i", type=str,
-                        help=help_input, required=True)
+    help_config = "(Required) YAML configuration file"
+    parser.add_argument("--yaml", "-i",
+                        help=help_config, required=True)
     
-    help_threads = "(Optional) Threads to use"
-    parser.add_argument("--threads", "-t", type=int,
-                        help=help_threads, default=1)
+    help_genome = "(Optional) Override YAML assembly"
+    parser.add_argument("--genome", "-g", type=str,
+                        help=help_genome, default="")
 
-    help_output = "(Required) Output path"
-    parser.add_argument("--output", "-o", type=str,
-                        help=help_output, required=True)
+    help_annot = "(Optional) Override YAML Genome Annotation"
+    parser.add_argument("--annotation", "-a", type=str,
+                        help=help_annot, default="")
+    
+    help_taxid = "(Optional) Override NCBI taxid"
+    parser.add_argument("--taxid", "-t", type=str,
+                        help=help_taxid, default="")
+    
+    help_outbase = "(Optional) Override YAML outbase"
+    parser.add_argument("--outbase", "-o", type=str,
+                        help=help_outbase, default="")
     
     if len(sys.argv)==1:
         parser.print_help()
         exit()
     return parser.parse_args()
 
-#Function to compile de arguments into a dictionary
+
 def get_arguments():
     parser = parse_arguments()
-    fof_fpath = Path(parser.input)
-    if not fof_fpath.exists():
-        raise RuntimeError("Fof does not exist")
-    else:
-        samples = {}
-        with open(fof_fpath) as fof_fhand:
-            samples = {line["name"]: line for line in DictReader(fof_fhand, delimiter="\t")}
-                       
-    return {"input": samples,
-            "threads": parser.threads,
-            "output": Path(parser.output)}
+    yaml = parser.yaml
+    with open(Path(parser.yaml)) as yaml_fhand:
+        yaml = load_yaml(yaml_fhand)
+    if parser.genome:
+        yaml["Assembly"] = parser.genome
+    if parser.annotation:
+        yaml["Annotation"] = parser.annotation
+    if parser.taxid:
+        yaml["OMARK_taxid"] = parser.taxid
+    if parser.outbase:
+        yaml["Basedir"] = parser.outbase
+    config_report = report_yaml_file(yaml)
+    return yaml, config_report
 
 
 def main():
-    arguments = get_arguments()
-    out_dir =  arguments["output"]
-    if not out_dir.exists():
-        out_dir.mkdir(parents=True, exist_ok=True)
-    stats = {}                                          #diccionario para guardar los resultados de cada modulo por cada especie
+    sys.tracebacklimit = 1
+    arguments, config_report = get_arguments()
+    basedir = Path(arguments["Basedir"])
+    if not basedir.exists():
+        basedir.mkdir(parents=True, exist_ok=True)
+
+    log_fhand = open(basedir / "GAQET.log.txt", "w")
+    header = "\t\t\t###############\n\t\t\t##   GAQET   ##\n\t\t\t###############\n\n" + config_report
+    print(header)
+    log_fhand.write(header)
+    if "ERROR!" in config_report:
+        raise RuntimeError("Check {} for details".format(str(basedir / "GAQET.log.txt")))
+       
     for name, values in arguments["input"].items():
         stats[name] = {}
         name_dir = out_dir / name
@@ -99,9 +127,6 @@ def main():
         annotation_scores = calculate_annotation_scores(values)
         print(annotation_scores)
         stats[name]["annotation_scores"] = annotation_scores
-
-        
-
 
 
 if __name__ == "__main__":
