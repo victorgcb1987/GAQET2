@@ -3,14 +3,13 @@ import subprocess
 from pathlib import Path
 
 
-
 def run_gffread(config):
     report = {"commands": [], "status": [], "outfiles": []}
     modes = {"cds": "x", "proteins": "y"}
     outdir = config["Basedir"] / "input_sequences"
     if not outdir.exists():
         outdir.mkdir(parents=True, exist_ok=True)
-        
+
     for mode, arg in modes.items():
         outfile = outdir / "{}.{}.fasta".format(Path(config["Assembly"]).stem, mode)
         cmd = "gffread -{} {} -g {} {}".format(arg,

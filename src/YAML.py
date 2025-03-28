@@ -42,7 +42,7 @@ def check_busco_lineages(yaml):
 def check_available_analysis(yaml):
     errors = []
     available_analysis = ["AGAT", "BUSCO", "PSAURON",
-                          "DETENGA", "PROTHOMOLOGY"]
+                          "DETENGA", "OMARK", "PROTHOMOLOGY"]
     if not yaml["Analysis"]:
         return [BULLET_FIX + "No analysis found in YAML config file"]
     else:
@@ -67,6 +67,7 @@ def check_taxid(yaml):
         try:
             ncbi = ete3.NCBITaxa()
             linid = ncbi.get_lineage(taxid)
+            print(linid)
         except ValueError:
             return [BULLET_FIX + "NCBI taxid {} is not valid".format(taxid)]
     return [BULLET_OK + "Taxid for OMARK is valid"]
@@ -91,6 +92,24 @@ def check_prothomology_dbs(yaml):
     return errors
     
 
+def check_OMARK_db(yaml):
+    errors = []
+    not_defined = False
+    if "OMARK_db" not in yaml:
+        not_defined = True
+    elif not yaml["OMARK_db"]:
+        not_defined = True
+    if not_defined:
+        return [BULLET_FIX + "OMARK_db field is not defined"]
+    else:
+        path = Path(yaml["OMARK_db"])
+        if not path.is_file():
+            errors.append(BULLET_FIX + "OMARK_db database {} doesn't exists".format(str(path)))
+    if len(errors) == 0:
+        errors = [BULLET_OK +  "OMARK_db {} found".format(str(path))]
+    return errors
+
+
 def report_yaml_file(yaml):
     report = []
     report += [HEADER + "Checking if all required inputs are present" + HEADER]
@@ -104,6 +123,8 @@ def report_yaml_file(yaml):
         if "OMARK" in yaml["Analysis"]:
             report += [HEADER + "Checking if OMARK taxid is valid" + HEADER]
             report += check_taxid(yaml)
+            report += [HEADER + "Checking if OMARK db is available"]
+            report += check_OMARK_db(yaml)
         if "PROTHOMOLOGY" in yaml["Analysis"]:
             report += [HEADER + "Checking if protein databases exists" + HEADER]
             report += check_prothomology_dbs(yaml)

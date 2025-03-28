@@ -7,11 +7,13 @@ Analysis:
   - BUSCO
   - PSAURON
   - DETENGA
+  - OMARK
   - PROTHOMOLOGY
 BUSCO_lineages:
   -  viridiplantae_odb10
   -  embryophyta_odb10
 OMARK_taxid: ""
+OMARK_db: ""
 PROTHOMOLOGY_tags:
   - TREMBL: ""
   - SWISSPROT: ""

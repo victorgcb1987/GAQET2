@@ -81,7 +81,9 @@ def main():
     log_fhand.write(header)
     if "ERROR!" in config_report:
         raise RuntimeError("Check {} for details".format(str(basedir / "GAQET.log.txt")))
-       
+    
+    report
+
     for name, values in arguments["input"].items():
         stats[name] = {}
         name_dir = out_dir / name

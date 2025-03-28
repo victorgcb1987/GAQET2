@@ -4,3 +4,4 @@ docs/INSTALL
 /MMMMM
 /src/__pycache__
 src/envs.py
+taxdump.tar.gz
