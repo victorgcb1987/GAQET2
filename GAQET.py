@@ -78,7 +78,7 @@ def emit_msg(string, log_fhand):
 def main():
     sys.tracebacklimit = 1
     arguments, config_report = get_arguments()
-    basedir = Path(arguments["Basedir"])
+    basedir = Path(arguments["Basedir"]).resolve()
     if not basedir.exists():
         basedir.mkdir(parents=True, exist_ok=True)
 
@@ -92,18 +92,18 @@ def main():
     
     emit_msg("#Results will be stored at {}\n".format(basedir), log_fhand)
    
-    emit_msg(HEADER + "Extracting CDS and protein sequences" + HEADER + "\n")
+    emit_msg(HEADER + "Extracting CDS and protein sequences" + HEADER + "\n", log_fhand)
     
     gffread = run_gffread(arguments)
     for kind, values in gffread.items():
         status =  values["status"]
         emit_msg("#{} extraction, command used: {}\n".format(kind, values["command"]))
         if "Failed" in status:
-            emit_msg(BULLET_FIX + status + "\n")
-            emit_msg(HEADER + "GAQET has stopped working")
+            emit_msg(BULLET_FIX + status + "\n", log_fhand)
+            emit_msg(HEADER + "GAQET has stopped working", log_fhand)
             raise RuntimeError("GAQET has failed, {} for details".format(str(basedir / "GAQET.log.txt")))
         else:
-            emit_msg(BULLET_OK + status + "\n")
+            emit_msg(BULLET_OK + status + "\n", log_fhand)
 
 
     
