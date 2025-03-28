@@ -40,13 +40,13 @@ def run_agat(config):
         msg = "AGAT premature stop codons analysis already done"
 
     else:
-        run_ = subprocess.run(cmd, shell=True, stderr=subprocess.PIPE)
+        run_ = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE)
         #Is process has gone well
         if run_.returncode == 0:
             msg = "AGAT premature stop codons analysis run successfully"
         #But if not
         else:
-            msg = "AGAT premature stop codons analysis Failed: \n {}".format(run_.stderr)
+            msg = "AGAT premature stop codons analysis Failed: \n {}".format(run_.stdout)
     
     report["AGAT stop codons"] = {"command": cmd, "status": msg, 
                                   "outfile": premature_stop_outfile}
