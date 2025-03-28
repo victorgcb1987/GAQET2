@@ -21,6 +21,8 @@ from pathlib import Path
 BULLET_OK = "\t✓\t"
 BULLET_FIX = "\tERROR!\t"
 HEADER = "-"*5
+AVAILABLE_ANALYSIS = ["AGAT", "BUSCO", "PSAURON",
+                      "DETENGA", "OMARK", "PROTHOMOLOGY"]
 
 def parse_arguments():
     description = '''\t\t\t###############\n\t\t\t##   GAQET   ##\n\t\t\t###############\n
@@ -96,6 +98,7 @@ def main():
    
     emit_msg(HEADER + "Extracting CDS and protein sequences" + HEADER + "\n", log_fhand)
     
+
     gffread = run_gffread(arguments)
     for kind, values in gffread.items():
         status =  values["status"]
@@ -106,6 +109,25 @@ def main():
             raise RuntimeError(error_msg)
         else:
             emit_msg(BULLET_OK + status + "\n", log_fhand)
+
+    for analysis in arguments["Analysis"]:
+        if analysis == "AGAT":
+            emit_msg(HEADER + "Running agat on the GFF file"+ HEADER + "\n", log_fhand)
+            agat = run_agat(arguments)
+            for mode, values in agat.items():
+                status = values["status"]
+                emit_msg("#{} command used: \n\t{}\n".format(mode, values["command"]), log_fhand)
+                if "Failed" in status:
+                    emit_msg(BULLET_FIX + status + "\n", log_fhand)
+                    emit_msg(HEADER + "GAQET has stopped working", log_fhand)
+                    raise RuntimeError(error_msg)
+                else:
+                    emit_msg(BULLET_OK + status + "\n", log_fhand)
+
+
+    
+
+
 
 
     

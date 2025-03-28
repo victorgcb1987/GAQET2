@@ -67,7 +67,6 @@ def check_taxid(yaml):
         try:
             ncbi = ete3.NCBITaxa()
             linid = ncbi.get_lineage(taxid)
-            print(linid)
         except ValueError:
             return [BULLET_FIX + "NCBI taxid {} is not valid".format(taxid)]
     return [BULLET_OK + "Taxid for OMARK is valid"]

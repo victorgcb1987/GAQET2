@@ -1,51 +1,74 @@
 import subprocess
 
-def run_agat(arguments):
-    #Creating output dir
-    outdir = arguments["output"] / "RunAgat" 
-    outdir.mkdir(parents=True, exist_ok=True)
-    out_fpath = outdir / "ResultAgat.txt"
+from pathlib import Path
 
-    #Creating command to run AGAT as a list
-    cmd = ["agat_sp_statistics.pl", "--gff", "{}".format(arguments["annotation"]), "-o", "{}".format(out_fpath)]
 
-    # #Adding "distribution" to command if it has been selected
-    # if arguments["distribution"]:
-    #     dist_arg = ["-d"]
-    #     cmd += dist_arg
-    # #Adding "plot" to command if it has been selected
-    # if arguments["plot"]:
-    #     plot_arg = ["-p"]
-    #     cmd += plot_arg
+def run_agat(config):
+    report = {}
+    outdir = Path(config["Basedir"]) / "AGAT_run"
+    if not outdir.exists():
+        outdir.mkdir(parents=True, exist_ok=True)
+    annot = config["Annotation"]
+    assembly = config["Assembly"]
 
-    # #Adding "genome size" to command if it has a different value than default
-    # if arguments["gs"] > 0:
-    #     size_arg = ["-g {}".format(arguments["gs"])]
-    #     cmd += size_arg
+    #Running AGAT STATS
+    stats_outfile = outdir / "{}.01_agat_stats".format(config["ID"])
+    cmd = "agat_sp_statistics.pl --gff {} -o {}".format(annot, stats_outfile)
 
-#Check if AGAT is already done
-    if out_fpath.exists():
-        #Show a message if it is
-        return {"command": cmd, "msg": "AGAT already done",
-                "out_fpath": out_fpath, "returncode": 99}
-    #But if is not done
+    if stats_outfile.is_file():
+        msg = "AGAT stats already done"
+
     else:
-        #Run AGAT with command
-        command = ' '.join(cmd)
-        print(command)
-        run_ = subprocess.run(command, shell=True, stdout=subprocess.PIPE)
+        run_ = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE)
         #Is process has gone well
-        print(run_.returncode)
         if run_.returncode == 0:
-            msg = "AGAT run successfully"
+            msg = "AGAT stats run successfully"
         #But if not
         else:
-            msg = "AGAT Failed: \n {}".format(run_.stdout)
-        #Return command, final message and output dir path
-        return {"command": command, "msg": msg,
-                "out_fpath": out_fpath}
+            msg = "AGAT stats Failed: \n {}".format(run_.stdout)
+    
+    report["AGAT stats"] = {"cmd": cmd, "status": msg, 
+                            "outfile": stats_outfile}
+    
+    #Running AGAT premature stop codons
+    premature_stop_outfile = outdir / "{}.01_agat_premature_stop.txt".format(config["ID"])
+    cmd = "agat_sp_flag_premature_stop_codons.pl --gff {} --fasta {} -o {}".format(annot, 
+                                                                                   assembly,
+                                                                                   premature_stop_outfile)
+    
+    if premature_stop_outfile.is_file():
+        msg = "AGAT premature stop codons analysis already done"
 
-#def get_agat_results(agat_results):
+    else:
+        run_ = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE)
+        #Is process has gone well
+        if run_.returncode == 0:
+            msg = "AGAT premature stop codons analysis run successfully"
+        #But if not
+        else:
+            msg = "AGAT premature stop codons analysis Failed: \n {}".format(run_.stdout)
+    
+    report["AGAT stop codons"] = {"cmd": cmd, "status": msg, 
+                                  "outfile": premature_stop_outfile}
+    
 
-
-#    return = "NG:1212112;NT:34345334"
+    #Running AGAT incomplete CDS
+    incomplete_cds_outfile = outdir / "{}.01_agat_incomplete.txt".format(config["ID"])
+    cmd = "agat_sp_filter_incomplete_gene_coding_models.pl --add_flag --gff {} ".format(annot)
+    cmd += "--fasta {} -o {}".format(assembly, incomplete_cds_outfile)
+    
+    if incomplete_cds_outfile.is_file():
+        msg = "AGAT incomplete CDS analysis already done"
+ 
+    else:
+        run_ = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE)
+        #Is process has gone well
+        if run_.returncode == 0:
+            msg = "AGAT incomplete CDS analysis run successfully"
+        #But if not
+        else:
+            msg = "AGAT incomplete CDS analysis Failed: \n {}".format(run_.stdout)
+    
+    report["AGAT incomplete CDS"] = {"cmd": cmd, "status": msg, 
+                                     "outfile": incomplete_cds_outfile}
+    return report
