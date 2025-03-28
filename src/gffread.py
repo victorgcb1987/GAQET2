@@ -28,9 +28,9 @@ def run_gffread(config):
         #But if not
             else:
                 msg = "GFFread, mode {} Failed: \n {}".format(run_.stderr)
-        report[kind]["command"].append(cmd)
-        report[kind]["status"].append(msg)
-        report[kind]["outfile"].append(outfile)
+        report[kind]["command"] = cmd
+        report[kind]["status"] = msg
+        report[kind]["outfile"] = outfile
 
         #Return command, final message and output dir path
         return report
