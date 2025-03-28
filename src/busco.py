@@ -14,11 +14,8 @@ def run_busco(arguments, protein_sequences):
                                                                             protein_sequences,
                                                                             lineage_outdir,
                                                                             lineage)
-        print("XXXXXX")
-        print(outfile)
-        print("XXXXX")
+
         if outfile.exists():
-            print(outfile)
             msg = "Busco on lineage {} done already".format(lineage)
         else:
             run_ = subprocess.run(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.DEVNULL)
@@ -26,7 +23,7 @@ def run_busco(arguments, protein_sequences):
                 msg = "BUSCO analysis with lineage {} run successfully".format(lineage)
             else:
                 msg = "BUSCO analysis with lineage {} Failed: \n {}".format(lineage, run_.stderr)
-            report[lineage] = {"command": cmd,
-                               "status": msg,
-                               "outfile": outfile}
+        report[lineage] = {"command": cmd,
+                           "status": msg,
+                           "outfile": outfile}
     return report
