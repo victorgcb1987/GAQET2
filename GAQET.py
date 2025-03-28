@@ -72,6 +72,7 @@ def get_arguments():
     if parser.outbase:
         yaml["Basedir"] = parser.outbase
     config_report = report_yaml_file(yaml)
+    #subs whitespaces with _ in ID∫
     yaml["ID"] = "_".join(yaml["ID"].split())
     return yaml, config_report
 
@@ -114,7 +115,7 @@ def main():
 
     for analysis in arguments["Analysis"]:
         if analysis == "AGAT":
-            emit_msg(HEADER + "Running agat on the GFF file"+ HEADER + "\n", log_fhand)
+            emit_msg(HEADER + "Running AGAT on the GFF file"+ HEADER + "\n", log_fhand)
             agat = run_agat(arguments)
             for mode, values in agat.items():
                 status = values["status"]
@@ -125,7 +126,18 @@ def main():
                     raise RuntimeError(error_msg)
                 else:
                     emit_msg(BULLET_OK + status + "\n", log_fhand)
-
+        if analysis == "BUSCO":
+            emit_msg(HEADER + "Running BUSCO"+ HEADER + "\n", log_fhand)
+            agat = run_busco(arguments, gffread)
+            for mode, values in agat.items():
+                status = values["status"]
+                emit_msg("#{} command used: \n\t{}\n".format(mode, values["command"]), log_fhand)
+                if "Failed" in status:
+                    emit_msg(BULLET_FIX + status + "\n", log_fhand)
+                    emit_msg(HEADER + "GAQET has stopped working", log_fhand)
+                    raise RuntimeError(error_msg)
+                else:
+                    emit_msg(BULLET_OK + status + "\n", log_fhand)
 
     
 

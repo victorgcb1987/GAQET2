@@ -1,65 +1,30 @@
 import subprocess
 from pathlib import Path
 
-def run_gffread(config):
-    outdir = basedir / "input_sequences"
-    if not outdir.exists():
-        outdir.mkdir(parents=True, exist_ok=True)
-    outfile = outdir / "{}.proteins.fasta".format(Path(arguments["ref_assembly"]).stem)
-    cmd = "gffread -y {} -g {} {}".format(outfile, 
-                                            arguments["ref_assembly"],
-                                            arguments["annotation"])
 
-    #Add input sequences file for BUSCO
-    arguments["input"] = outfile
-    if outfile.exists():
-        #Show a message if it is
-        return {"command": cmd, "msg": "Extract sequences already done",
-                "out_fpath": outfile}
-    #But if is not done
-    else:
-        #Run BUSCO with command
-        run_ = subprocess.run(cmd, shell=True, stderr=subprocess.PIPE)
-        #Is process has gone well
-        if run_.returncode == 0:
-            msg = "GFFread run successfully"
-        #But if not
-        else:
-            msg = "GFFread Failed: \n {}".format(run_.stderr)
-        #Return command, final message and output dir path
-        return {"command": cmd, "msg": msg,
-                "out_fpath": outfile, "returncode": run_.returncode}
-
-
-def run_busco(arguments):
+def run_busco(arguments, protein_sequences):
     #Creating output dir
-    outdir = arguments["output"] / "BUSCOCompleteness"
-    cmd = "busco -i {} -c {} -o {} --mode prot -l {}".format(arguments["input"],
-                                                             arguments["threads"],
-                                                              outdir,
-                                                            arguments["lineage"])
-    if outdir.exists():
-        #Show a message if it is
-        return {"command": cmd, "msg": "BUSCO already done",
-                "out_fpath": outdir}
-    else: 
-    #Command to run BUSCO
-        
-        #Run BUSCO with command
-        run_ = subprocess.run(cmd, shell=True, stderr=subprocess.PIPE)
-        #Is process has gone well
-        if run_.returncode == 0:
-            msg = "BUSCO run successfully"
-        #But if not
-        else:
-            msg = "BUSCO Failed: \n {}".format(run_.stderr)
-        #Return command, final message and output dir path
-        return {"command": cmd, "msg": msg,
-                "out_fpath": outdir, "returncode": run_.returncode}
-
-
-def get_busco_results(busco_results):
-    with open(busco_results) as input:
-        for line in input:
-            if "%" in line:
-                return line.strip()
+    report = {}
+    outdir = arguments["Basedir"] / "BUSCOCompleteness"
+     #busco --cpu $threads -i $prot -o $outdir/$outbase".02_proteins.busco."$buscodb -m prot -l $buscodb;
+    for lineage in values in arguments["BUSCO_lineages"]:
+        lineage_outdir = outdir / lineage
+        if not lineage_outdir.exists():
+            lineage_outdir.mkdir(parents=True, exists_ok=True)
+            outfile = lineage_outdir / "run_{}".format(lineage) / "short_summary.txt"
+            cmd = "busco --cpu {} -i {} -o {} -m prot -l {}".format(arguments["threads"],
+                                                                    protein_sequences,
+                                                                    lineage_outdir,
+                                                                    lineage)
+            if outfile.exists():
+                msg = "Busco on lineage {} done already".format(lineage)
+            else:
+                run_ = subprocess.run(cmd, shell=True, stderr=subprocess.PIPE)
+                if run_.returncode == 0:
+                    msg = "BUSCO analysis with lineage {} run successfully".format(lineage)
+                else:
+                    msg = "BUSCO analysis with lineage {} Failed: \n {}".format(run_.stderr)
+                report[lineage]["command"] = cmd
+                report[lineage]["status"] = msg
+                report[lineage]["outfile"] = outfile
+    return report
