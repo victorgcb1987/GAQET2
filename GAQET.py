@@ -78,7 +78,7 @@ def emit_msg(string, log_fhand):
 def main():
     sys.tracebacklimit = 1
     arguments, config_report = get_arguments()
-    basedir = Path(arguments["Basedir"]).resolve()
+    basedir = Path(arguments["Basedir"]).absolute()
     if not basedir.exists():
         basedir.mkdir(parents=True, exist_ok=True)
 
