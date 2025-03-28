@@ -92,7 +92,7 @@ def main():
     if "ERROR!" in config_report:
         raise RuntimeError(error_msg)
     
-    emit_msg("#Results will be stored at {}\n".format(basedir.resolve(), log_fhand))
+    emit_msg("#Results will be stored at {}\n".format(basedir.resolve()), log_fhand)
    
     emit_msg(HEADER + "Extracting CDS and protein sequences" + HEADER + "\n", log_fhand)
     
