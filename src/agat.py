@@ -27,7 +27,7 @@ def run_agat(config):
         else:
             msg = "AGAT stats Failed: \n {}".format(run_.stdout)
     
-    report["AGAT stats"] = {"cmd": cmd, "status": msg, 
+    report["AGAT stats"] = {"command": cmd, "status": msg, 
                             "outfile": stats_outfile}
     
     #Running AGAT premature stop codons
@@ -48,7 +48,7 @@ def run_agat(config):
         else:
             msg = "AGAT premature stop codons analysis Failed: \n {}".format(run_.stdout)
     
-    report["AGAT stop codons"] = {"cmd": cmd, "status": msg, 
+    report["AGAT stop codons"] = {"command": cmd, "status": msg, 
                                   "outfile": premature_stop_outfile}
     
 
@@ -69,6 +69,6 @@ def run_agat(config):
         else:
             msg = "AGAT incomplete CDS analysis Failed: \n {}".format(run_.stdout)
     
-    report["AGAT incomplete CDS"] = {"cmd": cmd, "status": msg, 
+    report["AGAT incomplete CDS"] = {"command": cmd, "status": msg, 
                                      "outfile": incomplete_cds_outfile}
     return report
