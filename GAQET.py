@@ -82,8 +82,9 @@ def main():
     if not basedir.exists():
         basedir.mkdir(parents=True, exist_ok=True)
 
-    log_fhand = open(basedir / "GAQET.log.txt", "w")
-    error_msg = "GAQET has failed, {} for details".format(str(basedir / "GAQET.log.txt").resolve())
+    log_fpath = basedir / "GAQET.log.txt" 
+    log_fhand = open(log_fpath, "w")
+    error_msg = "GAQET has failed, {} for details".format(log_fpath.resolve())
     
     header = "\t\t\t###############\n\t\t\t##   GAQET   ##\n\t\t\t###############\n\n" + config_report + "\n"
     emit_msg(header, log_fhand)
