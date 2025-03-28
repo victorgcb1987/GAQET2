@@ -31,25 +31,25 @@ def run_agat(config):
                             "outfile": stats_outfile}
     
     #Running AGAT premature stop codons
-    # premature_stop_outfile = outdir / "{}.01_agat_premature_stop.txt".format(config["ID"])
-    # cmd = "agat_sp_flag_premature_stop_codons.pl --gff {} --fasta {} -o {}".format(annot, 
-    #                                                                                assembly,
-    #                                                                                premature_stop_outfile)
+    premature_stop_outfile = outdir / "{}.01_agat_premature_stop.txt".format(config["ID"])
+    cmd = "agat_sp_flag_premature_stop_codons.pl --gff {} --fasta {} -o {}".format(annot, 
+                                                                                   assembly,
+                                                                                   premature_stop_outfile)
     
-    # if premature_stop_outfile.is_file():
-    #     msg = "AGAT premature stop codons analysis already done"
+    if premature_stop_outfile.is_file():
+        msg = "AGAT premature stop codons analysis already done"
 
-    # else:
-    #     run_ = subprocess.run(cmd, shell=True, stderr=subprocess.PIPE)
-    #     #Is process has gone well
-    #     if run_.returncode == 0:
-    #         msg = "AGAT premature stop codons analysis run successfully"
-    #     #But if not
-    #     else:
-    #         msg = "AGAT premature stop codons analysis Failed: \n {}".format(run_.stderr)
+    else:
+        run_ = subprocess.run(cmd, shell=True, stderr=subprocess.PIPE)
+        #Is process has gone well
+        if run_.returncode == 0:
+            msg = "AGAT premature stop codons analysis run successfully"
+        #But if not
+        else:
+            msg = "AGAT premature stop codons analysis Failed: \n {}".format(run_.stderr)
     
-    # report["AGAT stop codons"] = {"command": cmd, "status": msg, 
-    #                               "outfile": premature_stop_outfile}
+    report["AGAT stop codons"] = {"command": cmd, "status": msg, 
+                                  "outfile": premature_stop_outfile}
     
 
     #Running AGAT incomplete CDS
