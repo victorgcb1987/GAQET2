@@ -128,7 +128,7 @@ def main():
                     emit_msg(BULLET_OK + status + "\n", log_fhand)
         if analysis == "BUSCO":
             emit_msg(HEADER + "Running BUSCO"+ HEADER + "\n", log_fhand)
-            busco = run_busco(arguments, gffread)
+            busco = run_busco(arguments, gffread["proteins"]["outfile"])
             for lineage, values in busco.items():
                 status = values["status"]
                 emit_msg("#{} command used: \n\t{}\n".format(lineage, values["command"]), log_fhand)
