@@ -14,10 +14,12 @@ def run_busco(arguments, protein_sequences):
                                                                             protein_sequences,
                                                                             lineage_outdir,
                                                                             lineage)
+            print(outfile)
             if outfile.exists():
+                print(outfile)
                 msg = "Busco on lineage {} done already".format(lineage)
             else:
-                run_ = subprocess.run(cmd, shell=True, stderr=subprocess.PIPE)
+                run_ = subprocess.run(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.DEVNULL)
                 if run_.returncode == 0:
                     msg = "BUSCO analysis with lineage {} run successfully".format(lineage)
                 else:
