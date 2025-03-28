@@ -33,4 +33,4 @@ def run_gffread(config):
         report[kind]["outfile"] = outfile
 
         #Return command, final message and output dir path
-        return report
+    return report

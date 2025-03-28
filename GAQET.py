@@ -99,7 +99,7 @@ def main():
     gffread = run_gffread(arguments)
     for kind, values in gffread.items():
         status =  values["status"]
-        emit_msg("#{} extraction, command used: {}\n".format(kind, values["command"]), log_fhand)
+        emit_msg("#{} extraction, command used: \n\t{}\n".format(kind, values["command"]), log_fhand)
         if "Failed" in status:
             emit_msg(BULLET_FIX + status + "\n", log_fhand)
             emit_msg(HEADER + "GAQET has stopped working", log_fhand)
