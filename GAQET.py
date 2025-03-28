@@ -62,6 +62,7 @@ def get_arguments():
     yaml = parser.yaml
     with open(Path(parser.yaml)) as yaml_fhand:
         yaml = load_yaml(yaml_fhand)
+        
     if parser.genome:
         yaml["Assembly"] = parser.genome
     if parser.annotation:
@@ -71,6 +72,7 @@ def get_arguments():
     if parser.outbase:
         yaml["Basedir"] = parser.outbase
     config_report = report_yaml_file(yaml)
+    yaml["ID"] = "_".join(yaml["ID"].split())
     return yaml, config_report
 
 def emit_msg(string, log_fhand):
