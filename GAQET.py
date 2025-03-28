@@ -78,7 +78,7 @@ def get_arguments():
 
 def emit_msg(string, log_fhand):
     print(string)
-    log_fhand.write(string)
+    log_fhand.write("\n"+ string)
 
 def main():
     sys.tracebacklimit = 1
