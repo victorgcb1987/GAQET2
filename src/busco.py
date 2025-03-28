@@ -5,9 +5,9 @@ from pathlib import Path
 def run_busco(arguments, protein_sequences):
     #Creating output dir
     report = {}
-    outdir = arguments["Basedir"] / "BUSCOCompleteness"
+    outdir = Path(arguments["Basedir"]) / "BUSCOCompleteness"
      #busco --cpu $threads -i $prot -o $outdir/$outbase".02_proteins.busco."$buscodb -m prot -l $buscodb;
-    for lineage in values in arguments["BUSCO_lineages"]:
+    for lineage in arguments["BUSCO_lineages"]:
         lineage_outdir = outdir / lineage
         if not lineage_outdir.exists():
             lineage_outdir.mkdir(parents=True, exists_ok=True)
