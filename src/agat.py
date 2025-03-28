@@ -12,7 +12,7 @@ def run_agat(config):
     assembly = config["Assembly"]
 
     #Running AGAT STATS
-    stats_outfile = outdir / "{}.01_agat_stats".format(config["ID"])
+    stats_outfile = outdir / "{}.01_agat_stats.txt".format(config["ID"])
     cmd = "agat_sp_statistics.pl --gff {} -o {}".format(annot, stats_outfile)
 
     if stats_outfile.is_file():
@@ -40,13 +40,13 @@ def run_agat(config):
         msg = "AGAT premature stop codons analysis already done"
 
     else:
-        run_ = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE)
+        run_ = subprocess.run(cmd, shell=True, stderr=subprocess.PIPE)
         #Is process has gone well
         if run_.returncode == 0:
             msg = "AGAT premature stop codons analysis run successfully"
         #But if not
         else:
-            msg = "AGAT premature stop codons analysis Failed: \n {}".format(run_.stdout)
+            msg = "AGAT premature stop codons analysis Failed: \n {}".format(run_.stderr)
     
     report["AGAT stop codons"] = {"command": cmd, "status": msg, 
                                   "outfile": premature_stop_outfile}
