@@ -128,10 +128,10 @@ def main():
                     emit_msg(BULLET_OK + status + "\n", log_fhand)
         if analysis == "BUSCO":
             emit_msg(HEADER + "Running BUSCO"+ HEADER + "\n", log_fhand)
-            agat = run_busco(arguments, gffread)
-            for mode, values in agat.items():
+            busco = run_busco(arguments, gffread)
+            for lineage, values in busco.items():
                 status = values["status"]
-                emit_msg("#{} command used: \n\t{}\n".format(mode, values["command"]), log_fhand)
+                emit_msg("#{} command used: \n\t{}\n".format(lineage, values["command"]), log_fhand)
                 if "Failed" in status:
                     emit_msg(BULLET_FIX + status + "\n", log_fhand)
                     emit_msg(HEADER + "GAQET has stopped working", log_fhand)
