@@ -14,7 +14,9 @@ def run_busco(arguments, protein_sequences):
                                                                             protein_sequences,
                                                                             lineage_outdir,
                                                                             lineage)
+            print("XXXXXX")
             print(outfile)
+            print("XXXXX")
             if outfile.exists():
                 print(outfile)
                 msg = "Busco on lineage {} done already".format(lineage)
