@@ -83,7 +83,7 @@ def main():
         basedir.mkdir(parents=True, exist_ok=True)
 
     log_fhand = open(basedir / "GAQET.log.txt", "w")
-    error_msg = "GAQET has failed, {} for details".format(str(basedir / "GAQET.log.txt").resolve()
+    error_msg = "GAQET has failed, {} for details".format(str(basedir / "GAQET.log.txt").resolve())
     
     header = "\t\t\t###############\n\t\t\t##   GAQET   ##\n\t\t\t###############\n\n" + config_report + "\n"
     emit_msg(header, log_fhand)
