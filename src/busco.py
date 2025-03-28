@@ -10,10 +10,10 @@ def run_busco(arguments, protein_sequences):
         if not lineage_outdir.exists():
             lineage_outdir.mkdir(parents=True, exist_ok=True)
             outfile = lineage_outdir / "run_{}".format(lineage) / "short_summary.txt"
-            cmd = "busco --cpu {} -i {} -o {} -m prot -l {}".format(arguments["Threads"],
-                                                                    protein_sequences,
-                                                                    lineage_outdir,
-                                                                    lineage)
+            cmd = "busco --cpu {} -i {} -o {} -m prot -l {} --force".format(arguments["Threads"],
+                                                                            protein_sequences,
+                                                                            lineage_outdir,
+                                                                            lineage)
             if outfile.exists():
                 msg = "Busco on lineage {} done already".format(lineage)
             else:
@@ -25,5 +25,4 @@ def run_busco(arguments, protein_sequences):
                 report[lineage]["command"] = cmd
                 report[lineage]["status"] = msg
                 report[lineage]["outfile"] = outfile
-    print(report)
     return report
