@@ -25,4 +25,5 @@ def run_busco(arguments, protein_sequences):
                 report[lineage]["command"] = cmd
                 report[lineage]["status"] = msg
                 report[lineage]["outfile"] = outfile
+    print(report)
     return report
