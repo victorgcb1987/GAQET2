@@ -6,7 +6,7 @@ from pathlib import Path
 def run_gffread(config):
     report = {"cds": {"mode": "x", "command": "", "status": "", "outfile": ""}, 
               "proteins": {"mode": "y", "command": "", "status": "", "outfile": ""}}
-    outdir = config["Basedir"] / "input_sequences"
+    outdir = Path(config["Basedir"]) / "input_sequences"
 
     if not outdir.exists():
         outdir.mkdir(parents=True, exist_ok=True)
