@@ -78,19 +78,20 @@ def emit_msg(string, log_fhand):
 def main():
     sys.tracebacklimit = 1
     arguments, config_report = get_arguments()
-    basedir = Path(arguments["Basedir"]).absolute()
+    basedir = Path(arguments["Basedir"])
     if not basedir.exists():
         basedir.mkdir(parents=True, exist_ok=True)
 
     log_fhand = open(basedir / "GAQET.log.txt", "w")
+    error_msg = "GAQET has failed, {} for details".format(str(basedir / "GAQET.log.txt").resolve()
     
     header = "\t\t\t###############\n\t\t\t##   GAQET   ##\n\t\t\t###############\n\n" + config_report + "\n"
     emit_msg(header, log_fhand)
 
     if "ERROR!" in config_report:
-        raise RuntimeError("Check {} for details".format(str(basedir / "GAQET.log.txt")))
+        raise RuntimeError(error_msg)
     
-    emit_msg("#Results will be stored at {}\n".format(basedir), log_fhand)
+    emit_msg("#Results will be stored at {}\n".format(basedir.resolve(), log_fhand))
    
     emit_msg(HEADER + "Extracting CDS and protein sequences" + HEADER + "\n", log_fhand)
     
@@ -101,7 +102,7 @@ def main():
         if "Failed" in status:
             emit_msg(BULLET_FIX + status + "\n", log_fhand)
             emit_msg(HEADER + "GAQET has stopped working", log_fhand)
-            raise RuntimeError("GAQET has failed, {} for details".format(str(basedir / "GAQET.log.txt")))
+            raise RuntimeError(error_msg)
         else:
             emit_msg(BULLET_OK + status + "\n", log_fhand)
 
