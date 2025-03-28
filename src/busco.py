@@ -22,7 +22,7 @@ def run_busco(arguments, protein_sequences):
                     msg = "BUSCO analysis with lineage {} run successfully".format(lineage)
                 else:
                     msg = "BUSCO analysis with lineage {} Failed: \n {}".format(lineage, run_.stderr)
-                report[lineage]["command"] = cmd
-                report[lineage]["status"] = msg
-                report[lineage]["outfile"] = outfile
+                report[lineage] = {"command": cmd,
+                                   "status": msg,
+                                   "outfile": outfile}
     return report
