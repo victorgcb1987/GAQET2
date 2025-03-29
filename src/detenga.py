@@ -105,20 +105,22 @@ def run_detenga(config, protein_sequences, mrna_sequences):
     base_dir = Path(os.getcwd())
     tesorter_outfile = outdir / "{}.{}.cls.tsv".format(mrna_sequences.name, config["DETENGA_db"])
     cmd = "TEsorter {} -db {} -p {}".format(mrna_sequences.absolute(), config["DETENGA_db"], str(config["Threads"]))
-    os.chdir(outdir)
+    
     print(tesorter_outfile)
     if tesorter_outfile.is_file():
         msg = "DeTEnGA TEsorter step already done"
     else:
+        os.chdir(outdir)
         run_ = subprocess.run(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.DEVNULL)
         if run_.returncode == 0:
             msg = "DeTEnGA TEsorter step run successfully"
         else:
             msg = "DeTEnGA TEsorter step Failed: \n {}".format(run_.stderr)
+        os.chdir(base_dir)
     report["TEsorter"] = {"command": cmd,
                           "status": msg,
                           "outfile": tesorter_outfile}
-    os.chdir(base_dir)
+    
     
     #REMOVE stop codons
     stop_codons_outfile = outdir / "{}.pep.nostop.fasta".format(Path(config["Assembly"]).stem)
@@ -168,22 +170,24 @@ def run_detenga(config, protein_sequences, mrna_sequences):
     #Run interproscan
     interpro_outfile = outdir / "{}.pep.nostop.fasta.tsv".format(Path(config["Assembly"]).stem)
     base_dir = Path(os.getcwd())
-    os.chdir(outdir)
+
     cmd = "interproscan.sh -i {} -cpu {} -exclappl {} --disable-precalc".format(str(stop_codons_outfile), 
                                                                                 config["Threads"], 
                                                                                 ",".join(EXCLUDE))
     if interpro_outfile.is_file():
         msg = "DeTEnGA InteproScan analysis step already done"
     else:
+        os.chdir(outdir)
         run_ = subprocess.run(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.DEVNULL)
         if run_.returncode == 0:
             msg = "DeTEnGA InteproScan analysis step run successfully"
         else:
             msg = "DeTEnGA InteproScan analysis step Failed: \n {}".format(run_.stderr)
+        os.chdir(base_dir)
     report["InterproScan"] = {"command": cmd,
                               "status": msg,
                               "outfile": interpro_outfile}
-    os.chdir(base_dir)
+    
     return report
     
 
