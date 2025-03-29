@@ -114,7 +114,7 @@ def run_detenga(config, protein_sequences, mrna_sequences):
             msg = "DeTEnGA TEsorter step run successfully"
         else:
             msg = "DeTEnGA TEsorter step Failed: \n {}".format(run_.stderr)
-    report["tesorter"] = {"command": cmd,
+    report["TEsorter"] = {"command": cmd,
                           "status": msg,
                           "outfile": tesorter_outfile}
     os.chdir(base_dir)
@@ -159,7 +159,7 @@ def run_detenga(config, protein_sequences, mrna_sequences):
             msg = "DeTEnGA Removing stop codons step run successfully"
         except Exception as error:
             msg = "DeTEnGA Removing stop codons step Failed: \n {}".format(error)
-    report["stop_codons"] = {"command": "",
+    report["Stop codons removed"] = {"command": "",
                             "status": msg,
                             "outfile": stop_codons_outfile}
     
