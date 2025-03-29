@@ -105,7 +105,7 @@ def run_detenga(config, protein_sequences, mrna_sequences):
     base_dir = Path(os.getcwd())
     tesorter_outfile = Path("{}.{}.cls.tsv".format(mrna_sequences, config["DETENGA_db"]))
     os.chdir(outdir)
-    cmd = "TEsorter {} -db {} -p {}".format(mrna_sequences, config["DETENGA_db"], str(config["Threads"]))
+    cmd = "TEsorter {} -db {} -p {}".format(mrna_sequences.absolute(), config["DETENGA_db"], str(config["Threads"]))
     if tesorter_outfile.is_file():
         msg = "DeTEnGA TEsorter step already done"
     else:
@@ -168,7 +168,7 @@ def run_detenga(config, protein_sequences, mrna_sequences):
     interpro_outfile = outdir / "{}.pep.nostop.fasta.tsv".format(Path(config["Assembly"]).stem)
     base_dir = Path(os.getcwd())
     os.chdir(outdir)
-    cmd = "interproscan.sh -i {} -cpu {} -exclappl {} --disable-precalc".format(interpro_outfile, 
+    cmd = "interproscan.sh -i {} -cpu {} -exclappl {} --disable-precalc".format(str(interpro_outfile), 
                                                                                 config["Threads"], 
                                                                                 ",".join(EXCLUDE))
     if interpro_outfile.is_file():
