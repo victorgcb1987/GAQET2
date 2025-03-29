@@ -1,0 +1,61 @@
+#Obtained by running interproscan on rexdb protein database, Viridiplantae 4.0
+PF00075 RNase H
+PF00077 Retroviral aspartyl protease
+PF00078 Reverse transcriptase (RNA-dependent DNA polymerase)
+PF00385 Chromo (CHRromatin Organisation MOdifier) domain
+PF00665 Integrase core domain
+PF00872 Transposase, Mutator family
+PF01021 Ty transposon capsid protein
+PF02689 Helicase
+PF02992 Transposase family tnp2
+PF03184 DDE superfamily endonuclease
+PF03732 Retrotransposon gag protein
+PF04827 Plant transposon protein
+PF04937 Protein of unknown function (DUF 659)
+PF05699 hAT family C-terminal dimerisation region
+PF05970 PIF1-like helicase
+PF07727 Reverse transcriptase (RNA-dependent DNA polymerase)
+PF08284 Retroviral aspartyl protease
+PF10447 Exosome component EXOSC1/CSL4
+PF10551 MULE transposase domain
+PF12382 Retrotransposon peptidase
+PF12384 Ty3 transposon peptidase
+PF13358 DDE superfamily endonuclease
+PF13359 DDE superfamily endonuclease
+PF13456 Reverse transcriptase-like
+PF13650 Aspartyl protease
+PF13843 Transposase IS4
+PF13960 Domain of unknown function (DUF4218)
+PF13975 gag-polyprotein putative aspartyl protease
+PF13976 GAG-pre-integrase domain
+PF14214 Helitron helicase-like domain at N-terminus
+PF14223 gag-polypeptide of LTR copia-type
+PF14291 Domain of unknown function (DUF4371)
+PF14372 hAT-like transposase, RNase-H fold
+PF16297 Domain of unknown function (DUF4939)
+PF17917 RNase H-like domain found in reverse transcriptase
+PF17919 RNase H-like domain found in reverse transcriptase
+PF17921 Integrase zinc binding domain
+PF19259 Ty3 transposon capsid-like protein
+PF20700 Mutator-like transposase
+PF21024 Peptidase A3B
+PF21530 DNA helicase Pif1, 2B domain
+PF21787 TNP-like, RNase H N-terminal domain
+PF22936 Pol polyprotein, beta-barrel domain
+#Added by manual curation of oryza TEs
+PF24626 Tf2-1-like, SH3 domain
+PF03108 MuDR family transposase 
+PF10536 Plant mobile domain
+PF10551 MULE transposase domain
+PF13963 Transposase-associated domain
+PF09322 Domain of unknown function (DUF1979)
+PF13961 Domain of unknown function (DUF4219)
+PF12776 Myb/SANT-like DNA-binding domain
+PF13359 DDE superfamily endonuclease
+PF03004 Plant transposase (Ptta/En/Spm family)
+PF14392 Zinc knuckle
+PF14244 gag-polypeptide of LTR copia-type
+PF03078 ATHILA ORF-1 family
+PF04195 Putative gypsy type transposon
+PF14529 Endonuclease-reverse transcriptase
+PF13966 zinc-binding in reverse transcriptase

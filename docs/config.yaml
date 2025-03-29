@@ -14,6 +14,7 @@ BUSCO_lineages:
   -  embryophyta_odb10
 OMARK_taxid: ""
 OMARK_db: ""
+DETENGA_db: "rexdb-plant"
 PROTHOMOLOGY_tags:
   - TREMBL: ""
   - SWISSPROT: ""
