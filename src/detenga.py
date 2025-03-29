@@ -117,6 +117,7 @@ def run_detenga(config, protein_sequences, mrna_sequences):
     report["tesorter"] = {"command": cmd,
                           "status": msg,
                           "outfile": tesorter_outfile}
+    print(report)
     os.chdir(base_dir)
     
     #REMOVE stop codons
@@ -162,6 +163,7 @@ def run_detenga(config, protein_sequences, mrna_sequences):
     report["stop_codons"] = {"command": "",
                             "status": msg,
                             "outfile": stop_codons_outfile}
+    print(report)
     
    
     #Run interproscan
@@ -182,6 +184,7 @@ def run_detenga(config, protein_sequences, mrna_sequences):
     report["InterproScan"] = {"command": cmd,
                               "status": msg,
                               "outfile": interpro_outfile}
+    print(report)
         
     os.chdir(base_dir)
     return report
