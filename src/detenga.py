@@ -178,7 +178,7 @@ def run_detenga(config, protein_sequences, mrna_sequences):
         msg = "DeTEnGA InteproScan analysis step already done"
     else:
         os.chdir(outdir)
-        run_ = subprocess.run(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.DEVNULL)
+        run_ = subprocess.run(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         if run_.returncode == 0:
             msg = "DeTEnGA InteproScan analysis step run successfully"
         else:
