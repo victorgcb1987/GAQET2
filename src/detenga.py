@@ -103,7 +103,7 @@ def run_detenga(config, protein_sequences, mrna_sequences):
 
     #Run TEsorter
     base_dir = Path(os.getcwd())
-    tesorter_outfile = Path("{}.{}.cls.tsv".format(mrna_sequences, config["DETENGA_db"]))
+    tesorter_outfile = outdir / "{}.{}.cls.tsv".format(mrna_sequences.name, config["DETENGA_db"])
     cmd = "TEsorter {} -db {} -p {}".format(mrna_sequences.absolute(), config["DETENGA_db"], str(config["Threads"]))
     os.chdir(outdir)
     print(tesorter_outfile)
