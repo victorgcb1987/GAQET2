@@ -10,6 +10,7 @@ from yaml import safe_load as load_yaml
 
 from src.agat import run_agat
 from src.busco import run_busco
+from src.detenga import run_detenga
 from src.gffread import run_gffread
 from src.omark import run_omark
 from src.psauron import run_psauron
@@ -151,7 +152,7 @@ def main():
                 raise RuntimeError(error_msg)
             else:
                 emit_msg(BULLET_OK + status + "\n", log_fhand)
-                
+
         if analysis == "OMARK":
             emit_msg(HEADER + "Running OMARK"+ HEADER + "\n", log_fhand)
             omark = run_omark(arguments, gffread["proteins"]["outfile"])
@@ -164,6 +165,20 @@ def main():
                     raise RuntimeError(error_msg)
                 else:
                     emit_msg(BULLET_OK + status + "\n", log_fhand)
+
+        if analysis == "DETENGA":
+            emit_msg(HEADER + "Running DeTEnGA"+ HEADER + "\n", log_fhand)
+            detenga = run_detenga(arguments, gffread["proteins"]["outfile"])
+            for analysis, values in detenga.items():
+                status = values["status"]
+                emit_msg("#{} command used: \n\t{}\n".format(analysis, values["command"]), log_fhand)
+                if "Failed" in status:
+                    emit_msg(BULLET_FIX + status + "\n", log_fhand)
+                    emit_msg(HEADER + "GAQET has stopped working", log_fhand)
+                    raise RuntimeError(error_msg)
+                else:
+                    emit_msg(BULLET_OK + status + "\n", log_fhand)
+
 
     
 
