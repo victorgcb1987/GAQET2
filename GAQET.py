@@ -142,7 +142,7 @@ def main():
         if analysis == "PSAURON":
             emit_msg(HEADER + "Running PSAURON"+ HEADER + "\n", log_fhand)
             psauron = run_psauron(arguments, gffread["cds"]["outfile"])
-            status = values["psauron"]
+            status = psauron["psauron"]
             emit_msg("#{} command used: \n\t{}\n".format(lineage, values["command"]), log_fhand)
             if "Failed" in status:
                 emit_msg(BULLET_FIX + status + "\n", log_fhand)
