@@ -11,8 +11,7 @@ from yaml import safe_load as load_yaml
 from src.agat import run_agat
 from src.busco import run_busco
 from src.gffread import run_gffread
-from src.LTR_retriever import create_outdir, run_suffixerator, run_harvest, run_finder, concatenate_outputs, run_LTR_retriever, run_LAI
-from src.stringtie import run_stringtie, run_gffcompare, calculate_annotation_scores
+from src.omark import run_omark
 from src.psauron import run_psauron
 from src.YAML import report_yaml_file
 
@@ -127,6 +126,7 @@ def main():
                     raise RuntimeError(error_msg)
                 else:
                     emit_msg(BULLET_OK + status + "\n", log_fhand)
+
         if analysis == "BUSCO":
             emit_msg(HEADER + "Running BUSCO"+ HEADER + "\n", log_fhand)
             busco = run_busco(arguments, gffread["proteins"]["outfile"])
@@ -139,6 +139,7 @@ def main():
                     raise RuntimeError(error_msg)
                 else:
                     emit_msg(BULLET_OK + status + "\n", log_fhand)
+
         if analysis == "PSAURON":
             emit_msg(HEADER + "Running PSAURON"+ HEADER + "\n", log_fhand)
             psauron = run_psauron(arguments, gffread["cds"]["outfile"])
@@ -150,6 +151,19 @@ def main():
                 raise RuntimeError(error_msg)
             else:
                 emit_msg(BULLET_OK + status + "\n", log_fhand)
+                
+        if analysis == "OMARK":
+            emit_msg(HEADER + "Running OMARK"+ HEADER + "\n", log_fhand)
+            omark = run_omark(arguments, gffread["proteins"]["outfile"])
+            for analysis, values in omark.items():
+                status = values["status"]
+                emit_msg("#{} command used: \n\t{}\n".format(analysis, values["command"]), log_fhand)
+                if "Failed" in status:
+                    emit_msg(BULLET_FIX + status + "\n", log_fhand)
+                    emit_msg(HEADER + "GAQET has stopped working", log_fhand)
+                    raise RuntimeError(error_msg)
+                else:
+                    emit_msg(BULLET_OK + status + "\n", log_fhand)
 
     
 
