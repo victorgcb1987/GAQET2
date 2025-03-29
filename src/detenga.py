@@ -184,6 +184,7 @@ def run_detenga(config, protein_sequences, mrna_sequences):
                               "outfile": interpro_outfile}
         
     os.chdir(base_dir)
+    return report
     
 
 #     msg = "##STEP 5: merging evidences from interpro and TEsorter\n"
