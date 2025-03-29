@@ -183,7 +183,6 @@ def run_detenga(config, protein_sequences, mrna_sequences):
                               "status": msg,
                               "outfile": interpro_outfile}
     os.chdir(base_dir)
-    print(report)
     return report
     
 
