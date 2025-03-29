@@ -105,8 +105,8 @@ def run_detenga(config, protein_sequences, mrna_sequences):
     #Run TEsorter
     base_dir = Path(os.getcwd())
     tesorter_outfile = Path("{}.{}.cls.tsv".format(mrna_sequences, config["DETENGA_db"]))
-    os.chdir(outdir)
     cmd = "TEsorter {} -db {} -p {}".format(mrna_sequences.absolute(), config["DETENGA_db"], str(config["Threads"]))
+    os.chdir(outdir)
     if tesorter_outfile.is_file():
         msg = "DeTEnGA TEsorter step already done"
     else:
