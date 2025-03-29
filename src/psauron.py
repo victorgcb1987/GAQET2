@@ -19,7 +19,7 @@ def run_psauron(arguments, cds_sequences):
                 msg = "PSAURON analysis run successfully"
             else:
                 msg = "PSAURON analysis Failed: \n {}".format(run_.stderr)
-        report = {"command": cmd,
-                  "status": msg,
-                  "outfile": outfile}
+    report = {"command": cmd,
+              "status": msg,
+              "outfile": outfile}
     return report
