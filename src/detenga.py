@@ -97,6 +97,7 @@ def get_row(label, genome, annotation, stats):
 def run_detenga(config, protein_sequences, mrna_sequences):
     report = {"TEsorter": {}, "Stop codons removed": {},
               "InterproScan": {}}
+    print(protein_sequences, mrna_sequences)
     outdir = Path(config["Basedir"]) / "DETENGA_run"
     if not outdir.exists():
         outdir.mkdir(parents=True, exist_ok=True)
