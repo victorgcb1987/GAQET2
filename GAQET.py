@@ -16,6 +16,7 @@ from src.omark import run_omark
 from src.psauron import run_psauron
 from src.YAML import report_yaml_file
 from src.agat_parsers import parse_agat_stats, parse_agat_incomplete, parse_agat_premature
+from src.busco_parsers import busco_stats
 
 from pathlib import Path
 
@@ -187,7 +188,12 @@ def main():
             results["models_stats"] = parse_agat_stats(agat)
             results["models_premature"] = parse_agat_premature(agat)
             results["models_stops"] = parse_agat_incomplete(agat)
-            print(results)
+        if analysis == "BUSCO":
+            busco_results = busco_stats(busço)
+            for lineage, stats in busco_results.items():
+                results["Annotation_BUSCO_{}".format(lineage)] = stats
+    print(results)
+
             
 
 
