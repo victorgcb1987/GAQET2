@@ -15,6 +15,7 @@ from src.gffread import run_gffread
 from src.omark import run_omark
 from src.psauron import run_psauron
 from src.YAML import report_yaml_file
+from src.agat_parsers import parse_agat_results
 
 from pathlib import Path
 
@@ -180,8 +181,13 @@ def main():
                     emit_msg(BULLET_OK + status + "\n", log_fhand)
         
     #Get results from analysis
+    results = {}
     for analysis in arguments["Analysis"]:
         if analysis == "AGAT":
+            results["AGAT"] = parse_agat_results(agat)
+            for col, value in results["AGAT"].items():
+                print(col, value)
+            
 
 
 
