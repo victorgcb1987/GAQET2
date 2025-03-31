@@ -163,7 +163,7 @@ def run_detenga(config, protein_sequences, mrna_sequences):
     except Exception as error:
         msg = "DeTEnGA Parse Interpro step Failed: \n {}".format(error)
         report["classify_interpro"] = {"command": "",
-                                       "msg": msg,
+                                       "status": msg,
                                        "outfile": ""}
     #try:
     te_summary = create_summary(classified_pfams, te_sorter_output)
