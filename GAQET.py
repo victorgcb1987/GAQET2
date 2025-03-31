@@ -189,7 +189,7 @@ def main():
             results["models_premature"] = parse_agat_premature(agat)
             results["models_stops"] = parse_agat_incomplete(agat)
         if analysis == "BUSCO":
-            busco_results = busco_stats(busço)
+            busco_results = busco_stats(busco)
             for lineage, stats in busco_results.items():
                 results["Annotation_BUSCO_{}".format(lineage)] = stats
     print(results)
