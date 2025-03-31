@@ -45,7 +45,7 @@ def parse_agat_stats(agat_results):
     }
 
     with open(agat_results["AGAT stats"]["outfile"], 'r') as stats_fhand:
-        for line in f:
+        for line in stats_fhand:
             if ':' in line or not line.strip():
                 continue
             try:
