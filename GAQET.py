@@ -15,7 +15,7 @@ from src.gffread import run_gffread
 from src.omark import run_omark
 from src.psauron import run_psauron
 from src.YAML import report_yaml_file
-from src.agat_parsers import parse_agat_stats
+from src.agat_parsers import parse_agat_stats, parse_agat_incomplete, parse_agat_premature
 
 from pathlib import Path
 
@@ -184,9 +184,10 @@ def main():
     results = {}
     for analysis in arguments["Analysis"]:
         if analysis == "AGAT":
-            results["AGAT"] = parse_agat_stats(agat)
-            for col, value in results["AGAT"].items():
-                print(col, value)
+            results["models_stats"] = parse_agat_stats(agat)
+            results["models_premature"] = parse_agat_premature(agat)
+            results["models_stops"] = parse_agat_incomplete(agat)
+            print(results)
             
 
 
