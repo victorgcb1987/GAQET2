@@ -44,7 +44,7 @@ def parse_agat_stats(agat_results):
         "Shortest intron into cds part (bp)": "Shortest Intron Length (bp)"
     }
 
-    with open(agat_results["stats"]["outfikle"], 'r') as stats_fhand:
+    with open(agat_results["AGAT stats"]["outfile"], 'r') as stats_fhand:
         for line in f:
             if ':' in line or not line.strip():
                 continue
