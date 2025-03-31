@@ -152,20 +152,19 @@ def run_detenga(config, protein_sequences, mrna_sequences):
     report["classify_tesorter"] = {"command": "",
                                    "msg": msg,
                                    "outfile": ""}
-
-    try:            
-        with open(report["InterproScan"]["outfile"]) as interpro_fhand:
+         
+    with open(report["InterproScan"]["outfile"]) as interpro_fhand:
             TE_pfams = get_pfams_from_interpro_query(open(REXDB_PFAMS))
             intepro_pfams = get_pfams_from_interpro_query(interpro_fhand)
             classified_pfams = classify_pfams(intepro_pfams, TE_pfams)
             msg = "DeTEnGA Parse Interpro step run succesfully \n {}"
             print(msg)
-    except Exception as error:
-        msg = "DeTEnGA Parse Interpro step Failed: \n {}".format(error)
-        print(msg)
-    report["classify_interpro"] = {"command": "",
-                                   "msg": msg,
-                                   "outfile": ""}
+    # except Exception as error:
+    #     msg = "DeTEnGA Parse Interpro step Failed: \n {}".format(error)
+    #     print(msg)
+    # report["classify_interpro"] = {"command": "",
+                                #    "msg": msg,
+                                #    "outfile": ""}
     try:
         te_summary = create_summary(classified_pfams, te_sorter_output)
         outfile = outdir / "{}_TE_summary.csv".format(config["ID"])
