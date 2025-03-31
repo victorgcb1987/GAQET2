@@ -1,16 +1,11 @@
-#!/usr/bin/env python
-
 import argparse
 import os
 import sys
 
 from pathlib import Path
 
-
-from src.parsers import (parse_fof, get_pfams_from_db, get_pfams_from_interpro_query, 
-                         parse_TEsort_output, classify_pfams, create_summary, write_summary,
-                         get_stats)
-from src.run import run_gffread, run_TEsorter, remove_stop_codons, run_interpro, run_agat
+from src.detenga_parsers import (get_pfams_from_interpro_query, parse_TEsort_output, 
+                         classify_pfams, create_summary, write_summary)
 
 
 import subprocess
@@ -28,46 +23,6 @@ EXCLUDE = ["AntiFam", "CDD", "Coils", "FunFam",
                "PIRSR", "PRINTS", "ProSitePatterns",
                "ProSiteProfiles", "SFLD", "SMART", 
                "SUPERFAMILY"]
-
-#Generating program options
-def parse_arguments():
-    desc = "Pipeline to identify Transposable Elments (TE) in annotated genes"
-    parser = argparse.ArgumentParser(description=desc)
-    
-    
-    help_input = '''(Required) File of Files with the following format:
-                    "NAME   FASTA   GFF'''
-    parser.add_argument("--input", "-i", type=str,
-                        help=help_input,
-                        required=True)
-    
-    help_output_dir = '''(Required) Output dir'''
-    parser.add_argument("--output", "-out", type=str,
-                        help=help_output_dir,
-                        required=True)
-    
-    help_threads = "(Optional) number of threads. 1 by default"
-    parser.add_argument("--threads", "-t", type=int,
-                        help=help_threads, default=1)
-    
-    help_database = "(Optional) database for TEsorter. rexdb-plant by default"
-    parser.add_argument("--tesorter_database", "-d", type=str,
-                        help=help_database, default="rexdb-plant")
-    
-    if len(sys.argv)==1:
-        parser.print_help()
-        exit()
-    return parser.parse_args()
-
-def get_arguments():
-    parser = parse_arguments()
-    output = Path(parser.output)
-    if not output.exists():
-        output.mkdir(parents=True)
-    return {"input": parser.input,
-            "out": output,
-            "threads": parser.threads,
-            "tesorter_database": parser.tesorter_database}
 
 
 def create_header():
@@ -96,7 +51,8 @@ def get_row(label, genome, annotation, stats):
 
 def run_detenga(config, protein_sequences, mrna_sequences):
     report = {"TEsorter": {}, "Stop codons removed": {},
-              "InterproScan": {}}
+              "InterproScan": {}, "classify_interpro": {},
+              "classify_tesorter": {}, "create_summary": {}}
     outdir = Path(config["Basedir"]) / "DETENGA_run"
     if not outdir.exists():
         outdir.mkdir(parents=True, exist_ok=True)
@@ -186,76 +142,36 @@ def run_detenga(config, protein_sequences, mrna_sequences):
     report["InterproScan"] = {"command": cmd,
                               "status": msg,
                               "outfile": interpro_outfile}
-    
+
+    try:
+        with open(report["TEsorter"]["outfile"]) as tesorter_fhand:
+            te_sorter_output = parse_TEsort_output(tesorter_fhand)
+            msg = "DeTEnGA Parse TEsorter step run succesfully \n {}"
+    except Exception as error:
+        msg = "DeTEnGA Parse TEsorter step Failed: \n {}".format(error)
+    report["classify_tesorter"] = {"command": "",
+                                   "msg": msg,
+                                   "outfile": ""}
+
+    try:            
+        with open(report["InterproScan"]["outfile"]) as interpro_fhand:
+            TE_pfams = get_pfams_from_interpro_query(interpro_fhand)
+            classified_pfams = classify_pfams(interpro_fhand, TE_pfams)
+            msg = "DeTEnGA Parse Interpro step run succesfully \n {}"
+    except Exception as error:
+        msg = "DeTEnGA Parse Interpro step Failed: \n {}".format(error)
+    report["classify_interpro"] = {"command": "",
+                                   "msg": msg,
+                                   "outfile": ""}
+    try:
+        te_summary = create_summary(classified_pfams, te_sorter_output)
+        outfile = outdir / "{}_TE_summary.csv".format(config["ID"])
+        with open(outfile, "w") as out_fhand:
+            write_summary(te_summary, out_fhand)
+        msg = "DeTEnGA create summary step done"
+    except Exception as error:
+        msg = "DeTEnGA create summary step done Failed: \n {}".format(error)
+    report["create_results"] = {"command": "",
+                                "msg": msg,
+                                "outfile": outfile}
     return report
-    
-
-#     msg = "##STEP 5: merging evidences from interpro and TEsorter\n"
-#     print(msg)
-#     log_fhand.write(msg)
-#     log_fhand.flush()
-#     TE_pfams = get_pfams_from_db(REXDB_PFAMS)
-#     summaries = {}
-#     for label in sequences:
-#         if label in interpro_results and label in TEsorter_results:
-#             with open(TEsorter_results[label]["out_fpath"]) as TEsorter_fhand:
-#                 te_sorter_output = parse_TEsort_output(TEsorter_fhand)
-        
-#             with open(interpro_results[label]["out_fpath"]) as interpro_fhand:
-#                 interpro = get_pfams_from_interpro_query(interpro_fhand)
-#                 classified_pfams = classify_pfams(interpro, TE_pfams)
-    
-#             te_summary = create_summary(classified_pfams, te_sorter_output)
-    
-#             out_fpath = Path(out_dir / label / "{}_TE_summary.csv".format(label))
-#             with open(out_fpath, "w") as out_fhand:
-#                 write_summary(te_summary, out_fhand)
-#                 summaries[label] = out_fpath
-#                 msg = "TE Summary for {} written in {}\n".format(label, out_fpath)
-#                 log_fhand.write(msg)
-#                 log_fhand.flush()
-    
-#     msg = "##STEP 6: Running stats on annotation files\n"
-#     print(msg)
-#     log_fhand.write(msg)
-#     log_fhand.flush()
-#     agat_results = run_agat(summaries, files)
-#     with open(args["out"]/ "combined_summaries.tsv", "w") as combined_summaries_fhand:
-#         header = create_header()
-#         combined_summaries_fhand.write(header)
-#         for label, results in agat_results.items():
-#             stats = get_stats(results["out_fpath"], summaries[label])
-#             genome = files[label]["assembly"].stem
-#             annotation = files[label]["annotation"].stem
-#             row = get_row(label, genome, annotation, stats)
-#             combined_summaries_fhand.write(row)
-
-
-# if __name__ == "__main__":
-#     main()
-
-#     base_dir = Path(os.getcwd())
-#     for label, values in sequences_input.items():
-#         results = {}
-#         input_mrna = values["out_fpath"]["mrna"]
-#         out_mrna = Path("{}.{}.cls.tsv".format(input_mrna, database))
-#         os.chdir(out_mrna.parents[0].absolute())
-#         cmd = "TEsorter {} -db {} -p {}".format(input_mrna, database, str(threads))
-#         if out_mrna.exists():
-#             returncode = 99
-#             msg = "File {} already exists\n".format(str(out_mrna))
-#         else:
-#             run_ = run(cmd, capture_output=True, shell=True)
-#             returncode = run_.returncode
-#             log = out_mrna.parents[0] / "{}_TEsorter.log.txt".format(label)
-#             if returncode == 0:
-#                 msg = "Done, check {} for details \n".format(str(log))
-#             else:
-#                 msg = run_.stderr.decode()
-#             with open(log, "w") as log_fhand:
-#                 log_fhand.write(run_.stderr.decode())
-#         results = {"command": cmd, "returncode": returncode,
-#                    "msg": msg, "out_fpath": out_mrna}
-#         tesorter_results[label] = results
-#         os.chdir(base_dir)
-#     return tesorter_results
