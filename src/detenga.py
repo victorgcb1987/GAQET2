@@ -165,16 +165,16 @@ def run_detenga(config, protein_sequences, mrna_sequences):
     report["classify_interpro"] = {"command": "",
                                    "status": msg,
                                    "outfile": ""}
-    #try:
-    te_summary = create_summary(classified_pfams, te_sorter_output)
-    outfile = outdir / "{}_TE_summary.csv".format(config["ID"])
-    with open(outfile, "w") as out_fhand:
-        write_summary(te_summary, out_fhand)
-        msg = "DeTEnGA create summary step done"
-    #except Exception as error:
-    #    msg = "DeTEnGA create summary step done Failed: \n {}".format(error)
-    #    print(msg)
-    report["create_results"] = {"command": "",
+    try:
+        te_summary = create_summary(classified_pfams, te_sorter_output)
+        outfile = outdir / "{}_TE_summary.csv".format(config["ID"])
+        with open(outfile, "w") as out_fhand:
+            write_summary(te_summary, out_fhand)
+            msg = "DeTEnGA create summary step done"
+    except Exception as error:
+        msg = "DeTEnGA create summary step done Failed: \n {}".format(error)
+        print(msg)
+    report["create_summary"] = {"command": "",
                                 "status": msg,
                                 "outfile": outfile}
     return report
