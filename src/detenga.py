@@ -153,27 +153,27 @@ def run_detenga(config, protein_sequences, mrna_sequences):
                                    "msg": msg,
                                    "outfile": ""}
          
-    with open(report["InterproScan"]["outfile"]) as interpro_fhand:
+    try:
+        with open(report["InterproScan"]["outfile"]) as interpro_fhand:
             TE_pfams = get_pfams_from_db(REXDB_PFAMS)
             intepro_pfams = get_pfams_from_interpro_query(interpro_fhand)
             classified_pfams = classify_pfams(intepro_pfams, TE_pfams)
             msg = "DeTEnGA Parse Interpro step run succesfully \n {}"
             print(msg)
-    # except Exception as error:
-    #     msg = "DeTEnGA Parse Interpro step Failed: \n {}".format(error)
-    #     print(msg)
-    # report["classify_interpro"] = {"command": "",
-                                #    "msg": msg,
-                                #    "outfile": ""}
-    try:
-        te_summary = create_summary(classified_pfams, te_sorter_output)
-        outfile = outdir / "{}_TE_summary.csv".format(config["ID"])
-        with open(outfile, "w") as out_fhand:
-            write_summary(te_summary, out_fhand)
-        msg = "DeTEnGA create summary step done"
     except Exception as error:
-        msg = "DeTEnGA create summary step done Failed: \n {}".format(error)
-        print(msg)
+        msg = "DeTEnGA Parse Interpro step Failed: \n {}".format(error)
+        report["classify_interpro"] = {"command": "",
+                                       "msg": msg,
+                                       "outfile": ""}
+    #try:
+    te_summary = create_summary(classified_pfams, te_sorter_output)
+    outfile = outdir / "{}_TE_summary.csv".format(config["ID"])
+    with open(outfile, "w") as out_fhand:
+        write_summary(te_summary, out_fhand)
+        msg = "DeTEnGA create summary step done"
+    #except Exception as error:
+    #    msg = "DeTEnGA create summary step done Failed: \n {}".format(error)
+    #    print(msg)
     report["create_results"] = {"command": "",
                                 "msg": msg,
                                 "outfile": outfile}
