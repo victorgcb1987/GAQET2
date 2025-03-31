@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 from subprocess import run
 
+
 def run_gffread(fof, output):
     results_catalog = {}
     for label, values in fof.items():
@@ -49,9 +50,8 @@ def run_gffread(fof, output):
     return results_catalog
 
 
-def run_TEsorter(sequences_input, database, threads):
+def run_TEsorter(outdir, sequences_input, database, threads):
     base_dir = Path(os.getcwd())
-    tesorter_results = {}
     for label, values in sequences_input.items():
         results = {}
         input_mrna = values["out_fpath"]["mrna"]

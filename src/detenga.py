@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 from src.detenga_parsers import (get_pfams_from_interpro_query, parse_TEsort_output, 
-                         classify_pfams, create_summary, write_summary)
+                         classify_pfams, create_summary, write_summary, get_pfams_from_db)
 
 
 import subprocess
@@ -154,7 +154,7 @@ def run_detenga(config, protein_sequences, mrna_sequences):
                                    "outfile": ""}
          
     with open(report["InterproScan"]["outfile"]) as interpro_fhand:
-            TE_pfams = get_pfams_from_interpro_query(open(REXDB_PFAMS))
+            TE_pfams = get_pfams_from_db(REXDB_PFAMS)
             intepro_pfams = get_pfams_from_interpro_query(interpro_fhand)
             classified_pfams = classify_pfams(intepro_pfams, TE_pfams)
             msg = "DeTEnGA Parse Interpro step run succesfully \n {}"
