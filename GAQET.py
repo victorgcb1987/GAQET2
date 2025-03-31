@@ -102,7 +102,7 @@ def main():
    
     emit_msg(HEADER + "Extracting CDS and protein sequences" + HEADER + "\n", log_fhand)
     
-
+    #Run analysis
     gffread = run_gffread(arguments)
     for kind, values in gffread.items():
         status =  values["status"]
@@ -170,7 +170,6 @@ def main():
             emit_msg(HEADER + "Running DeTEnGA"+ HEADER + "\n", log_fhand)
             detenga = run_detenga(arguments, gffread["proteins"]["outfile"], gffread["mrna"]["outfile"])
             for analysis, values in detenga.items():
-                print(analysis, values)
                 status = values["status"]
                 emit_msg("#{} command used: \n\t{}\n".format(analysis, values["command"]), log_fhand)
                 if "Failed" in status:
@@ -180,61 +179,11 @@ def main():
                 else:
                     emit_msg(BULLET_OK + status + "\n", log_fhand)
         
+    #Get results from analysis
+    for analysis in arguments["Analysis"]:
+        if analysis == "AGAT":
 
 
-    
-
-
-
-
-    
-    
-
-    # for name, values in arguments["input"].items():
-    #     stats[name] = {}
-    #     name_dir = out_dir / name
-    #     values["output"] = name_dir
-    #     values["threads"] = arguments["threads"]
-    #     if not name_dir.exists():
-    #         name_dir.mkdir(parents=True, exist_ok=True)
-
-    #     agat_statistics = run_agat(values)
-    #     print(agat_statistics)
-    #     stats[name]["agat_statistics"] = agat_statistics
-
-    #     gffread_results = run_gffread(values)
-    #     print(gffread_results)
-    #     busco_results = run_busco(values)
-    #     print(busco_results)
-    #     stats[name]["busco_results"] = get_busco_results(busco_results)
-
-    #     LAI_out_dir =  create_outdir(values)
-    #     print(LAI_out_dir)
-    #     values["LAI_dir"] = LAI_out_dir["out_fpath"]
-    #     suffixerator =  run_suffixerator(values)
-    #     if "returncode" in suffixerator:
-    #         if suffixerator["returncode"] == 1:
-    #             raise RuntimeError("Suffixerator has failed")
-    #     print(suffixerator)
-    #     harvest = run_harvest(values)
-    #     print(harvest)
-    #     finder = run_finder(values)
-    #     print(finder)
-    #     cat = concatenate_outputs(values)
-    #     print(cat)
-    #     LTR = run_LTR_retriever(values)
-    #     print(LTR)
-    #     LAI = run_LAI(values)
-    #     print(LAI)
-    #     stats[name]["LAI"] = LAI
-
-    #     stringtie = run_stringtie(values)
-    #     print(stringtie)
-    #     gffcompare = run_gffcompare(values)
-    #     print(gffcompare)
-    #     annotation_scores = calculate_annotation_scores(values)
-    #     print(annotation_scores)
-    #     stats[name]["annotation_scores"] = annotation_scores
 
 
 if __name__ == "__main__":
