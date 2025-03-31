@@ -70,20 +70,22 @@ def parse_agat_incomplete(agat_results):
     results = {"Models START missing": 0,
                "Models STOP missing": 0,
                "Models STAR & STOP missing":0}
-    for line in agat_results["AGAT incomplete CDS"]["outfile"]:
-        if "incomplete=1" in line:
-            results["Models START missing"] += 1
-        if "incomplete=2" in line:
-            results["Models STOP missing"] += 1
-        if "incomplete=3" in line:
-            results["Models STAR & STOP missing"] += 1
+    with open(agat_results["AGAT incomplete CDS"]["outfile"]) as fhand:
+        for line in fhand:
+            if "incomplete=1" in line:
+                results["Models START missing"] += 1
+            if "incomplete=2" in line:
+                results["Models STOP missing"] += 1
+            if "incomplete=3" in line:
+                results["Models STAR & STOP missing"] += 1
     return results
 
 
 def parse_agat_premature(agat_results):
     results = {"Models with early STOP": 0}
-    for line in agat_results["AGAT stop codons"]["outfile"]:
-        if "genes have been flagged as pseudogene" in line:
-            results["Models with early STOP"] = int(line.split())
+    with open(agat_results["AGAT stop codons"]["outfile"]) as fhand:
+        for line in fhand:
+            if "genes have been flagged as pseudogene" in line:
+                results["Models with early STOP"] = int(line.split())
     return results
 
