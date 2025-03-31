@@ -161,8 +161,8 @@ def run_detenga(config, protein_sequences, mrna_sequences):
             msg = "DeTEnGA Parse Interpro step run succesfully \n {}"
             print(msg)
     except Exception as error:
-        print(msg)
         msg = "DeTEnGA Parse Interpro step Failed: \n {}".format(error)
+        print(msg)
     report["classify_interpro"] = {"command": "",
                                    "msg": msg,
                                    "outfile": ""}
