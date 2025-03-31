@@ -158,7 +158,9 @@ def run_detenga(config, protein_sequences, mrna_sequences):
             TE_pfams = get_pfams_from_interpro_query(interpro_fhand)
             classified_pfams = classify_pfams(interpro_fhand, TE_pfams)
             msg = "DeTEnGA Parse Interpro step run succesfully \n {}"
+            print(msg)
     except Exception as error:
+        print(mgs)
         msg = "DeTEnGA Parse Interpro step Failed: \n {}".format(error)
     report["classify_interpro"] = {"command": "",
                                    "msg": msg,
