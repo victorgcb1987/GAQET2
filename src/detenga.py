@@ -171,6 +171,7 @@ def run_detenga(config, protein_sequences, mrna_sequences):
         msg = "DeTEnGA create summary step done"
     except Exception as error:
         msg = "DeTEnGA create summary step done Failed: \n {}".format(error)
+        print(msg)
     report["create_results"] = {"command": "",
                                 "msg": msg,
                                 "outfile": outfile}
