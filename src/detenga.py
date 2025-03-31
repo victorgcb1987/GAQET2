@@ -150,7 +150,7 @@ def run_detenga(config, protein_sequences, mrna_sequences):
     except Exception as error:
         msg = "DeTEnGA Parse TEsorter step Failed: \n {}".format(error)
     report["classify_tesorter"] = {"command": "",
-                                   "msg": msg,
+                                   "status": msg,
                                    "outfile": ""}
          
     try:
@@ -158,7 +158,7 @@ def run_detenga(config, protein_sequences, mrna_sequences):
             TE_pfams = get_pfams_from_db(REXDB_PFAMS)
             intepro_pfams = get_pfams_from_interpro_query(interpro_fhand)
             classified_pfams = classify_pfams(intepro_pfams, TE_pfams)
-            msg = "DeTEnGA Parse Interpro step run succesfully \n {}"
+            msg = "DeTEnGA Parse Interpro step run succesfully"
             print(msg)
     except Exception as error:
         msg = "DeTEnGA Parse Interpro step Failed: \n {}".format(error)
@@ -175,6 +175,6 @@ def run_detenga(config, protein_sequences, mrna_sequences):
     #    msg = "DeTEnGA create summary step done Failed: \n {}".format(error)
     #    print(msg)
     report["create_results"] = {"command": "",
-                                "msg": msg,
+                                "status": msg,
                                 "outfile": outfile}
     return report
