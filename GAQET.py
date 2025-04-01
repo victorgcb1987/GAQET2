@@ -208,7 +208,7 @@ def main():
         header = ["Species", "NCBI_TaxID", "Assembly_Version", "Annotation_Version"] + [stats for stats in results]
         out_fhand.write("{}\n".format("\t".join(header)))
         row = [arguments["ID"], arguments["OMARK_taxid"], Path(arguments["Assembly"]).name, Path(arguments["Annotation"]).name]
-        row += [value for stats, value in results.items()]
+        row += [str(value) for stats, value in results.items()]
         out_fhand.write("{}\n".format("\t".join(row)))
 
             
