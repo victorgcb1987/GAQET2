@@ -1,33 +1,24 @@
 def omark_stats(omark):
     results = {}
     clades = []
-    print(omark["OMARK"]["outfile"])
     with open(omark["OMARK"]["outfile"]) as fhand:
         for line in fhand:
             if "The clade used was" in line:
                 clade = line.strip().split()[-1]+"-HOGs"
-                print(clade)
             if "Number of conserved HOGs" in line:
                 hogs = line.strip().split()[-1]
-                print(hogs)   
             if "Single:" in line:
                 single = line.strip().split()[-1]
-                print(single)
             if "Duplicated:" in line:
                 dup = line.rstrip().split()[-1]
-                print(dup)
             if "Duplicated, Unexpected:" in line:
                 dup_un = line.strip().split()[-1]
-                print(dup_un)
             if "Duplicated, Expected:" in line:
                 dup_exp = line.strip().split()[-1]
-                print(dup_exp)
             if "Missing:" in line:
                 missing = line.strip().split()[-1]
-                print(missing)
             if "Total Consistent" in line:
                 consistent = line.strip().split()[-1]
-                print(consistent)
             if "Consistent, partial hits" in line:
                 cons_partial = line.strip().split()[-1]
             if "Consistent, fragmented" in line:
@@ -51,17 +42,20 @@ def omark_stats(omark):
             if "associated query proteins" in line:
                 clade_per = line.strip().split()[-1]
                 clades.append("{}: {}".format(clade_comp, clade_per))
-    results["OMArk Consistency Results"] = "Cons:{}[P:{};F:{}],Inco:{}[P:{},F:{}],Cont:{},Unkn:{}".format(consistent,
-                                                                                                          cons_partial,
-                                                                                                          cons_frag,
-                                                                                                          inconsistent,
-                                                                                                          inconsistent_partial,
-                                                                                                          inconsistent_fragmented,
-                                                                                                          contaminants,
-                                                                                                          unkown)
-    results["OMArk Completeness Results"] = "{}: {}; S:{},D:{}[U:{},E:{}],M:{}".format(clade, hogs, single,
-                                                                                             dup, dup_un, dup_exp,
-                                                                                             missing)
-    results["OMArk Species Composition"] = "; ".join(clades)
+    consistency_results = "Cons:{}[P:{};F:{}],Inco:{}[P:{},F:{}],Cont:{},Unkn:{}".format(consistent,
+                                                                                 cons_partial,
+                                                                                 cons_frag,
+                                                                                 inconsistent,
+                                                                                 inconsistent_partial,
+                                                                                 inconsistent_fragmented,
+                                                                                 contaminants,
+                                                                                 unkown).replace("(", "").replace(")", "")
+    results["OMArk Consistency Results"] = consistency_results
+
+    completness_results = "{}: {}; S:{},D:{}[U:{},E:{}],M:{}".format(clade, hogs, single,
+                                                                     dup, dup_un, dup_exp,
+                                                                     missing).replace("(", "").replace(")", "")
+    results["OMArk Completeness Results"] = completness_results
+    results["OMArk Species Composition"] = "; ".join(clades).replace("(", "").replace(")", "")
     return results
             
