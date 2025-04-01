@@ -3,7 +3,7 @@ import subprocess
 from pathlib import Path
 
 def run_protein_homology(config, protein_sequences):
-    outdir = Path(config["Basedir"]) / "RUN_DIAMOND"
+    outdir = Path(config["Basedir"]) / "DIAMOND_RUN"
     results = {}
     if not outdir.exists():
         outdir.mkdir(parents=True, exist_ok=True)

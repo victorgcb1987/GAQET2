@@ -5,7 +5,7 @@ from pathlib import Path
 
 def run_omark(arguments, protein_sequences):
     report = {"OMAMER": {}, "OMARK": {}}
-    outdir = Path(arguments["Basedir"]) / "OMARK"
+    outdir = Path(arguments["Basedir"]) / "OMARK_RUN"
     if not outdir.exists():
         outdir.mkdir(parents=True, exist_ok=True)
     #Run OMAMER
