@@ -1,9 +1,9 @@
 def omark_stats(omark):
     results = {}
     clades = []
+    print(omark["OMARK"]["outfile"])
     with open(omark["OMARK"]["outfile"]) as fhand:
         for line in fhand:
-            print(line)
             if "The clade used was" in line:
                 clade = line.strip().split()[-1]
                 print(clade)
