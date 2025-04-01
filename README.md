@@ -1,6 +1,7 @@
 # GAQET
 Genome Annotation Quality Evaluation Tools
 
+GAQET is a tools configura
 
 ## Requirements
 
