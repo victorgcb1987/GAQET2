@@ -4,7 +4,7 @@ def omark_stats(omark):
     with open(omark["OMARK"]["outfile"]) as fhand:
         for line in fhand:
             if "The clade used was" in line:
-                clade = line.strip().split[-1]
+                clade = line.strip().split()[-1]
             if "Number of conserved HOGs" in line:
                 hogs = line.strip().split()[-1]   
             if "Single:" in line:
@@ -12,35 +12,35 @@ def omark_stats(omark):
             if "Duplicated:" in line:
                 dup = line.rstrip().split()[-1]
             if "Duplicated, Unexpected:" in line:
-                dup_un = line.strip().split[-1]
+                dup_un = line.strip().split()[-1]
             if "Duplicated, Expected:" in line:
-                dup_exp = line.strip().split[-1]
+                dup_exp = line.strip().split()[-1]
             if "Missing:" in line:
-                missing = line.strip().split[-1]
+                missing = line.strip().split()[-1]
             if "Total Consistent" in line:
-                consistent = line.strip().split[-1]
+                consistent = line.strip().split()[-1]
             if "Consistent, partial hits" in line:
-                cons_partial = line.strip().split[-1]
+                cons_partial = line.strip().split()[-1]
             if "Consistent, fragmented" in line:
-                cons_frag = line.strip().split[-1]
+                cons_frag = line.strip().split()[-1]
             if "Total Inconsistent" in line:
-                inconsistent = line.strip().split[-1]
+                inconsistent = line.strip().split()[-1]
             if "Inconsistent, partial hits" in line:
-                inconsistent_partial =  line.strip().split[-1]
+                inconsistent_partial =  line.strip().split()[-1]
             if "Inconsistent, fragmented" in line:
-                inconsistent_fragmented = line.strip().split[-1]
+                inconsistent_fragmented = line.strip().split()[-1]
             if "Total Contaminants" in line:
-                contaminants = line.strip().split[-1]
+                contaminants = line.strip().split()[-1]
             if "Contaminants, partial hits":
-                contaminants_partial = line.strip().split[-1]
+                contaminants_partial = line.strip().split()[-1]
             if "Contaminants, fragmented": 
-                contaminants_fragmented = line.strip().split[-1]
+                contaminants_fragmented = line.strip().split()[-1]
             if "Total Unknown" in line:
-                unkown = line.strip().split[-1]
+                unkown = line.strip().split()[-1]
             if "Clade" in line:
                 clade = line.split(":")[-1].strip()
             if "associated query proteins" in line:
-                clade_per = line.strip().split[-1]
+                clade_per = line.strip().split()[-1]
                 clades.append("{}: {}".format(clade, clade_per))
     results["OMArk Consistency Results"] = "Cons:{}[P:{};F:{}],Inco:{}[P:{},F:{}],Cont:{},Unkn:{}".format(consistent,
                                                                                                           cons_partial,
