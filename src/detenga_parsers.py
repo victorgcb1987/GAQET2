@@ -39,8 +39,8 @@ def get_row(stats):
     values = [str(stats["num_transcripts"])] + [str(stats[key]) for key in inverse_categories]
     per_values = [str(stats["num_transcripts"])] + [str(round(float(stats[key]/stats["num_transcripts"])*100, 2)) for key in inverse_categories]
     summary = "{0}: {1};{2}: {3};{4}: {5};{6}: {7};{8}: {9};{10}: {11};{12}: {13}"
-    results["DETENGA_FPV"] = [summary.format(*[item for pair in zip(categories, values) for item in pair])]
-    results["DETENGA_FP%"] = [summary.format(*[item for pair in zip(categories, per_values) for item in pair])]    
+    results["DETENGA_FPV"] = ";".join([summary.format(*[item for pair in zip(categories, values) for item in pair])])
+    results["DETENGA_FP%"] = ";".join([summary.format(*[item for pair in zip(categories, per_values) for item in pair])])  
     return results
 
 

@@ -15,6 +15,7 @@ from src.gffread import run_gffread
 from src.omark import run_omark
 from src.psauron import run_psauron
 from src.YAML import report_yaml_file
+from src.homology import run_protein_homology
 from src.agat_parsers import parse_agat_stats, parse_agat_incomplete, parse_agat_premature
 from src.busco_parsers import busco_stats
 from src.detenga_parsers import detenga_stats
@@ -185,6 +186,19 @@ def main():
                 else:
                     emit_msg(BULLET_OK + status + "\n", log_fhand)
         
+        if analysis == "PROTHOMOLOGY":
+            emit_msg(HEADER + "Running Protein homology"+ HEADER + "\n", log_fhand)
+            protein_homology = run_protein_homology(arguments, gffread["proteins"]["outfile"])
+            for db, values in protein_homology.items():
+                status = values["status"]
+                emit_msg("#{} command used: \n\t{}\n".format(db, values["command"]), log_fhand)
+                if "Failed" in status:
+                    emit_msg(BULLET_FIX + status + "\n", log_fhand)
+                    emit_msg(HEADER + "GAQET has stopped working", log_fhand)
+                    raise RuntimeError(error_msg)
+                else:
+                    emit_msg(BULLET_OK + status + "\n", log_fhand)
+        
     #Get results from analysis
     results = {}
     for analysis in arguments["Analysis"]:
@@ -203,7 +217,7 @@ def main():
         if analysis == "DETENGA":
             results.update(detenga_stats(results["Transcript_Models (N)"], 
                                          detenga["create_summary"]["outfile"]))
-    outfile = Path(arguments["Basedir"]) / "{}_GAQET.stats.txt".format(arguments["ID"])
+    outfile = Path(arguments["Basedir"]) / "{}_GAQET.stats.tsv".format(arguments["ID"])
     with open(outfile, "w") as out_fhand:
         header = ["Species", "NCBI_TaxID", "Assembly_Version", "Annotation_Version"] + [stats for stats in results]
         out_fhand.write("{}\n".format("\t".join(header)))
