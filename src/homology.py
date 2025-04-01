@@ -17,7 +17,7 @@ def run_protein_homology(config, protein_sequences):
             if outfile.is_file():
                 msg = "Protein homology analysis with {} already done".format(tag)
             else:
-                run_ = subprocess.run(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.DEVNULL)
+                run_ = subprocess.run(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
             #Is process has gone well
                 if run_.returncode == 0:
                     msg = "Protein homology analysis with {} run successfully".format(tag)
