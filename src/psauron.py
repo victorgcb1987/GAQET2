@@ -5,7 +5,7 @@ from pathlib import Path
 
 def run_psauron(arguments, cds_sequences):
     report = {}
-    outdir = Path(arguments["Basedir"]) / "PSAURON_RUN"
+    outdir = Path(arguments["Basedir"]) / "PSAURON_run"
     if not outdir.exists():
         outdir.mkdir(parents=True, exist_ok=True)
     outfile = outdir / "{}.cds.psauron.csv".format(arguments["ID"])

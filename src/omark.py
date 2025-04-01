@@ -5,7 +5,7 @@ from pathlib import Path
 
 def run_omark(arguments, protein_sequences):
     report = {"OMAMER": {}, "OMARK": {}}
-    outdir = Path(arguments["Basedir"]) / "OMARK_RUN"
+    outdir = Path(arguments["Basedir"]) / "OMARK_run"
     if not outdir.exists():
         outdir.mkdir(parents=True, exist_ok=True)
     #Run OMAMER
@@ -27,12 +27,12 @@ def run_omark(arguments, protein_sequences):
                         "outfile": omamer_outfile}
     
     #Run OMARK
-    omark_outfile = outdir  / "{}_proteins_detailed_summary.txt".format(arguments["ID"])
-
-    cmd = "omark  -f {} -d {} -t {} -o {}".format(omamer_outfile,
+    omark_outdir = outdir / "{}_proteins.omark".format(arguments["ID"]) / "{}_proteins_detailed_summary.txt".format(arguments["ID"])
+    omark_outfile = omark_outdir / "{}_proteins_detailed_summary.txt"
+    cmd = "omark  -f {} -d {} -t {} -o {}".format(omamer_out,
                                                   arguments["OMARK_db"],
                                                   arguments["OMARK_taxid"],
-                                                  omark_outfile)
+                                                  omark_outdir)
     if omark_outfile.is_file():
         msg = "OMARK analysis done already"
     else:
