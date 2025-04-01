@@ -209,6 +209,7 @@ def main():
         out_fhand.write("{}\n".format("\t".join(header)))
         row = [arguments["ID"], arguments["OMARK_taxid"], Path(arguments["Assembly"]).name, Path(arguments["Annotation"]).name]
         row += [str(value) for stats, value in results.items()]
+        print(row)
         out_fhand.write("{}\n".format("\t".join(row)))
 
             
