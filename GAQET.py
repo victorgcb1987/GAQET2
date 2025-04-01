@@ -194,6 +194,7 @@ def main():
             results.update(parse_agat_incomplete(agat))
         if analysis == "BUSCO":
             busco_results = busco_stats(busco)
+            print(busco_results)
             for lineage, stats in busco_results.items():
                 results["Annotation_BUSCO_{}".format(lineage)] = stats
         if analysis == "OMARK":
