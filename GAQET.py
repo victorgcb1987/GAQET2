@@ -17,6 +17,10 @@ from src.psauron import run_psauron
 from src.YAML import report_yaml_file
 from src.agat_parsers import parse_agat_stats, parse_agat_incomplete, parse_agat_premature
 from src.busco_parsers import busco_stats
+from src.detenga_parsers import detenga_stats
+from src.omark_parsers import omark_stats
+from src.psauron_parsers import psauron_stats
+
 
 from pathlib import Path
 
@@ -185,13 +189,20 @@ def main():
     results = {}
     for analysis in arguments["Analysis"]:
         if analysis == "AGAT":
-            results["models_stats"] = parse_agat_stats(agat)
-            results["models_premature"] = parse_agat_premature(agat)
-            results["models_stops"] = parse_agat_incomplete(agat)
+            results.update(parse_agat_stats(agat))
+            results.update(parse_agat_premature(agat))
+            results.update(parse_agat_incomplete(agat))
         if analysis == "BUSCO":
             busco_results = busco_stats(busco)
             for lineage, stats in busco_results.items():
                 results["Annotation_BUSCO_{}".format(lineage)] = stats
+        if analysis == "OMARK":
+            results.update(omark_stats(omark))
+        if analysis == "PSAURON":
+            results.update(psauron_stats(psauron))
+        if analysis == "DETENGA":
+            results.update(detenga_stats(results["Transcript_Models (N)"], 
+                                         detenga["create_summary"]["outfile"]))
     print(results)
 
             

@@ -6,6 +6,11 @@ from csv import DictReader
 from pathlib import Path
 
 
+CATEGORIES = {"No_TE(PcpM0)": "PcpM0", "Protein_TE_only(PteM0)": "PteM0",
+              "Chimeric_Protein_Only(PchM0)": "PchM0", "mRNA_TE_Only(PcpMte)": "PcpMte",
+              "Protein_and_mRNA_TE(PteMte)": "PteMte", "Chimeric_Protein_and_mRNA_TE(PchMte)": "PchMte",
+              "No_Protein_Domains_mRNA_TE(P0Mte)": "P0Mte"}
+
 
 def get_pfams_from_db(fpath):
     pfams = {}
@@ -16,6 +21,27 @@ def get_pfams_from_db(fpath):
             line = line.split()
             pfams[line[0]] = " ".join(line[1:])
     return pfams
+
+def create_header():
+    header = ["Run", "Genome", "Annotation", "Annotated_transcripts"]
+    for key in CATEGORIES:
+        header.append(f"{key}_N")
+    for key in CATEGORIES:
+        header.append(f"{key}_%")
+    header += ["Summary_N", "Summary_%"]
+    return "\t".join(header)+"\n"
+
+
+def get_row(stats):
+    results = {}
+    inverse_categories = {value: key for key, value in CATEGORIES.items()}
+    categories = ["T"] + [key for key in inverse_categories]
+    values = [str(stats["num_transcripts"])] + [str(stats[key]) for key in inverse_categories]
+    per_values = [str(stats["num_transcripts"])] + [str(round(float(stats[key]/stats["num_transcripts"])*100, 2)) for key in inverse_categories]
+    summary = "{0}: {1};{2}: {3};{4}: {5};{6}: {7};{8}: {9};{10}: {11};{12}: {13}"
+    results["DETENGA_FPV"] = [summary.format(*[item for pair in zip(categories, values) for item in pair])]
+    results["DETENGA_FP%"] = [summary.format(*[item for pair in zip(categories, per_values) for item in pair])]    
+    return results
 
 
 def get_pfams_from_interpro_query(fhand):
@@ -30,6 +56,7 @@ def get_pfams_from_interpro_query(fhand):
                     for key, value in genes.items()}
     return sorted_genes
 
+
 def classify_pfams(interpro, te_pfams):
     for gene, pfams in interpro.items():
         for pfam in pfams:
@@ -38,6 +65,7 @@ def classify_pfams(interpro, te_pfams):
             else:
                 pfam.append("NT")
     return interpro
+
 
 def parse_TEsort_output(fhand):
     output = defaultdict(list)
@@ -116,11 +144,7 @@ def write_summary(summary, out_fhand):
         out_fhand.flush()
 
 
-def get_stats(agat_stats, summary):
-    with open(agat_stats) as agat_fhand:
-        text = agat_fhand.read()
-        match = re.search(r"Number of mrna\s+(\d+)", text, re.IGNORECASE)
-        num_transcripts = int(match.group(1))
+def detenga_stats(num_transcripts, summary):
     stats = {"PcpM0": 0, "PteM0": 0, "PchM0": 0, 
              "PcpMte": 0, "PteMte": 0, "PchMte": 0, 
              "P0Mte":0, "num_transcripts": num_transcripts}
@@ -139,4 +163,5 @@ def get_stats(agat_stats, summary):
             stats["PchMte"] +=1
         if row["Interpro_status"] == "NA" and row["TEsort_domains"] != "NA":
             stats["P0Mte"] += 1
-    return stats
+    results = get_row(stats)
+    return results
