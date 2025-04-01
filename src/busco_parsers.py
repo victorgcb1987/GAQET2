@@ -8,4 +8,5 @@ def busco_stats(busco):
                     results[lineage] = line.strip()
     print("XXXXX")
     print(results)
+    print("xxxx")
     return results
