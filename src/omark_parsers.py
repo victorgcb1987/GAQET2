@@ -1,24 +1,33 @@
 def omark_stats(omark):
     results = {}
     clades = []
+    print(line)
     with open(omark["OMARK"]["outfile"]) as fhand:
         for line in fhand:
             if "The clade used was" in line:
                 clade = line.strip().split()[-1]
+                print(clade)
             if "Number of conserved HOGs" in line:
-                hogs = line.strip().split()[-1]   
+                hogs = line.strip().split()[-1]
+                print(hogs)   
             if "Single:" in line:
                 single = line.strip().split()[-1]
+                print(single)
             if "Duplicated:" in line:
                 dup = line.rstrip().split()[-1]
+                print(dup)
             if "Duplicated, Unexpected:" in line:
                 dup_un = line.strip().split()[-1]
+                print(dup_un)
             if "Duplicated, Expected:" in line:
                 dup_exp = line.strip().split()[-1]
+                print(dup_exp)
             if "Missing:" in line:
                 missing = line.strip().split()[-1]
+                print(missing)
             if "Total Consistent" in line:
                 consistent = line.strip().split()[-1]
+                print(consistent)
             if "Consistent, partial hits" in line:
                 cons_partial = line.strip().split()[-1]
             if "Consistent, fragmented" in line:
