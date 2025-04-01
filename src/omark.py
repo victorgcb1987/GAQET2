@@ -43,7 +43,7 @@ def run_omark(arguments, protein_sequences):
             msg = "OMARK analysis Failed: \n {}".format(run_.stderr)
     report["OMARK"] = {"command": cmd,
                         "status": msg,
-                        "outfile": omamer_outfile}
+                        "outfile": omark_outfile}
    
 
     return report
