@@ -212,9 +212,5 @@ def main():
         outfile.write("{}\n".format("\t".join(row)))
 
             
-
-
-
-
 if __name__ == "__main__":
     main()
