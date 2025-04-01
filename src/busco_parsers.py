@@ -1,8 +1,8 @@
 def busco_stats(busco):
     results = {}
-    for lineage, results in busco.items():
+    for lineage, report in busco.items():
         print(lineage)
-        with open(results["outfile"]) as fhand:
+        with open(report["outfile"]) as fhand:
             for line in fhand:
                 if "%" in line:
                     results[lineage] = line.strip()
