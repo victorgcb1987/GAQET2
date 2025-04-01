@@ -17,13 +17,13 @@ def run_protein_homology(config, protein_sequences):
             if outfile.is_file():
                 msg = "Protein homology analysis with {} already done".format(tag)
             else:
-                run_ = subprocess.run(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+                run_ = subprocess.run(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.DEVNULL)
             #Is process has gone well
                 if run_.returncode == 0:
                     msg = "Protein homology analysis with {} run successfully".format(tag)
             #But if not
                 else:
-                    msg = "Protein homology analysis with {} Failed: \n {}".format(tag, run_.stdout)
+                    msg = "Protein homology analysis with {} Failed: \n {}".format(tag, run_.sterr)
         results[tag] = {"command": cmd, "status": msg, "outfile": outfile}
     print(results)
     return results
