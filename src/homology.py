@@ -23,7 +23,7 @@ def run_protein_homology(config, protein_sequences):
                     msg = "Protein homology analysis with {} run successfully".format(tag)
             #But if not
                 else:
-                    msg = "Protein homology analysis with {} Failed: \n {}".format(tag, run_.sterr)
+                    msg = "Protein homology analysis with {} Failed: \n {}".format(tag, run_.stderr)
         results[tag] = {"command": cmd, "status": msg, "outfile": outfile}
     print(results)
     return results
