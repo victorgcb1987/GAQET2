@@ -219,7 +219,7 @@ def main():
             results.update(detenga_stats(results["Transcript_Models (N)"], 
                                          detenga["create_summary"]["outfile"]))
         if analysis == "PROTHOMOLOGY":
-            results.update(protein_homology_stats(protein_homology), results["Transcript_Models (N)"])
+            results.update(protein_homology_stats(protein_homology, results["Transcript_Models (N)"]))
 
     outfile = Path(arguments["Basedir"]) / "{}_GAQET.stats.tsv".format(arguments["ID"])
     with open(outfile, "w") as out_fhand:
