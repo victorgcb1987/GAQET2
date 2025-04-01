@@ -8,7 +8,7 @@ def run_protein_homology(config, protein_sequences):
     if not outdir.exists():
         outdir.mkdir(parents=True, exist_ok=True)
     for db in config["PROTHOMOLOGY_tags"]:  
-        tag, db_fpath = db.items()
+        tag, db_fpath = list[db.items()][0]
         outfile = outdir / "{}.proteins.dmd.{}.o6.txt".format(config["ID"], tag)
         cmd = "diamond blastp --threads {} --db {} --query {} --out {}".format(config["Threads"],
                                                                                str(db_fpath),
