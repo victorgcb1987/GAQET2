@@ -5,7 +5,7 @@ def omark_stats(omark):
     with open(omark["OMARK"]["outfile"]) as fhand:
         for line in fhand:
             if "The clade used was" in line:
-                clade = line.strip().split()[-1]
+                clade = line.strip().split()[-1]+"-HOGs"
                 print(clade)
             if "Number of conserved HOGs" in line:
                 hogs = line.strip().split()[-1]
