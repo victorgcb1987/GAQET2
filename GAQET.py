@@ -203,7 +203,7 @@ def main():
         if analysis == "DETENGA":
             results.update(detenga_stats(results["Transcript_Models (N)"], 
                                          detenga["create_summary"]["outfile"]))
-    outfile = Path(arguments["Basedir"]) / "{}_GAQET.stats.txt"
+    outfile = Path(arguments["Basedir"]) / "{}_GAQET.stats.txt".format(arguments["ID"])
     with open(outfile, "w") as out_fhand:
         header = ["Species", "NCBI_TaxID", "Assembly_Version", "Annotation_Version"] + [stats for stats in results]
         out_fhand.write("{}\n".format("\t".join(header)))
