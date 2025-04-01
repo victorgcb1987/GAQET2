@@ -207,9 +207,8 @@ def main():
     with open(outfile, "w") as out_fhand:
         header = ["Species", "NCBI_TaxID", "Assembly_Version", "Annotation_Version"] + [stats for stats in results]
         out_fhand.write("{}\n".format("\t".join(header)))
-        row = [arguments["ID"], arguments["OMARK_taxid"], Path(arguments["Assembly"]).name, Path(arguments["Annotation"]).name]
+        row = [arguments["ID"], str(arguments["OMARK_taxid"]), Path(arguments["Assembly"]).name, Path(arguments["Annotation"]).name]
         row += [str(value) for stats, value in results.items()]
-        print(row)
         out_fhand.write("{}\n".format("\t".join(row)))
 
             
