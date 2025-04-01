@@ -6,4 +6,6 @@ def busco_stats(busco):
             for line in fhand:
                 if "%" in line:
                     results[lineage] = line.strip()
+    print("XXXXX")
+    print(results)
     return results
