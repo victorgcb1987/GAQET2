@@ -13,40 +13,12 @@ import subprocess
 REXDB_PFAMS = Path(os.path.dirname(os.path.realpath(__file__))).parent / "docs" / "Viridiplantae_2.0_pfams.txt"
 
 
-CATEGORIES = {"No_TE(PcpM0)": "PcpM0", "Protein_TE_only(PteM0)": "PteM0",
-              "Chimeric_Protein_Only(PchM0)": "PchM0", "mRNA_TE_Only(PcpMte)": "PcpMte",
-              "Protein_and_mRNA_TE(PteMte)": "PteMte", "Chimeric_Protein_and_mRNA_TE(PchMte)": "PchMte",
-              "No_Protein_Domains_mRNA_TE(P0Mte)": "P0Mte"}
 EXCLUDE = ["AntiFam", "CDD", "Coils", "FunFam",
                "Gene3D", "Hamap", "MobiDBLite",
                "NCBIfam", "PANTHER", "PIRSF", 
                "PIRSR", "PRINTS", "ProSitePatterns",
                "ProSiteProfiles", "SFLD", "SMART", 
                "SUPERFAMILY"]
-
-
-def create_header():
-    header = ["Run", "Genome", "Annotation", "Annotated_transcripts"]
-    for key in CATEGORIES:
-        header.append(f"{key}_N")
-    for key in CATEGORIES:
-        header.append(f"{key}_%")
-    header += ["Summary_N", "Summary_%"]
-    return "\t".join(header)+"\n"
-
-
-def get_row(label, genome, annotation, stats):
-    inverse_categories = {value: key for key, value in CATEGORIES.items()}
-    categories = ["T"] + [key for key in inverse_categories]
-    values = [str(stats["num_transcripts"])] + [str(stats[key]) for key in inverse_categories]
-    per_values = [str(stats["num_transcripts"])] + [str(round(float(stats[key]/stats["num_transcripts"])*100, 2)) for key in inverse_categories]
-    summary = "{0}: {1};{2}: {3};{4}: {5};{6}: {7};{8}: {9};{10}: {11};{12}: {13}"
-    row = [label, genome, annotation]
-    row += values
-    row += per_values[1:]
-    row += [summary.format(*[item for pair in zip(categories, values) for item in pair])]
-    row += [summary.format(*[item for pair in zip(categories, per_values) for item in pair])]    
-    return "\t".join(row)+"\n"
 
 
 def run_detenga(config, protein_sequences, mrna_sequences):
@@ -146,7 +118,7 @@ def run_detenga(config, protein_sequences, mrna_sequences):
     try:
         with open(report["TEsorter"]["outfile"]) as tesorter_fhand:
             te_sorter_output = parse_TEsort_output(tesorter_fhand)
-            msg = "DeTEnGA Parse TEsorter step run succesfully \n {}"
+            msg = "DeTEnGA Parse TEsorter step run succesfully"
     except Exception as error:
         msg = "DeTEnGA Parse TEsorter step Failed: \n {}".format(error)
     report["classify_tesorter"] = {"command": "",
@@ -159,7 +131,6 @@ def run_detenga(config, protein_sequences, mrna_sequences):
             intepro_pfams = get_pfams_from_interpro_query(interpro_fhand)
             classified_pfams = classify_pfams(intepro_pfams, TE_pfams)
             msg = "DeTEnGA Parse Interpro step run succesfully"
-            print(msg)
     except Exception as error:
         msg = "DeTEnGA Parse Interpro step Failed: \n {}".format(error)
     report["classify_interpro"] = {"command": "",
@@ -173,7 +144,6 @@ def run_detenga(config, protein_sequences, mrna_sequences):
             msg = "DeTEnGA create summary step done"
     except Exception as error:
         msg = "DeTEnGA create summary step done Failed: \n {}".format(error)
-        print(msg)
     report["create_summary"] = {"command": "",
                                 "status": msg,
                                 "outfile": outfile}
