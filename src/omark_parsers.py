@@ -47,10 +47,10 @@ def omark_stats(omark):
             if "Total Unknown" in line:
                 unkown = line.strip().split()[-1]
             if "Clade" in line:
-                clade = line.split(":")[-1].strip()
+                clade_comp = line.split(":")[-1].strip()
             if "associated query proteins" in line:
                 clade_per = line.strip().split()[-1]
-                clades.append("{}: {}".format(clade, clade_per))
+                clades.append("{}: {}".format(clade_comp, clade_per))
     results["OMArk Consistency Results"] = "Cons:{}[P:{};F:{}],Inco:{}[P:{},F:{}],Cont:{},Unkn:{}".format(consistent,
                                                                                                           cons_partial,
                                                                                                           cons_frag,
