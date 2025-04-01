@@ -40,9 +40,9 @@ def omark_stats(omark):
                 inconsistent_fragmented = line.strip().split()[-1]
             if "Total Contaminants" in line:
                 contaminants = line.strip().split()[-1]
-            if "Contaminants, partial hits":
+            if "Contaminants, partial hits" in line:
                 contaminants_partial = line.strip().split()[-1]
-            if "Contaminants, fragmented": 
+            if "Contaminants, fragmented" in line: 
                 contaminants_fragmented = line.strip().split()[-1]
             if "Total Unknown" in line:
                 unkown = line.strip().split()[-1]
