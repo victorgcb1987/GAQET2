@@ -14,7 +14,7 @@ def run_gffread(config):
 
     for kind, values in report.items():
         outfile = outdir / "{}.{}.fasta".format(Path(config["Assembly"]).stem, kind)
-        cmd = "gffread -{} {} -g {} {}".format(values["mode"],
+        cmd = "gffread -{} {} -J -g {} {}".format(values["mode"],
                                                outfile,
                                                config["Assembly"],
                                                config["Annotation"])
