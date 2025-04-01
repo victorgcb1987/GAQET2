@@ -11,7 +11,7 @@ def run_protein_homology(config, protein_sequences):
         outfile = outdir / "{}.proteins.dmd.{}.o6.txt".format(config["ID"], tag)
         cmd = "diamond blastp --threads {} --db {} --query {} --out {}".format(config["Threads"],
                                                                                str(db_fpath),
-                                                                               str(protein_sequences)
+                                                                               str(protein_sequences),
                                                                                str(outfile))
         if outfile.is_file():
             msg = "Protein homology analysis with {} already done".format(tag)
