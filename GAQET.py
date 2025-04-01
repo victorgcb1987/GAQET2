@@ -21,6 +21,7 @@ from src.busco_parsers import busco_stats
 from src.detenga_parsers import detenga_stats
 from src.omark_parsers import omark_stats
 from src.psauron_parsers import psauron_stats
+from src.homology_parsers import protein_homology_stats
 
 
 from pathlib import Path
@@ -217,6 +218,9 @@ def main():
         if analysis == "DETENGA":
             results.update(detenga_stats(results["Transcript_Models (N)"], 
                                          detenga["create_summary"]["outfile"]))
+        if analysis == "PROTHOMOLOGY":
+            results.update(protein_homology_stats(protein_homology), results["Transcript_Models (N)"])
+
     outfile = Path(arguments["Basedir"]) / "{}_GAQET.stats.tsv".format(arguments["ID"])
     with open(outfile, "w") as out_fhand:
         header = ["Species", "NCBI_TaxID", "Assembly_Version", "Annotation_Version"] + [stats for stats in results]

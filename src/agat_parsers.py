@@ -69,7 +69,7 @@ def parse_agat_stats(agat_results):
 def parse_agat_incomplete(agat_results):
     results = {"Models START missing": 0,
                "Models STOP missing": 0,
-               "Models STAR & STOP missing":0}
+               "Models START & STOP missing":0}
     with open(agat_results["AGAT incomplete CDS"]["outfile"]) as fhand:
         for line in fhand:
             if "incomplete=1" in line:
@@ -77,7 +77,7 @@ def parse_agat_incomplete(agat_results):
             if "incomplete=2" in line:
                 results["Models STOP missing"] += 1
             if "incomplete=3" in line:
-                results["Models STAR & STOP missing"] += 1
+                results["Models START & STOP missing"] += 1
     return results
 
 
