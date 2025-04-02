@@ -22,7 +22,7 @@ def run_gffread(config):
             msg = "{} sequences already extracted".format(kind)
         else:
         #Run BUSCO with command
-            run_ = subprocess.run(cmd, shell=True, stderr=subprocess.PIPE)
+            run_ = subprocess.run(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.DEVNULL)
         #Is process has gone well
             if run_.returncode == 0:
                 msg = "GFFread, mode {} run successfully".format(kind)
