@@ -19,7 +19,7 @@ def run_agat(config):
         msg = "AGAT stats already done"
 
     else:
-        run_ = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE)
+        run_ = subprocess.run(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.DEVNULL)
         #Is process has gone well
         if run_.returncode == 0:
             msg = "AGAT stats run successfully"
@@ -72,3 +72,5 @@ def run_agat(config):
     report["AGAT incomplete CDS"] = {"command": cmd, "status": msg, 
                                      "outfile": incomplete_cds_outfile}
     return report
+
+

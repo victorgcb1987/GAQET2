@@ -3,7 +3,6 @@ import re
 
 from collections import defaultdict
 from csv import DictReader
-from pathlib import Path
 
 
 CATEGORIES = {"No_TE(PcpM0)": "PcpM0", "Protein_TE_only(PteM0)": "PteM0",
