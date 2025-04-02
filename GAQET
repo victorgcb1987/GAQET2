@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import argparse
 from argparse import RawTextHelpFormatter
 from pathlib import Path
@@ -103,8 +105,8 @@ def main():
     header = "\t\t\t###############\n\t\t\t##   GAQET   ##\n\t\t\t###############\n\n" + config_report + "\n"
     emit_msg(header, log_fhand)
 
-    emit_msg("Command used: {}\n".format(" ".join(sys.argv[1])))
-    
+    emit_msg("Command used: {}\n".format(" ".join(sys.argv[1]), log_fhand))
+
     if "ERROR!" in config_report:
         raise RuntimeError(error_msg)
     
