@@ -27,8 +27,8 @@ def run_omark(arguments, protein_sequences):
                         "outfile": omamer_outfile}
     
     #Run OMARK
-    omark_outdir = outdir /  "{}_proteins_detailed_summary.txt".format(arguments["ID"])
-    omark_outfile = omark_outdir / "{}_proteins_detailed_summary.txt"
+    omark_outdir = outdir /  "omark" 
+    omark_outfile = omark_outdir / "{}_proteins_detailed_summary.txt".format(arguments["ID"])
     cmd = "omark  -f {} -d {} -t {} -o {}".format(omamer_outfile,
                                                   arguments["OMARK_db"],
                                                   arguments["OMARK_taxid"],
