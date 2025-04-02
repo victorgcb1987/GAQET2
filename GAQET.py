@@ -229,6 +229,7 @@ def main():
         row += [str(value) for stats, value in results.items()]
         out_fhand.write("{}\n".format("\t".join(row)))
 
+    emit_msg("GAQET finished successfully", log_fhand)
             
 if __name__ == "__main__":
     main()
