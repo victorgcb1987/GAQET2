@@ -56,7 +56,7 @@ Then, add interproscan.sh to your PATH variable:
 
 ## Usage
 
-GAQET uses as a primary input a YAML file as follows:
+GAQET uses as a primary input a **YAML** file as follows:
 ```yaml
 ID: "SpeciesName"
 Assembly: "/path/to/assembly.fasta"
@@ -99,24 +99,23 @@ DETENGA_db: "rexdb-plant"
 | DETENGA_db | DeTEnGA database for interpro checks. Only needed if DETENGA is in Analysis    |
 
 
-Run the main script from the terminal:
+With the YAML file you can **run GAQET** as follows:
 
 ```bash
-python gaqet2.py -g annotation.gff -f genome.fasta -o output_folder
+GAQET --YAML {yaml_file}
 ```
+Some YAML config file values can be override by using **GAQET arguments**:
 
-### Arguments:
 
 | Parameter     | Description                                  |
 |---------------|----------------------------------------------|
-| `-g`          | GFF file with annotation                     |
-| `-f`          | FASTA genome file                            |
-| `-o`          | Output folder for reports                    |
-| `--summary`   | (optional) Generates summary statistics       |
-| `--plot`      | (optional) Generates distribution plots       |
+| --genome, -g          | Override YAML Assembly                     |
+| --annotation, -a          | Override YAML Annotation                            |
+| --taxid, -t          | Override NCBI taxid                    |
+| --outbase, -o   | Override YAML outbase       |
 
-### Example:
+
 
 ```bash
-gaqet -g data/annotation.gff -f data/genome.fasta -o results/ --summary --plot
+GAQET --YAML {yaml_file} -g {assembly.fasta} -a annotation.gff -t 3702 -o {outdir
 ```
