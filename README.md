@@ -96,7 +96,7 @@ DETENGA_db: "rexdb-plant"
 | OMARK_taxid | NCBI taxid for OMARK. Only needed if OMARK is in Analysis     |
 | BUSCO_lineages | List of BUSCO clades to run. Only needed if BUSCO is in Analysis      |
 | PROTHOMOLOGY_tags | List of name and path to DIAMOND proteins database. Only needed if  PROTHOMOLOGY is in Analysis     |
-| DETENGA_db | DeTEnGA database for interpro lookups. Only needed if DETENGA is in Analysis    |
+| DETENGA_db | DeTEnGA database for interpro checks. Only needed if DETENGA is in Analysis    |
 
 
 Run the main script from the terminal:
