@@ -30,7 +30,7 @@ GAQET2 is a Python-based tool designed to evaluate the quality of genome annotat
 - InterproScan == 5.72 (https://github.com/ebi-pf-team/interproscan)
 - BUSCO == 5.8.3 (https://github.com/metashot/busco)
 - Diamond == 2.0.14.152 (https://github.com/bbuchfink/diamond)
-- PSAURON == 
+- PSAURON == 1.0.4 (https://github.com/salzberg-lab/PSAURON)
 
 ## ⚙️ Installation
 
@@ -49,12 +49,18 @@ conda install -c bioconda psauron
 conda install -c bioconda busco
 conda install -c bioconda gffread
 conda install -c bioconda tesorter
+conda install -c bioconda diamond
 conda install -c bioconda busco
 conda install python==3.10
 pip install psauron
 pip install ete3
 pip install PyYAML
 ```
+
+**Interproscan**: we recommend using the github version instead of any conda installation (https://interproscan-docs.readthedocs.io/en/latest/HowToDownload.html)
+Then, add interproscan.sh to your PATH variable:
+
+`export PATH=$PATH:/path/to/interproscan.sh`
 
 ---
 
