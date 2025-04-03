@@ -23,11 +23,13 @@ GAQET2 is a Python-based tool designed to evaluate the quality of genome annotat
 - PyYAML
 
 ### Software dependencies
+- AGAT == 1.4.1 (https://github.com/NBISweden/AGAT)
+- GFFread == 0.12.7 (https://github.com/gpertea/gffread)
 - Omamer == 2.1.0 and OMARK == 0.3.1 (https://github.com/DessimozLab/OMArk)
 - TEsorter == 1.4.7 (https://github.com/zhangrengang/TEsorter)
-- InterproScan == 5.72 (
-- BUSCO == 5.8.3
-- Diamond == 2.1.11
+- InterproScan == 5.72 (https://github.com/ebi-pf-team/interproscan)
+- BUSCO == 5.8.3 (https://github.com/metashot/busco)
+- Diamond == 2.1.11 (https://github.com/bbuchfink/diamond)
 
 ## ⚙️ Installation
 
