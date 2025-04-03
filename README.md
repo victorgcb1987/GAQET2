@@ -55,6 +55,30 @@ Then, add interproscan.sh to your PATH variable:
 
 ## Usage
 
+```yaml
+ID: "Arabidopsis thaliana"
+Assembly: "Athaliana_447_TAIR10.fa"
+Annotation: "Athaliana_447_Araport11.gene_exons.gff3"
+Basedir: "athaliana_QC"
+Analysis:
+  - AGAT
+  - BUSCO
+  - PSAURON
+  - DETENGA
+  - OMARK
+  - PROTHOMOLOGY
+OMARK_db: "/data/shared_dbs/omark/LUCA.h5"
+BUSCO_lineages:
+  -  viridiplantae_odb10
+  -  embryophyta_odb10
+OMARK_taxid: 3702
+PROTHOMOLOGY_tags:
+  - TREMBL: "/data/shared_dbs/swissprot/uniprot_trembl_r2025_01.dmnd"
+  - SWISSPROT: "/data/shared_dbs/swissprot/uniprot_sprot_r2025_01.dmnd"
+Threads: 40
+DETENGA_db: "rexdb-plant"
+```
+
 Run the main script from the terminal:
 
 ```bash
