@@ -29,7 +29,7 @@ GAQET2 is a Python-based tool designed to evaluate the quality of genome annotat
 - TEsorter == 1.4.7 (https://github.com/zhangrengang/TEsorter)
 - InterproScan == 5.72 (https://github.com/ebi-pf-team/interproscan)
 - BUSCO == 5.8.3 (https://github.com/metashot/busco)
-- Diamond == 2.1.11 (https://github.com/bbuchfink/diamond)
+- Diamond == 2.0.14.152 (https://github.com/bbuchfink/diamond)
 - PSAURON == 
 
 ## ⚙️ Installation
