@@ -17,9 +17,9 @@ Then, add interproscan.sh to your PATH variable:
 
 `export PATH=$PATH:/path/to/interproscan.sh`
 
-Reccommended installation 
+Recommended installation instructions
 `conda create -c bioconda -n GAQET agat\
-conda install python==3.10`
+ conda install python==3.10`
 
 **DeTEnGA**: just clone this respository `git clone https://github.com/victorgcb1987/DeTEnGA.git`
 
