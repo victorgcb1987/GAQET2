@@ -18,19 +18,16 @@ GAQET2 is a Python-based tool designed to evaluate the quality of genome annotat
 
 ### Python Dependencies
 
-- Python >= 3.6
-- Biopython
-- pandas
-- matplotlib
-- seaborn
+- Python == 3.10
+- ete3
+- PyYAML
 
-Install dependencies with:
-
-```bash
-pip install -r requirements.txt
-```
-
----
+### Software dependencies
+- Omamer == 2.1.0 and OMARK == 0.3.1 (https://github.com/DessimozLab/OMArk)
+- TEsorter == 1.4.7 (https://github.com/zhangrengang/TEsorter)
+- InterproScan == 5.72 (
+- BUSCO == 5.8.3
+- Diamond == 2.1.11
 
 ## ⚙️ Installation
 
