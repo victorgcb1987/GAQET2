@@ -74,28 +74,5 @@ python gaqet2.py -g annotation.gff -f genome.fasta -o output_folder
 ### Example:
 
 ```bash
-python gaqet2.py -g data/annotation.gff -f data/genome.fasta -o results/ --summary --plot
+gaqet -g data/annotation.gff -f data/genome.fasta -o results/ --summary --plot
 ```
-
----
-
-## Repository Structure
-
-```
-GAQET2/
-├── gaqet2.py               # Main script
-├── utils/                  # Helper functions
-│   ├── fasta_utils.py
-│   └── gff_utils.py
-├── data/                   # Example data
-├── results/                # Output folder (generated at runtime)
-├── requirements.txt        # Python dependencies
-├── README.md               # Documentation
-└── LICENSE
-```
-
----
-
-## Credits
-
-Developed by **Vic
