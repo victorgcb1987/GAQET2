@@ -3,7 +3,7 @@
 GAQET2 is a Python-based tool designed to evaluate the quality of genome annotations. Using GFF and FASTA files, GAQET2 generates statistical reports to help identify common errors and artifacts in gene structural annotations.
 
 
-## 📆 Requirements
+## Requirements
 
 ### Python Dependencies
 
@@ -21,7 +21,7 @@ GAQET2 is a Python-based tool designed to evaluate the quality of genome annotat
 - Diamond == 2.0.14.152 (https://github.com/bbuchfink/diamond)
 - PSAURON == 1.0.4 (https://github.com/salzberg-lab/PSAURON)
 
-## ⚙️ Installation
+## Installation
 
 Clone this repository:
 
@@ -53,7 +53,7 @@ Then, add interproscan.sh to your PATH variable:
 
 ---
 
-## 🚀 Usage
+## Usage
 
 Run the main script from the terminal:
 
@@ -79,7 +79,7 @@ python gaqet2.py -g data/annotation.gff -f data/genome.fasta -o results/ --summa
 
 ---
 
-## 🗂️ Repository Structure
+## Repository Structure
 
 ```
 GAQET2/
@@ -96,6 +96,6 @@ GAQET2/
 
 ---
 
-## 👥 Credits
+## Credits
 
 Developed by **Vic
