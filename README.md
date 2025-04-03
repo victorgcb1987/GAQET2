@@ -55,11 +55,12 @@ Then, add interproscan.sh to your PATH variable:
 
 ## Usage
 
+GAQET uses as a primary input a YAML file as follows:
 ```yaml
-ID: "Arabidopsis thaliana"
-Assembly: "Athaliana_447_TAIR10.fa"
-Annotation: "Athaliana_447_Araport11.gene_exons.gff3"
-Basedir: "athaliana_QC"
+ID: "SpeciesName"
+Assembly: "/path/to/assembly.fasta"
+Annotation: "/path/to/annotation.gff3"
+Basedir: "/path/to/GAQET/results"
 Analysis:
   - AGAT
   - BUSCO
@@ -67,18 +68,28 @@ Analysis:
   - DETENGA
   - OMARK
   - PROTHOMOLOGY
-OMARK_db: "/data/shared_dbs/omark/LUCA.h5"
+OMARK_db: "/path/to/omark_db.h5"
 BUSCO_lineages:
-  -  viridiplantae_odb10
-  -  embryophyta_odb10
-OMARK_taxid: 3702
+  -  clade1_odb10
+  -  clade2_odb10
+OMARK_taxid: NCBItaxonID
 PROTHOMOLOGY_tags:
-  - TREMBL: "/data/shared_dbs/swissprot/uniprot_trembl_r2025_01.dmnd"
-  - SWISSPROT: "/data/shared_dbs/swissprot/uniprot_sprot_r2025_01.dmnd"
-Threads: 40
+  - TREMBL: "/path/to/uniprot_trembl_db.dmnd"
+  - SWISSPROT: "/path/to/uniprot_swssprot.dmnd"
+  - MYDB: "/path/to/mydb.dmnd"
+Threads: N
 DETENGA_db: "rexdb-plant"
 ```
 
+| Parameter     | Description                                  |
+|---------------|----------------------------------------------|
+| ID            | Name of the species                     |
+| Assembly      | FASTA genome file                            |
+| Annotation    | GFF3/GTF annotation file                    |
+| Basedir       | GAQET analysis and results directory       |
+| Analysis      | List of analysis to run. All of them are optional      |
+| OMARK_db      | Path to omark db. Only needed if OMARK is in Analysis      |
+| BUSCO_lineages | List of analysis to run. All of them are optional      |
 Run the main script from the terminal:
 
 ```bash
