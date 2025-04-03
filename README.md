@@ -20,6 +20,7 @@ GAQET2 is a Python-based tool designed to evaluate the quality of genome annotat
 - BUSCO == 5.8.3 (https://github.com/metashot/busco)
 - Diamond == 2.0.14.152 (https://github.com/bbuchfink/diamond)
 - PSAURON == 1.0.4 (https://github.com/salzberg-lab/PSAURON)
+- DeTEnGA == 1.0 (https://github.com/victorgcb1987/DeTEnGA). Already bundled with GAQET
 
 ## Installation
 
@@ -61,6 +62,7 @@ ID: "SpeciesName"
 Assembly: "/path/to/assembly.fasta"
 Annotation: "/path/to/annotation.gff3"
 Basedir: "/path/to/GAQET/results"
+Threads: N
 Analysis:
   - AGAT
   - BUSCO
@@ -69,16 +71,17 @@ Analysis:
   - OMARK
   - PROTHOMOLOGY
 OMARK_db: "/path/to/omark_db.h5"
+OMARK_taxid: NCBItaxonID
 BUSCO_lineages:
   -  clade1_odb10
   -  clade2_odb10
-OMARK_taxid: NCBItaxonID
 PROTHOMOLOGY_tags:
   - TREMBL: "/path/to/uniprot_trembl_db.dmnd"
   - SWISSPROT: "/path/to/uniprot_swssprot.dmnd"
   - MYDB: "/path/to/mydb.dmnd"
-Threads: N
 DETENGA_db: "rexdb-plant"
+
+
 ```
 
 | Parameter     | Description                                  |
@@ -87,9 +90,15 @@ DETENGA_db: "rexdb-plant"
 | Assembly      | FASTA genome file                            |
 | Annotation    | GFF3/GTF annotation file                    |
 | Basedir       | GAQET analysis and results directory       |
+| Threads       | Number of threads       |
 | Analysis      | List of analysis to run. All of them are optional      |
 | OMARK_db      | Path to omark db. Only needed if OMARK is in Analysis      |
-| BUSCO_lineages | List of analysis to run. All of them are optional      |
+| OMARK_taxid | NCBI taxid for OMARK. Only needed if OMARK is in Analysis     |
+| BUSCO_lineages | List of BUSCO clades to run. Only needed if BUSCO is in Analysis      |
+| PROTHOMOLOGY_tags | List of name and path to DIAMOND proteins database. Only needed if  PROTHOMOLOGY is in Analysis     |
+| DETENGA_db | DeTEnGA database for interpro lookups. Only needed if DETENGA is in Analysis    |
+
+
 Run the main script from the terminal:
 
 ```bash
