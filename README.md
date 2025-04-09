@@ -40,6 +40,7 @@ conda install -c bioconda busco
 conda install -c bioconda gffread
 conda install -c bioconda tesorter
 conda install -c bioconda diamond
+conda install -c bioconda omark
 conda install -c bioconda busco
 conda install python==3.10
 pip install psauron
