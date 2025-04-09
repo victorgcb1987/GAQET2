@@ -121,7 +121,8 @@ Some YAML config file values can be override by using **GAQET arguments**:
 ```bash
 GAQET --YAML {yaml_file} -s {species} -g {assembly.fasta} -a annotation.gff -t 3702 -o {outdir}
 ```
-One way to reuse easily a YAML file si to add it to a env variable, for example YAML_PATH:
+One way to reuse easily a YAML file is to add it to a env variable, for example YAML_PATH:
+
 ```bash
 export YAML_PATH=/path/to/YAML/file
 GAQET --YAML YAML_PATH -s {species} -g {assembly.fasta} -a annotation.gff -t 3702 -o {outdir}
