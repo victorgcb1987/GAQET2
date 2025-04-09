@@ -110,6 +110,7 @@ Some YAML config file values can be override by using **GAQET arguments**:
 
 | Parameter     | Description                                  |
 |---------------|----------------------------------------------|
+| --species, -s  |  Override YAML ID  |
 | --genome, -g          | Override YAML Assembly                     |
 | --annotation, -a          | Override YAML Annotation                            |
 | --taxid, -t          | Override NCBI taxid                    |
