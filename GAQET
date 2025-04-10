@@ -68,11 +68,6 @@ def parse_arguments():
     parser.add_argument("--outbase", "-o", type=str,
                         help=help_outbase, default="")
     
-    help_version = "Print version and close"
-    parser.add_argument("--version", "-v",
-                        help=help_version,
-                        action="store_true")
-    
     if len(sys.argv)==1:
         parser.print_help()
         exit()
@@ -81,9 +76,6 @@ def parse_arguments():
 
 def get_arguments():
     parser = parse_arguments()
-    if parser.version:
-        print(VERSION)
-        exit()
     yaml = parser.yaml
     with open(Path(parser.yaml)) as yaml_fhand:
         yaml = load_yaml(yaml_fhand)
@@ -121,6 +113,7 @@ def main():
     
     header = "\t\t\t###############\n\t\t\t##   GAQET   ##\n\t\t\t###############\n\n" + config_report + "\n"
     emit_msg(header, log_fhand)
+    emit_msg(VERSION + "\n")
 
     emit_msg("Command used: {}\n".format(" ".join(sys.argv)), log_fhand)
 
