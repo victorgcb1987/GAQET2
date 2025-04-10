@@ -113,7 +113,7 @@ def main():
     
     header = "\t\t\t###############\n\t\t\t##   GAQET   ##\n\t\t\t###############\n\n" + config_report + "\n"
     emit_msg(header, log_fhand)
-    emit_msg(VERSION + "\n")
+    emit_msg(VERSION + "\n", log_fhand)
 
     emit_msg("Command used: {}\n".format(" ".join(sys.argv)), log_fhand)
 
