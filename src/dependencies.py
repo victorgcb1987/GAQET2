@@ -20,7 +20,7 @@ BULLET_FIX = "\tERROR!\t"
 def check_dependencies(config):
     report = {"ok": True}
     msg = HEADER+"Checking binaries for gffread" + HEADER+ "\n"
-    if which["gffread"]:
+    if which("gffread"):
         msg += BULLET_OK + "Binary gffread found" + "\n"
     else:
         msg += BULLET_FIX + "Binary gffread not found" + "\n"
