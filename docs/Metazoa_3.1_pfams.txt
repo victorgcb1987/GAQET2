@@ -10,7 +10,6 @@ PF02022 Integrase Zinc binding domain
 PF02492 CobW/HypB/UreG, nucleotide-binding domain
 PF02992 Transposase family tnp2
 PF03175 DNA polymerase type B, organellar and viral
-PF03372 Endonuclease/Exonuclease/phosphatase family
 PF03564 Protein of unknown function (DUF1759)
 PF03732 Retrotransposon gag protein
 PF04665 Poxvirus A32 protein
