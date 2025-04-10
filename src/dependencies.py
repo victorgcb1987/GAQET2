@@ -27,7 +27,7 @@ def check_dependencies(config):
         report["ok"] = False
     report["gffread"] = msg       
     for analysis in config["Analysis"]:
-        msg = HEADER+"Checking binaries for {}".format(analysis) + HEADER = "-"*5 + "\n"
+        msg = HEADER+"Checking binaries for {}".format(analysis) + HEADER  + "\n"
         for binary in analysis:
             if which(binary):
                 msg += BULLET_OK + "Binary {} found" + "\n"
