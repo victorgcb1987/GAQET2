@@ -30,9 +30,9 @@ def check_dependencies(config):
         msg = HEADER+"Checking binaries for {}".format(analysis) + HEADER  + "\n"
         for binary in analysis:
             if which(binary):
-                msg += BULLET_OK + "Binary {} found" + "\n"
+                msg += BULLET_OK + "Binary {} found".format(binary) + "\n"
             else:
-                msg += BULLET_FIX + "Binary {} not found" + "\n"
+                msg += BULLET_FIX + "Binary {} not found".format(binary) + "\n"
                 report["ok"] = False
         report[analysis] = msg    
     return report
