@@ -17,9 +17,9 @@ BULLET_OK = "\t✓\t"
 BULLET_FIX = "\tERROR!\t"
 
 
-def check_binary_in_user_envs(config):
+def check_dependencies(config):
     report = {"ok": True}
-    msg = HEADER+"Checking binaries for {}".format(analysis) + HEADER = "-"*5 + "\n"
+    msg = HEADER+"Checking binaries for {}".format(analysis) + HEADER+ "\n"
     if which["gffread"]:
         msg += BULLET_OK + "Binary gffread found" + "\n"
     else:
