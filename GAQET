@@ -127,7 +127,6 @@ def main():
     if "ERROR!" in config_report:
         raise RuntimeError(error_msg)
     
-    emit_msg("#Checking binary dependencies\n", log_fhand)
     dependencies = check_dependencies(arguments)
     for analysis, msg in dependencies.items():
         if analysis == "ok":
