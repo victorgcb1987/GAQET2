@@ -1,14 +1,15 @@
 #!/usr/bin/env python
 
 import argparse
+import sys
+import time
+
 from argparse import RawTextHelpFormatter
 from pathlib import Path
-import sys
+
 
 from pathlib import Path
 from yaml import safe_load as load_yaml
-
-
 
 from src.agat import run_agat
 from src.busco import run_busco
@@ -25,9 +26,6 @@ from src.detenga_parsers import detenga_stats
 from src.omark_parsers import omark_stats
 from src.psauron_parsers import psauron_stats
 from src.homology_parsers import protein_homology_stats
-
-
-from pathlib import Path
 
 
 BULLET_OK = "\t✓\t"
@@ -95,10 +93,12 @@ def get_arguments():
     yaml["ID"] = "_".join(yaml["ID"].split())
     return yaml, config_report
 
+
 def emit_msg(string, log_fhand):
     print(string)
     log_fhand.write("\n"+ string)
     log_fhand.flush()
+
 
 def main():
     sys.tracebacklimit = 1
@@ -132,95 +132,103 @@ def main():
     emit_msg(HEADER + "Extracting CDS and protein sequences" + HEADER + "\n", log_fhand)
     
     #Run analysis
+    start_time = time.time()
     gffread = run_gffread(arguments)
+    end_time = time.time()
     for kind, values in gffread.items():
         status =  values["status"]
         emit_msg("#{} extraction, command used: \n\t{}\n".format(kind, values["command"]), log_fhand)
         if "Failed" in status:
             emit_msg(BULLET_FIX + status + "\n", log_fhand)
-            emit_msg(HEADER + "GAQET has stopped working", log_fhand)
-            raise RuntimeError(error_msg)
         else:
             emit_msg(BULLET_OK + status + "\n", log_fhand)
+    emit_msg("Time consumed extracting CDS and proteins: {}\n".format(end_time-start_time), log_fhand)
 
     for analysis in arguments["Analysis"]:
         if analysis == "AGAT":
             emit_msg(HEADER + "Running AGAT on the GFF file"+ HEADER + "\n", log_fhand)
+            start_time = time.time()
             agat = run_agat(arguments)
+            end_time = time.time()
             for mode, values in agat.items():
                 status = values["status"]
                 emit_msg("#{} command used: \n\t{}\n".format(mode, values["command"]), log_fhand)
                 if "Failed" in status:
                     emit_msg(BULLET_FIX + status + "\n", log_fhand)
-                    emit_msg(HEADER + "GAQET has stopped working", log_fhand)
-                    raise RuntimeError(error_msg)
                 else:
                     emit_msg(BULLET_OK + status + "\n", log_fhand)
+            emit_msg("Time consumed Running AGAT: {}\n".format(end_time-start_time), log_fhand)       
 
         if analysis == "BUSCO":
             emit_msg(HEADER + "Running BUSCO"+ HEADER + "\n", log_fhand)
+            start_time = time.time()
             busco = run_busco(arguments, gffread["proteins"]["outfile"])
+            end_time = time.time()
             for lineage, values in busco.items():
                 status = values["status"]
                 emit_msg("#{} command used: \n\t{}\n".format(lineage, values["command"]), log_fhand)
                 if "Failed" in status:
                     emit_msg(BULLET_FIX + status + "\n", log_fhand)
-                    emit_msg(HEADER + "GAQET has stopped working", log_fhand)
-                    raise RuntimeError(error_msg)
                 else:
                     emit_msg(BULLET_OK + status + "\n", log_fhand)
+            emit_msg("Time consumed Running BUSCO: {}\n".format(end_time-start_time), log_fhand)  
 
         if analysis == "PSAURON":
+            start_time = time.time()
             emit_msg(HEADER + "Running PSAURON"+ HEADER + "\n", log_fhand)
+            end_time = time.time()
             psauron = run_psauron(arguments, gffread["cds"]["outfile"])
             status = psauron["status"]
             emit_msg("#{} command used: \n\t{}\n".format(lineage, values["command"]), log_fhand)
             if "Failed" in status:
                 emit_msg(BULLET_FIX + status + "\n", log_fhand)
-                emit_msg(HEADER + "GAQET has stopped working", log_fhand)
-                raise RuntimeError(error_msg)
             else:
                 emit_msg(BULLET_OK + status + "\n", log_fhand)
+            emit_msg("Time consumed Running PSAURON: {}\n".format(end_time-start_time), log_fhand) 
 
         if analysis == "OMARK":
+            start_time = time.time()
             emit_msg(HEADER + "Running OMARK"+ HEADER + "\n", log_fhand)
+            end_time = time()
             omark = run_omark(arguments, gffread["proteins"]["outfile"])
             for analysis, values in omark.items():
                 status = values["status"]
                 emit_msg("#{} command used: \n\t{}\n".format(analysis, values["command"]), log_fhand)
                 if "Failed" in status:
                     emit_msg(BULLET_FIX + status + "\n", log_fhand)
-                    emit_msg(HEADER + "GAQET has stopped working", log_fhand)
-                    raise RuntimeError(error_msg)
                 else:
                     emit_msg(BULLET_OK + status + "\n", log_fhand)
+            emit_msg("Time consumed Running OMARK: {}\n".format(end_time-start_time), log_fhand) 
 
         if analysis == "DETENGA":
             emit_msg(HEADER + "Running DeTEnGA"+ HEADER + "\n", log_fhand)
+            start_time = time.time()
             detenga = run_detenga(arguments, gffread["proteins"]["outfile"], gffread["mrna"]["outfile"])
+            end_time = time()
             for analysis, values in detenga.items():
                 status = values["status"]
                 emit_msg("#{} command used: \n\t{}\n".format(analysis, values["command"]), log_fhand)
                 if "Failed" in status:
                     emit_msg(BULLET_FIX + status + "\n", log_fhand)
-                    emit_msg(HEADER + "GAQET has stopped working", log_fhand)
-                    raise RuntimeError(error_msg)
                 else:
                     emit_msg(BULLET_OK + status + "\n", log_fhand)
+            emit_msg("Time consumed Running DeTEnGA: {}\n".format(end_time-start_time), log_fhand)
         
+
         if analysis == "PROTHOMOLOGY":
             emit_msg(HEADER + "Running Protein homology"+ HEADER + "\n", log_fhand)
+            start_time = time.time()
             protein_homology = run_protein_homology(arguments, gffread["proteins"]["outfile"])
+            end_time = time.time()
             for db, values in protein_homology.items():
                 status = values["status"]
                 emit_msg("#{} command used: \n\t{}\n".format(db, values["command"]), log_fhand)
                 if "Failed" in status:
                     emit_msg(BULLET_FIX + status + "\n", log_fhand)
-                    emit_msg(HEADER + "GAQET has stopped working", log_fhand)
-                    raise RuntimeError(error_msg)
                 else:
                     emit_msg(BULLET_OK + status + "\n", log_fhand)
-        
+            emit_msg("Time consumed Running Protein homology: {}\n".format(end_time-start_time), log_fhand)
+            
     #Get results from analysis
     results = {}
     for analysis in arguments["Analysis"]:
