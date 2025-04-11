@@ -142,7 +142,7 @@ def main():
             emit_msg(BULLET_FIX + status + "\n", log_fhand)
         else:
             emit_msg(BULLET_OK + status + "\n", log_fhand)
-    emit_msg("Time consumed extracting CDS and proteins: {}\n".format(end_time-start_time), log_fhand)
+    emit_msg("Time consumed extracting CDS and proteins: {}s\n".format(round(end_time-start_time, 2)), log_fhand)
 
     for analysis in arguments["Analysis"]:
         if analysis == "AGAT":
@@ -157,7 +157,7 @@ def main():
                     emit_msg(BULLET_FIX + status + "\n", log_fhand)
                 else:
                     emit_msg(BULLET_OK + status + "\n", log_fhand)
-            emit_msg("Time consumed Running AGAT: {}\n".format(end_time-start_time), log_fhand)       
+            emit_msg("Time consumed Running AGAT: {}s\n".format(round(end_time-start_time, 2)), log_fhand)       
 
         if analysis == "BUSCO":
             emit_msg(HEADER + "Running BUSCO"+ HEADER + "\n", log_fhand)
@@ -171,7 +171,7 @@ def main():
                     emit_msg(BULLET_FIX + status + "\n", log_fhand)
                 else:
                     emit_msg(BULLET_OK + status + "\n", log_fhand)
-            emit_msg("Time consumed Running BUSCO: {}\n".format(end_time-start_time), log_fhand)  
+            emit_msg("Time consumed Running BUSCO: {}s\n".format(round(end_time-start_time, 2)), log_fhand)  
 
         if analysis == "PSAURON":
             start_time = time.time()
@@ -184,7 +184,7 @@ def main():
                 emit_msg(BULLET_FIX + status + "\n", log_fhand)
             else:
                 emit_msg(BULLET_OK + status + "\n", log_fhand)
-            emit_msg("Time consumed Running PSAURON: {}\n".format(end_time-start_time), log_fhand) 
+            emit_msg("Time consumed Running PSAURON: {}s\n".format(round(end_time-start_time,2)), log_fhand) 
 
         if analysis == "OMARK":
             start_time = time.time()
@@ -198,7 +198,7 @@ def main():
                     emit_msg(BULLET_FIX + status + "\n", log_fhand)
                 else:
                     emit_msg(BULLET_OK + status + "\n", log_fhand)
-            emit_msg("Time consumed Running OMARK: {}\n".format(end_time-start_time), log_fhand) 
+            emit_msg("Time consumed Running OMARK: {}s\n".format(round(end_time-start_time,2)), log_fhand) 
 
         if analysis == "DETENGA":
             emit_msg(HEADER + "Running DeTEnGA"+ HEADER + "\n", log_fhand)
@@ -212,7 +212,7 @@ def main():
                     emit_msg(BULLET_FIX + status + "\n", log_fhand)
                 else:
                     emit_msg(BULLET_OK + status + "\n", log_fhand)
-            emit_msg("Time consumed Running DeTEnGA: {}\n".format(end_time-start_time), log_fhand)
+            emit_msg("Time consumed Running DeTEnGA: {}s\n".format(round(end_time-start_time, 2)), log_fhand)
         
 
         if analysis == "PROTHOMOLOGY":
@@ -227,8 +227,8 @@ def main():
                     emit_msg(BULLET_FIX + status + "\n", log_fhand)
                 else:
                     emit_msg(BULLET_OK + status + "\n", log_fhand)
-            emit_msg("Time consumed Running Protein homology: {}\n".format(end_time-start_time), log_fhand)
-            
+            emit_msg("Time consumed Running Protein homology: {}s\n".format(round(end_time-start_time, 2)), log_fhand)
+
     #Get results from analysis
     results = {}
     for analysis in arguments["Analysis"]:
