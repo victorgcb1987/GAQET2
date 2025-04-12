@@ -10,7 +10,7 @@ def run_busco(arguments, protein_sequences):
     for lineage in arguments["BUSCO_lineages"]:
         lineage_outdir = outdir / lineage
         #Busco have problems with fullpaths
-        busco_dir = "BUSCOCompleteness_run/{}".format(lineage)
+        busco_dir = "{}/BUSCOCompleteness_run/{}".format(arguments["Basedir"].split("/")[-1], lineage)
         if not lineage_outdir.exists():
             lineage_outdir.mkdir(parents=True, exist_ok=True)
 
