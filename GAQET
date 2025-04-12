@@ -191,7 +191,7 @@ def main():
             psauron = run_psauron(arguments, gffread["cds"]["outfile"])
             end_time = time.time()
             status = psauron["status"]
-            emit_msg("#PSAURON command used: \n\t{}\n".format(lineage, psauron["command"]), log_fhand)
+            emit_msg("#PSAURON command used: \n\t{}\n".format(psauron["command"]), log_fhand)
             if "Failed" in status:
                 emit_msg(BULLET_FIX + status + "\n", log_fhand)
             else:
