@@ -5,8 +5,7 @@ from pathlib import Path
 
 def run_busco(arguments, protein_sequences):
     report = {}
-    base_dir = Path(os.getcwd())
-    outdir = base_dir / "BUSCOCompleteness_run"
+    outdir = Path(arguments["Basedir"]) / "BUSCOCompleteness_run"
     for lineage in arguments["BUSCO_lineages"]:
         lineage_outdir = outdir / lineage
         if not lineage_outdir.exists():
