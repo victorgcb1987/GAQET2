@@ -186,12 +186,12 @@ def main():
             emit_msg("Time consumed Running BUSCO: {}s\n".format(round(end_time-start_time, 2)), log_fhand)  
 
         if analysis == "PSAURON":
-            start_time = time.time()
             emit_msg(HEADER + "Running PSAURON"+ HEADER + "\n", log_fhand)
-            end_time = time.time()
+            start_time = time.time()
             psauron = run_psauron(arguments, gffread["cds"]["outfile"])
+            end_time = time.time()
             status = psauron["status"]
-            emit_msg("#{} command used: \n\t{}\n".format(lineage, values["command"]), log_fhand)
+            emit_msg("#PSAURON command used: \n\t{}\n".format(lineage, psauron["command"]), log_fhand)
             if "Failed" in status:
                 emit_msg(BULLET_FIX + status + "\n", log_fhand)
             else:
@@ -199,10 +199,10 @@ def main():
             emit_msg("Time consumed Running PSAURON: {}s\n".format(round(end_time-start_time,2)), log_fhand) 
 
         if analysis == "OMARK":
-            start_time = time.time()
             emit_msg(HEADER + "Running OMARK"+ HEADER + "\n", log_fhand)
-            end_time = time()
+            start_time = time.time()
             omark = run_omark(arguments, gffread["proteins"]["outfile"])
+            end_time = time()
             for analysis, values in omark.items():
                 status = values["status"]
                 emit_msg("#{} command used: \n\t{}\n".format(analysis, values["command"]), log_fhand)
