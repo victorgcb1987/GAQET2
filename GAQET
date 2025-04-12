@@ -219,7 +219,6 @@ def main():
             end_time = time.time()
             for analysis, values in detenga.items():
                 status = values["status"]
-                emit_msg("#{} command used: \n\t{}\n".format(analysis, values["command"]), log_fhand)
                 if "Failed" in status:
                     emit_msg(BULLET_FIX + status + "\n", log_fhand)
                 else:
