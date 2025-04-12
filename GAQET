@@ -73,7 +73,7 @@ def parse_arguments():
     return parser.parse_args()
 
 
-def create_basedir():
+def create_basedir_fpath():
     suffix = datetime.now().isoformat().split(".")[0].replace("-","").replace(":","")
     basedir = Path().absolute() / "AnnotationQC_{}".format(suffix)
     return basedir
@@ -109,8 +109,9 @@ def emit_msg(string, log_fhand):
 def main():
     sys.tracebacklimit = 1
     arguments, config_report = get_arguments()
-    if not arguments["Basedir"]:
-        arguments["Basedir"] = create_basedir()
+    if "Basedir" not in arguments:
+        basedir = create_basedir_fpath()
+        arguments["Basedir"] = basedir
     else:
         basedir = Path(arguments["Basedir"])
     if not basedir.exists():
