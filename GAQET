@@ -202,7 +202,7 @@ def main():
             emit_msg(HEADER + "Running OMARK"+ HEADER + "\n", log_fhand)
             start_time = time.time()
             omark = run_omark(arguments, gffread["proteins"]["outfile"])
-            end_time = time()
+            end_time = time.time()
             for analysis, values in omark.items():
                 status = values["status"]
                 emit_msg("#{} command used: \n\t{}\n".format(analysis, values["command"]), log_fhand)
