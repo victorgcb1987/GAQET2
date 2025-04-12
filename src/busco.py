@@ -1,10 +1,12 @@
+import os
 import subprocess
 from pathlib import Path
 
 
 def run_busco(arguments, protein_sequences):
     report = {}
-    outdir = Path("./").absolute() / "BUSCOCompleteness_run"
+    base_dir = Path(os.getcwd())
+    outdir = base_dir / "BUSCOCompleteness_run"
     for lineage in arguments["BUSCO_lineages"]:
         lineage_outdir = outdir / lineage
         if not lineage_outdir.exists():
