@@ -109,8 +109,8 @@ def emit_msg(string, log_fhand):
 def main():
     sys.tracebacklimit = 1
     arguments, config_report = get_arguments()
-    if not basedir:
-        basedir = create_basedir()
+    if not arguments["Basedir"]:
+        arguments["Basedir"] = create_basedir()
     else:
         basedir = Path(arguments["Basedir"])
     if not basedir.exists():
