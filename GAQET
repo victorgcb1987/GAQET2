@@ -216,7 +216,7 @@ def main():
             emit_msg(HEADER + "Running DeTEnGA"+ HEADER + "\n", log_fhand)
             start_time = time.time()
             detenga = run_detenga(arguments, gffread["proteins"]["outfile"], gffread["mrna"]["outfile"])
-            end_time = time()
+            end_time = time.time()
             for analysis, values in detenga.items():
                 status = values["status"]
                 emit_msg("#{} command used: \n\t{}\n".format(analysis, values["command"]), log_fhand)
