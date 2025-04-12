@@ -5,6 +5,7 @@ import sys
 import time
 
 from argparse import RawTextHelpFormatter
+from datetime import datetime
 from pathlib import Path
 
 
@@ -72,12 +73,17 @@ def parse_arguments():
     return parser.parse_args()
 
 
+def create_basedir():
+    suffix = datetime.now().isoformat().split(".")[0].replace("-","").replace(":","")
+    basedir = Path().absolute() / "AnnotationQC_{}".format(suffix)
+    return basedir
+
 def get_arguments():
     parser = parse_arguments()
     yaml = parser.yaml
     with open(Path(parser.yaml)) as yaml_fhand:
         yaml = load_yaml(yaml_fhand)
-        
+    
     if parser.species:
         yaml["ID"] = parser.species
     if parser.genome:
@@ -103,7 +109,10 @@ def emit_msg(string, log_fhand):
 def main():
     sys.tracebacklimit = 1
     arguments, config_report = get_arguments()
-    basedir = Path(arguments["Basedir"])
+    if not basedir:
+        basedir = create_basedir()
+    else:
+        basedir = Path(arguments["Basedir"])
     if not basedir.exists():
         basedir.mkdir(parents=True, exist_ok=True)
 
@@ -111,7 +120,8 @@ def main():
     log_fhand = open(log_fpath, "w")
     error_msg = "GAQET has failed, {} for details".format(log_fpath.resolve())
     
-    header = "\t\t\t###############\n\t\t\t##   GAQET   ##\n\t\t\t###############\n\n" + VERSION + "\n" + config_report + "\n"
+    start = time.ctime()
+    header = "\t\t\t###############\n\t\t\t##   GAQET   ##\n\t\t\t###############\n\n" + VERSION + "\n" + start + "\n" + config_report + "\n"
     emit_msg(header, log_fhand)
     emit_msg("Command used: {}\n".format(" ".join(sys.argv)), log_fhand)
 
