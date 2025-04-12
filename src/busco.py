@@ -5,12 +5,12 @@ from pathlib import Path
 
 def run_busco(arguments, protein_sequences):
     report = {}
-    outdir = Path(arguments["Basedir"]) / "BUSCOCompleteness_run"
+    outdir = arguments["Basedir"] / "BUSCOCompleteness_run"
     print(outdir.absolute())
     for lineage in arguments["BUSCO_lineages"]:
         lineage_outdir = outdir / lineage
         #Busco have problems with fullpaths
-        busco_dir = "{}/BUSCOCompleteness_run/{}".format(arguments["Basedir"].split("/")[-1], lineage)
+        busco_dir = "{}/BUSCOCompleteness_run/{}".format(str(arguments["Basedir"]).split("/")[-1], lineage)
         if not lineage_outdir.exists():
             lineage_outdir.mkdir(parents=True, exist_ok=True)
 
