@@ -75,7 +75,7 @@ def parse_arguments():
 
 def create_basedir_fpath():
     suffix = datetime.now().isoformat().split(".")[0].replace("-","").replace(":","")
-    basedir = Path().absolute() / "AnnotationQC_{}".format(suffix)
+    basedir = Path("./").absolute() / "AnnotationQC_{}".format(suffix)
     return basedir
 
 def get_arguments():
