@@ -143,6 +143,7 @@ def main():
     emit_msg(HEADER + "Extracting CDS and protein sequences" + HEADER + "\n", log_fhand)
     
     #Run analysis
+    overall_start = time.time()
     start_time = time.time()
     gffread = run_gffread(arguments)
     end_time = time.time()
@@ -268,8 +269,8 @@ def main():
         row = [arguments["ID"], str(arguments["OMARK_taxid"]), Path(arguments["Assembly"]).name, Path(arguments["Annotation"]).name]
         row += [str(value) for stats, value in results.items()]
         out_fhand.write("{}\n".format("\t".join(row)))
-
-    emit_msg("GAQET finished successfully", log_fhand)
+    overall_end = time.time()
+    emit_msg("GAQET finished successfully at {}, runtime: {} minutes".format(time.ctime(), str((overall_end-overall_start)/60)), log_fhand)
             
 if __name__ == "__main__":
     main()
