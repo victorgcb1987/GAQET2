@@ -5,7 +5,7 @@ from pathlib import Path
 
 def run_busco(arguments, protein_sequences):
     report = {}
-    outdir = arguments["Basedir"] / "BUSCOCompleteness_run"
+    outdir = Path(arguments["Basedir"]) / "BUSCOCompleteness_run"
     for lineage in arguments["BUSCO_lineages"]:
         lineage_outdir = outdir / lineage
         #Busco have problems with fullpaths
