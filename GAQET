@@ -78,6 +78,7 @@ def create_basedir_fpath():
     basedir = Path("./").absolute() / "AnnotationQC_{}".format(suffix)
     return basedir
 
+
 def get_arguments():
     parser = parse_arguments()
     yaml = parser.yaml
@@ -109,11 +110,11 @@ def emit_msg(string, log_fhand):
 def main():
     sys.tracebacklimit = 1
     arguments, config_report = get_arguments()
-    if "Basedir" not in arguments:
+    try:
+        assert arguments["Basedir"]
+    except:
         basedir = create_basedir_fpath()
         arguments["Basedir"] = basedir
-    else:
-        basedir = Path(arguments["Basedir"])
     if not basedir.exists():
         basedir.mkdir(parents=True, exist_ok=True)
 
