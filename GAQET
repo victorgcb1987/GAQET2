@@ -115,6 +115,7 @@ def main():
     except:
         basedir = create_basedir_fpath()
         arguments["Basedir"] = basedir
+    basedir = arguments["Basedir"]
     if not basedir.exists():
         basedir.mkdir(parents=True, exist_ok=True)
 
