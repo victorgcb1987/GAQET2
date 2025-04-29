@@ -104,11 +104,11 @@ def get_arguments():
 def emit_msg(string, log_fhand):
     for line in string.split("\n"):
         if BULLET_OK in line:
-            print('\033[92m'+string+'\033[0m')
+            print('\033[92m'+line+'\033[0m')
         elif BULLET_FIX in line:
-            print('\033[31m'+string+'\033[0m')
+            print('\033[31m'+line+'\033[0m')
         else:
-            print(string)
+            print(line)
     log_fhand.write("\n"+ string)
     log_fhand.flush()
 
