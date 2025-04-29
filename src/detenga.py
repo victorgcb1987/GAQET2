@@ -10,7 +10,9 @@ from src.detenga_parsers import (get_pfams_from_interpro_query, parse_TEsort_out
 
 import subprocess
 
-REXDB_PFAMS = Path(os.path.dirname(os.path.realpath(__file__))).parent / "docs" / "Viridiplantae_2.0_pfams.txt"
+REXDB_PFAMS = {"rexdb-plant": Path(os.path.dirname(os.path.realpath(__file__))).parent / "docs" / "Viridiplantae_2.0_pfams.txt",
+               "rexdb-metazoa": Path(os.path.dirname(os.path.realpath(__file__))).parent / "docs" / "Metazoa_3.1_pfams.txt",
+               "rexdb": Path(os.path.dirname(os.path.realpath(__file__))).parent / "docs" / "Combined_pfams.txt"}
 
 
 EXCLUDE = ["AntiFam", "CDD", "Coils", "FunFam",
@@ -127,7 +129,7 @@ def run_detenga(config, protein_sequences, mrna_sequences):
          
     try:
         with open(report["InterproScan"]["outfile"]) as interpro_fhand:
-            TE_pfams = get_pfams_from_db(REXDB_PFAMS)
+            TE_pfams = get_pfams_from_db(REXDB_PFAMS[config["DETENGA_db"]])
             intepro_pfams = get_pfams_from_interpro_query(interpro_fhand)
             classified_pfams = classify_pfams(intepro_pfams, TE_pfams)
             msg = "DeTEnGA Parse Interpro step run succesfully"

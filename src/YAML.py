@@ -108,6 +108,23 @@ def check_OMARK_db(yaml):
         errors = [BULLET_OK +  "OMARK_db {} found".format(str(path))]
     return errors
 
+def check_detenga_db(yaml):
+    errors = []
+    not_defined = False
+    if "OMARK_db" not in yaml:
+        not_defined = True
+    elif not yaml["DETENGA_db"]:
+        not_defined = True
+    if not_defined:
+        return [BULLET_FIX + "DETENGA_db field is not defined"]
+    else:
+        detenga_dbs = ["rexdb-plant", "rexdb-metazoa", "rexdb"]
+        if yaml["DETENGA_db"] not in detenga_dbs:
+            errors.append(BULLET_FIX + "DETENGA_db database {} doesn't exists. Available options are {}".format(yaml["DETENGA_db"], ",".join(detenga_dbs)))
+    if len(errors) == 0:
+        errors = [BULLET_OK +  "DETENGA_db {} found".format(yaml["DETENGA_db"])]
+    return errors
+
 
 def report_yaml_file(yaml):
     report = []
@@ -124,6 +141,9 @@ def report_yaml_file(yaml):
             report += check_taxid(yaml)
             report += [HEADER + "Checking if OMARK db is available"]
             report += check_OMARK_db(yaml)
+        if "DETENGA" in yaml["Analysis"]:
+            report += [HEADER + "Checking if DeTEnGA db is available"]
+            report += check_detenga_db(yaml)
         if "PROTHOMOLOGY" in yaml["Analysis"]:
             report += [HEADER + "Checking if protein databases exists" + HEADER]
             report += check_prothomology_dbs(yaml)

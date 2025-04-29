@@ -1,0 +1,83 @@
+PF00075 RNase H
+PF00077 Retroviral aspartyl protease
+PF00078 Reverse transcriptase (RNA-dependent DNA polymerase)
+PF00385 Chromo (CHRromatin Organisation MOdifier) domain
+PF00589 Phage integrase family
+PF00665 Integrase core domain
+PF00770 Adenovirus endoprotease
+PF00872 Transposase, Mutator family
+PF01021 Ty transposon capsid protein
+PF01541 GIY-YIG catalytic domain
+PF01693 Ribonuclease H1 N-terminal domain
+PF02022 Integrase Zinc binding domain
+PF02492 CobW/HypB/UreG, nucleotide-binding domain
+PF02689 Helicase
+PF02992 Transposase family tnp2
+PF03004 Plant transposase (Ptta/En/Spm family)
+PF03078 ATHILA ORF-1 family
+PF03108 MuDR family transposase 
+PF03175 DNA polymerase type B, organellar and viral
+PF03184 DDE superfamily endonuclease
+PF03564 Protein of unknown function (DUF1759)
+PF03732 Retrotransposon gag protein
+PF04195 Putative gypsy type transposon
+PF04665 Poxvirus A32 protein
+PF04827 Plant transposon protein
+PF04937 Protein of unknown function (DUF 659)
+PF05380 Pao retrotransposon peptidase
+PF05585 Putative peptidase (DUF1758)
+PF05699 hAT family C-terminal dimerisation region
+PF05970 PIF1-like helicase
+PF06869 Protein of unknown function (DUF1258)
+PF07727 Reverse transcriptase (RNA-dependent DNA polymerase)
+PF08131 Defensin-like peptide family
+PF08284 Retroviral aspartyl protease
+PF09256 BAFF-R, TALL-1 binding
+PF09322 Domain of unknown function (DUF1979)
+PF09337 H2C2 zinc finger
+PF10447 Exosome component EXOSC1/CSL4
+PF10536 Plant mobile domain
+PF10551 MULE transposase domain
+PF12017 Transposable element P transposase-like, HTH domain
+PF12382 Retrotransposon peptidase
+PF12384 Ty3 transposon peptidase
+PF12762 ISXO2-like transposase domain
+PF12776 Myb/SANT-like DNA-binding domain
+PF13358 DDE superfamily endonuclease
+PF13359 DDE superfamily endonuclease
+PF13456 Reverse transcriptase-like
+PF13650 Aspartyl protease
+PF13842 DDE_Tnp_1-like zinc finger
+PF13843 Transposase IS4
+PF13960 Domain of unknown function (DUF4218)
+PF13961 Domain of unknown function (DUF4219)
+PF13963 Transposase-associated domain
+PF13966 zinc-binding in reverse transcriptase
+PF13975 gag-polyprotein putative aspartyl protease
+PF13976 GAG-pre-integrase domain
+PF14214 Helitron helicase-like domain at N-terminus
+PF14223 gag-polypeptide of LTR copia-type
+PF14244 gag-polypeptide of LTR copia-type
+PF14291 Domain of unknown function (DUF4371)
+PF14372 hAT-like transposase, RNase-H fold
+PF14392 Zinc knuckle
+PF14529 Endonuclease-reverse transcriptase
+PF16297 Domain of unknown function (DUF4939)
+PF16721 Zinc-finger like, probable DNA-binding
+PF17917 RNase H-like domain found in reverse transcriptase
+PF17919 RNase H-like domain found in reverse transcriptase
+PF17921 Integrase zinc binding domain
+PF18103 Retroviral integrase C-terminal SH3 domain
+PF18697 Murine leukemia virus (MLV) integrase (IN) C-terminal domain
+PF18701 Family of unknown function (DUF5641)
+PF19259 Ty3 transposon capsid-like protein
+PF20231 Family of unknown function (DUF6589)
+PF20700 Mutator-like transposase
+PF21024 Peptidase A3B
+PF21530 DNA helicase Pif1, 2B domain
+PF21787 TNP-like, RNase H N-terminal domain
+PF21788 TNP-like, GTP-binding insertion domain
+PF21789 TNP-like, RNase H C-terminal domain
+PF22936 Pol polyprotein, beta-barrel domain
+PF23309 Domain of unknown function (DUF7083)
+PF24626 Tf2-1-like, SH3 domain
