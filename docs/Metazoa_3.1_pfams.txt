@@ -32,7 +32,6 @@ PF13976 GAG-pre-integrase domain
 PF14214 Helitron helicase-like domain at N-terminus
 PF14223 gag-polypeptide of LTR copia-type
 PF14529 Endonuclease-reverse transcriptase
-PF14893 PNMA
 PF16721 Zinc-finger like, probable DNA-binding
 PF17917 RNase H-like domain found in reverse transcriptase
 PF17919 RNase H-like domain found in reverse transcriptase
@@ -46,3 +45,20 @@ PF21787 TNP-like, RNase H N-terminal domain
 PF21788 TNP-like, GTP-binding insertion domain
 PF21789 TNP-like, RNase H C-terminal domain
 PF22936 Pol polyprotein, beta-barrel domain
+#Added by curation
+PF00665 Integrase core domain
+PF00385 Chromo (CHRromatin Organisation MOdifier) domain
+PF00078 Reverse transcriptase (RNA-dependent DNA polymerase)
+PF00075 RNase H
+PF01693 Ribonuclease H1 N-terminal domain
+PF02022 Integrase Zinc binding domain
+PF05380 Pao retrotransposon peptidase
+PF12017 Transposable element P transposase-like, HTH domain
+PF13842 DDE_Tnp_1-like zinc finger
+PF13961 Domain of unknown function (DUF4219)
+PF18701 Family of unknown function (DUF5641)
+PF23309 Domain of unknown function (DUF7083)
+
+
+
+
