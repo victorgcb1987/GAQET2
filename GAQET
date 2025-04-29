@@ -102,7 +102,10 @@ def get_arguments():
 
 
 def emit_msg(string, log_fhand):
-    print(string)
+    if BULLET_FIX not in string:
+        print(string)
+    else:
+        print('\033[31m'+string+'\033[0m')
     log_fhand.write("\n"+ string)
     log_fhand.flush()
 
