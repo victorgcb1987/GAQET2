@@ -113,7 +113,7 @@ def emit_msg(string, log_fhand):
 
 
 def main():
-    sys.tracebacklimit = 1
+    sys.tracebacklimit = 0
     arguments, config_report = get_arguments()
     try:
         assert arguments["Basedir"]
