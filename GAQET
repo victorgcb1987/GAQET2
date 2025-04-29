@@ -129,8 +129,9 @@ def main():
     error_msg = "GAQET has failed, {} for details".format(log_fpath.resolve())
     
     start = time.ctime()
-    header = "\t\t\t###############\n\t\t\t##   GAQET   ##\n\t\t\t###############\n\n" + VERSION + "\n" + start + "\n" + config_report + "\n"
+    header = "\t\t\t###############\n\t\t\t##   GAQET   ##\n\t\t\t###############\n\n" + VERSION + "\n" + start + "\n"
     emit_msg(header, log_fhand)
+    emit_msg(config_report + "\n", log_fhand)
     emit_msg("Command used: {}\n".format(" ".join(sys.argv)), log_fhand)
 
     if "ERROR!" in config_report:
