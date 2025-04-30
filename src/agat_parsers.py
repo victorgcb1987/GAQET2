@@ -46,22 +46,17 @@ def parse_agat_stats(agat_results):
 
     with open(agat_results["AGAT stats"]["outfile"], 'r') as stats_fhand:
         start_mrna = False
-        start_transcript = False
         for line in stats_fhand:
             if "-" in line:
                 if "mrna" in line:
                     start_mrna = True
-                elif "transcript" in line:
-                    if not start_mrna:
-                        start_transcript = True
                 else:
                     start_mrna = False
-                    start_transcript = False
             if not line.rstrip():
                 continue
             if ':' in line:
                 break
-            if start_mrna or start_transcript:
+            if start_mrna:
                 try:
                     key, val = line.rsplit(maxsplit=1)
                     key = key.strip()
