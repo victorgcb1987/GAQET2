@@ -54,6 +54,9 @@ def parse_agat_stats(agat_results):
                 elif "transcript" in line:
                     if not start_mrna:
                         start_transcript = True
+                else:
+                    start_mrna = False
+                    start_transcript = False
             if not line.rstrip():
                 continue
             if ':' in line:
