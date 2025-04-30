@@ -45,23 +45,32 @@ def parse_agat_stats(agat_results):
     }
 
     with open(agat_results["AGAT stats"]["outfile"], 'r') as stats_fhand:
+        start_mrna = False
+        start_transcript = False
         for line in stats_fhand:
+            if "-" in line:
+                if "mrna" in line:
+                    start_mrna = True
+                elif "transcript" in line:
+                    if not start_mrna:
+                        start_transcript = True
             if not line.rstrip():
                 continue
             if ':' in line:
                 break
-            try:
-                key, val = line.rsplit(maxsplit=1)
-                key = key.strip()
-                val = int(val.strip())
-                if key in mapping:
-                    result_key = mapping[key]
-                    if result_key == "Total Gene Space (Mb)":
-                        results[result_key] = round(val / 1_000_000, 2)
-                    else:
-                        results[result_key] = val
-            except ValueError:
-                continue  # Skip lines that can't be parsed
+            if start_mrna or start_transcript:
+                try:
+                    key, val = line.rsplit(maxsplit=1)
+                    key = key.strip()
+                    val = int(val.strip())
+                    if key in mapping:
+                        result_key = mapping[key]
+                        if result_key == "Total Gene Space (Mb)":
+                            results[result_key] = round(val / 1_000_000, 2)
+                        else:
+                            results[result_key] = val
+                except ValueError:
+                    continue  # Skip lines that can't be parsed
 
     return results
 
