@@ -8,7 +8,7 @@ def get_longest_isoform(config):
     if not outdir.exists():
         outdir.mkdir(parents=True, exist_ok=True)
     outfile = outdir / "{}.longest_isoform.gff3".format(Path(config["Assembly"]).stem)
-    cmd = "agat_sp_keep_longest_isoform.pl -gff {} -o {}".format(Path(config["Assembly"]), outfile)
+    cmd = "agat_sp_keep_longest_isoform.pl -gff {} -o {}".format(Path(config["Annotation"]), outfile)
     if outfile.exists():
         msg = "Longest isoform from annotation file selected already"
     else:
