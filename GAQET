@@ -156,7 +156,6 @@ def main():
     start_time = time.time()
     longest_isoform = get_longest_isoform(arguments)
     emit_msg(HEADER + "Getting longest isoforms"+ HEADER + "\n", log_fhand)
-    longest_isoform = get_longest_isoform(arguments)
     end_time = time.time()
     status = longest_isoform["status"]
     emit_msg("#Getting longest isoforms, command used: \n\t{}\n".format(longest_isoform["command"]), log_fhand)

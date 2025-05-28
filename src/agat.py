@@ -17,8 +17,8 @@ def get_longest_isoform(config):
             msg = "AGAT longest isoform run successfully"
         else:
             msg = "AGAT longest isoform Failed: \n {}".format(run_.stdout)
-    report["AGAT longest isoform"] = {"command": cmd, "status": msg, 
-                                      "outfile": outfile}
+    report = {"command": cmd, "status": msg, 
+              "outfile": outfile}
     return report
     
 
