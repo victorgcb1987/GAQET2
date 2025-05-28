@@ -11,9 +11,10 @@ def run_omark(arguments, protein_sequences):
     #Run OMAMER
     omamer_outfile = outdir / "{}_proteins.omamer".format(arguments["ID"])
 
-    cmd = "omamer search --db {} --query {} --out {}".format(arguments["OMARK_db"],
-                                                             protein_sequences,
-                                                             omamer_outfile)
+    cmd = "omamer search --db {} --query {} --out {} --nthreads {}".format(arguments["OMARK_db"],
+                                                                           protein_sequences,
+                                                                           omamer_outfile,
+                                                                           arguments["Threads"])
     if omamer_outfile.exists():
         msg = "OMAMER search analysis done already"
     else:

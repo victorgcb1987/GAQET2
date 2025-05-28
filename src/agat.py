@@ -1,7 +1,26 @@
 import subprocess
-
 from pathlib import Path
 
+
+def get_longest_isoform(config):
+    report = {}
+    outdir = Path(config["Basedir"]) / "input_sequences"
+    if not outdir.exists():
+        outdir.mkdir(parents=True, exist_ok=True)
+    outfile = outdir / "{}.longest_isoform.gff3".format(Path(config["Assembly"]).stem)
+    cmd = "agat_sp_keep_longest_isoform.pl -gff {} -o {}".format(Path(config["Assembly"]), outfile)
+    if outfile.exists():
+        msg = "Longest isoform from annotation file selected already"
+    else:
+        run_ = subprocess.run(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.DEVNULL)   
+        if run_.returncode == 0:
+            msg = "AGAT longest isoform run successfully"
+        else:
+            msg = "AGAT longest isoform Failed: \n {}".format(run_.stdout)
+    report["AGAT longest isoform"] = {"command": cmd, "status": msg, 
+                                      "outfile": outfile}
+    return report
+    
 
 def run_agat(config):
     report = {}
@@ -72,5 +91,3 @@ def run_agat(config):
     report["AGAT incomplete CDS"] = {"command": cmd, "status": msg, 
                                      "outfile": incomplete_cds_outfile}
     return report
-
-
