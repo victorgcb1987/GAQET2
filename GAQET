@@ -34,7 +34,7 @@ BULLET_FIX = "\tERROR!\t"
 HEADER = "-"*5
 AVAILABLE_ANALYSIS = ["AGAT", "BUSCO", "PSAURON",
                       "DETENGA", "OMARK", "PROTHOMOLOGY"]
-VERSION = "v0.2.1"
+VERSION = "v0.3.1"
 
 def parse_arguments():
     description = '''\t\t\t###############\n\t\t\t##   GAQET   ##\n\t\t\t###############\n
@@ -166,7 +166,7 @@ def main():
     emit_msg("Time consumed getting longest isoforms: {}s\n".format(round(end_time-start_time,2)), log_fhand) 
 
     #change annotation to work with the longest isoform
-    arguments["Annotation"] = longest_isoform["outfile"]
+    arguments["Annotation_Longest"] = longest_isoform["outfile"]
 
     start_time = time.time()
     gffread = run_gffread(arguments)
@@ -180,9 +180,10 @@ def main():
             emit_msg(BULLET_OK + status + "\n", log_fhand)
     emit_msg("Time consumed extracting CDS and proteins: {}s\n".format(round(end_time-start_time, 2)), log_fhand)
 
+
     for analysis in arguments["Analysis"]:
         if analysis == "AGAT":
-            emit_msg(HEADER + "Running AGAT on the GFF file"+ HEADER + "\n", log_fhand)
+            emit_msg(HEADER + "Running AGAT on the ,GFF file"+ HEADER + "\n", log_fhand)
             start_time = time.time()
             agat = run_agat(arguments)
             end_time = time.time()
@@ -195,10 +196,11 @@ def main():
                     emit_msg(BULLET_OK + status + "\n", log_fhand)
             emit_msg("Time consumed Running AGAT: {}s\n".format(round(end_time-start_time, 2)), log_fhand)       
 
+
         if analysis == "BUSCO":
             emit_msg(HEADER + "Running BUSCO"+ HEADER + "\n", log_fhand)
             start_time = time.time()
-            busco = run_busco(arguments, gffread["proteins"]["outfile"])
+            busco = run_busco(arguments, gffread["proteins_longest_isoform"]["outfile"])
             end_time = time.time()
             for lineage, values in busco.items():
                 status = values["status"]
@@ -208,6 +210,7 @@ def main():
                 else:
                     emit_msg(BULLET_OK + status + "\n", log_fhand)
             emit_msg("Time consumed Running BUSCO: {}s\n".format(round(end_time-start_time, 2)), log_fhand)  
+
 
         if analysis == "PSAURON":
             emit_msg(HEADER + "Running PSAURON"+ HEADER + "\n", log_fhand)
@@ -225,7 +228,7 @@ def main():
         if analysis == "OMARK":
             emit_msg(HEADER + "Running OMARK"+ HEADER + "\n", log_fhand)
             start_time = time.time()
-            omark = run_omark(arguments, gffread["proteins"]["outfile"])
+            omark = run_omark(arguments, gffread["proteins_longest_isoform"]["outfile"])
             end_time = time.time()
             for analysis, values in omark.items():
                 status = values["status"]
