@@ -21,11 +21,11 @@ def get_longest_isoform(config):
               "outfile": outfile}
     return report
     
-    
+
 def split_annotation(config):
     report = {}
     outdir = Path(config["Basedir"]) / "input_sequences"
-    outfile = outdir / "mrna.gff3"
+    outfile = outdir / "mrna.gff"
     cmd = "agat_sp_separate_by_record_type.pl  --gff {} -o {}".format(config["Annotation"],
                                                                       outdir)
     if outfile.exists():

@@ -34,7 +34,7 @@ BULLET_FIX = "\tERROR!\t"
 HEADER = "-"*5
 AVAILABLE_ANALYSIS = ["AGAT", "BUSCO", "PSAURON",
                       "DETENGA", "OMARK", "PROTHOMOLOGY"]
-VERSION = "v0.4.1"
+VERSION = "v0.4.2"
 
 def parse_arguments():
     description = '''\t\t\t###############\n\t\t\t##   GAQET   ##\n\t\t\t###############\n
@@ -149,8 +149,6 @@ def main():
         raise RuntimeError(msg)
     emit_msg("#Results will be stored at {}\n".format(basedir.resolve()), log_fhand)
    
-    emit_msg(HEADER + "Extracting CDS and protein sequences" + HEADER + "\n", log_fhand)
-    
     #Run analysis
     overall_start = time.time()
     start_time = time.time()
@@ -185,6 +183,7 @@ def main():
     arguments["Annotation_Longest"] = longest_isoform["outfile"]
 
     start_time = time.time()
+    emit_msg(HEADER + "Extracting CDS and protein sequences" + HEADER + "\n", log_fhand)
     gffread = run_gffread(arguments)
     end_time = time.time()
     for kind, values in gffread.items():
