@@ -21,6 +21,25 @@ def get_longest_isoform(config):
               "outfile": outfile}
     return report
     
+    
+def split_annotation(config):
+    report = {}
+    outdir = Path(config["Basedir"]) / "input_sequences"
+    outfile = outdir / "mrna.gff3"
+    cmd = "agat_sp_separate_by_record_type.pl  --gff {} -o {}".format(config["Annotation"],
+                                                                      outdir)
+    if outfile.exists():
+        msg = "Annotation splitting by feature type done already"
+    else:
+        run_ = subprocess.run(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.DEVNULL)   
+        if run_.returncode == 0:
+            msg = "AGAT separate by type run successfully"
+        else:
+            msg = "AGAT separate by type Failed: \n {}".format(run_.stdout)
+    report = {"command": cmd, "status": msg, 
+              "outfile": outfile}
+    return report
+
 
 def run_agat(config):
     report = {}

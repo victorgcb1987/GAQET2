@@ -12,7 +12,7 @@ from pathlib import Path
 from pathlib import Path
 from yaml import safe_load as load_yaml
 
-from src.agat import run_agat, get_longest_isoform
+from src.agat import run_agat, get_longest_isoform, split_annotation
 from src.busco import run_busco
 from src.detenga import run_detenga
 from src.dependencies import check_dependencies
@@ -34,7 +34,7 @@ BULLET_FIX = "\tERROR!\t"
 HEADER = "-"*5
 AVAILABLE_ANALYSIS = ["AGAT", "BUSCO", "PSAURON",
                       "DETENGA", "OMARK", "PROTHOMOLOGY"]
-VERSION = "v0.3.1"
+VERSION = "v0.4.1"
 
 def parse_arguments():
     description = '''\t\t\t###############\n\t\t\t##   GAQET   ##\n\t\t\t###############\n
@@ -154,8 +154,24 @@ def main():
     #Run analysis
     overall_start = time.time()
     start_time = time.time()
-    longest_isoform = get_longest_isoform(arguments)
+    
+    
+    emit_msg(HEADER + "Splitting annotation by features"+ HEADER + "\n", log_fhand)
+    mrna_features = split_annotation(arguments)
+    end_time = time.time()
+    status = mrna_features["status"]
+    emit_msg("#Separate annotation by type, command used: \n\t{}\n".format(mrna_features["command"]), log_fhand)
+    if "Failed" in status:
+        emit_msg(BULLET_FIX + status + "\n", log_fhand)
+    else:
+        emit_msg(BULLET_OK + status + "\n", log_fhand)
+    emit_msg("Time consumed getting  splitting annotation: {}s\n".format(round(end_time-start_time,2)), log_fhand) 
+    #From now, we are using only mRNA features
+    arguments["Annotation"] = mrna_features["outfile"]
+
+    start_time = time.time()
     emit_msg(HEADER + "Getting longest isoforms"+ HEADER + "\n", log_fhand)
+    longest_isoform = get_longest_isoform(arguments)
     end_time = time.time()
     status = longest_isoform["status"]
     emit_msg("#Getting longest isoforms, command used: \n\t{}\n".format(longest_isoform["command"]), log_fhand)
@@ -183,7 +199,7 @@ def main():
 
     for analysis in arguments["Analysis"]:
         if analysis == "AGAT":
-            emit_msg(HEADER + "Running AGAT on the ,GFF file"+ HEADER + "\n", log_fhand)
+            emit_msg(HEADER + "Running AGAT on the GFF file"+ HEADER + "\n", log_fhand)
             start_time = time.time()
             agat = run_agat(arguments)
             end_time = time.time()
