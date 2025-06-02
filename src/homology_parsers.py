@@ -1,4 +1,4 @@
-from error_check import operation_failed
+from src.error_check import operation_failed
 
 def protein_homology_stats(homology, num_transcripts):
     results = {}

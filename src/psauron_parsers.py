@@ -1,4 +1,4 @@
-from error_check import operation_failed
+from src.error_check import operation_failed
 
 def psauron_stats(psauron):
     error = operation_failed(psauron)
