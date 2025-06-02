@@ -8,6 +8,7 @@ def psauron_stats(psauron):
     print(psauron["outfile"])
     with open(psauron["outfile"]) as fhand:
         for line in fhand:
+            print(line)
             if "psauron score" in line:
                 print(line)
                 return {"PSAURON SCORE": line.strip().split()[-1]}        
