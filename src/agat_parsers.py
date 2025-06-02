@@ -97,7 +97,7 @@ def parse_agat_incomplete(agat_results):
 
 
 def parse_agat_premature(agat_results):
-    error = operation_failed(agat_results["Models with early STOP"])
+    error = operation_failed(agat_results["AGAT stop codons"])
     if error:
         return error
     results = {"Models with early STOP": 0}
