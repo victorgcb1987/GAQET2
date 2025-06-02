@@ -33,7 +33,7 @@ def run_gffread(config):
             if run_.returncode == 0:
                 msg = "GFFread, mode {} run successfully".format(kind)
             else:
-                msg = "GFFread, mode {} Failed: \n {}".format(run_.stderr)
+                msg = "GFFread, mode {} Failed: \n {}".format(kind, run_.stderr)
         report[kind]["command"] = cmd
         report[kind]["status"] = msg
         report[kind]["outfile"] = outfile
