@@ -3,6 +3,16 @@ import subprocess
 from pathlib import Path
 
 
+def succes(outfile):
+    if outfile.is_file():
+        with open(outfile) as fhand:
+             for line in fhand:
+                if "psauron score" in line:
+                    return True
+    return False
+
+
+
 def run_psauron(arguments, cds_sequences):
     report = {}
     outdir = Path(arguments["Basedir"]) / "PSAURON_run"
@@ -15,7 +25,7 @@ def run_psauron(arguments, cds_sequences):
         msg = "PSAURON analysis done already"
     else:
         run_ = subprocess.run(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.DEVNULL)
-        if run_.returncode == 0:
+        if succes(outfile):
             msg = "PSAURON analysis run successfully"
         else:
             msg = "PSAURON analysis Failed: \n {}".format(run_.stderr)
