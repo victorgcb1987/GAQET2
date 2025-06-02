@@ -1,6 +1,7 @@
 from src.error_check import operation_failed
 
 def psauron_stats(psauron):
+    print(psauron)
     error = operation_failed(psauron)
     if operation_failed:
         return {"PSAURON SCORE": error}
