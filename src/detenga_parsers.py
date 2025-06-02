@@ -165,5 +165,5 @@ def detenga_stats(num_transcripts, summary):
                 stats["P0Mte"] += 1
         return get_row(stats)
     except FileNotFoundError:
-        return {"DETENGA_FPV":  "Failed",
-                "DETENGA_FP%": "Failed"}
+        return {"DETENGA_FPV":  "FAILED",
+                "DETENGA_FP%": "FAILED"}
