@@ -1,4 +1,4 @@
-def operation_failed(results):
+def error_check(results):
     if "Failed" in results["status"]:
         return "FAILED"
     else:
