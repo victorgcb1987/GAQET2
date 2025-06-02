@@ -2,7 +2,7 @@ from src.error_check import operation_failed
 
 
 def omark_stats(omark):
-    error = operation_failed(omark)
+    error = operation_failed(omark["OMARK"])
     results = {}
     if error:
         results["OMArk Consistency Results"] = error
