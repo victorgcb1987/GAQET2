@@ -1,4 +1,4 @@
-from error_check import operation_failed
+from src.error_check import operation_failed
 
 def busco_stats(busco):
     error = operation_failed(busco)
