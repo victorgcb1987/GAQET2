@@ -1,5 +1,14 @@
+from error_check import error_check
+
+
 def omark_stats(omark):
+    error = error_check(omark)
     results = {}
+    if error:
+        results["OMArk Consistency Results"] = error
+        results["OMArk Completeness Results"] = error
+        results["OMArk Species Composition"] = error
+        return results
     clades = []
     with open(omark["OMARK"]["outfile"]) as fhand:
         for line in fhand:

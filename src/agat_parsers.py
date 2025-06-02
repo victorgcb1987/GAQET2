@@ -1,3 +1,5 @@
+from error_check import error_check
+
 def parse_agat_stats(agat_results):
     results = {
         "Gene_Models (N)": 0,
@@ -44,6 +46,9 @@ def parse_agat_stats(agat_results):
         "Shortest intron into cds part (bp)": "Shortest Intron Length (bp)"
     }
 
+    error = error_check(agat_results)
+    if error:
+        return error
     with open(agat_results["AGAT stats"]["outfile"], 'r') as stats_fhand:
         start_mrna = False
         for line in stats_fhand:
@@ -74,6 +79,9 @@ def parse_agat_stats(agat_results):
 
 
 def parse_agat_incomplete(agat_results):
+    error = error_check(agat_results)
+    if error:
+        return error
     results = {"Models START missing": 0,
                "Models STOP missing": 0,
                "Models START & STOP missing":0}
@@ -89,6 +97,9 @@ def parse_agat_incomplete(agat_results):
 
 
 def parse_agat_premature(agat_results):
+    error = error_check(agat_results)
+    if error:
+        return error
     results = {"Models with early STOP": 0}
     with open(agat_results["AGAT stop codons"]["outfile"]) as fhand:
         for line in fhand:
