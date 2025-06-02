@@ -1,4 +1,4 @@
-from error_check import error_check
+from error_check import operation_failed
 
 def parse_agat_stats(agat_results):
     results = {
@@ -46,7 +46,7 @@ def parse_agat_stats(agat_results):
         "Shortest intron into cds part (bp)": "Shortest Intron Length (bp)"
     }
 
-    error = error_check(agat_results)
+    error = operation_failed(agat_results)
     if error:
         return error
     with open(agat_results["AGAT stats"]["outfile"], 'r') as stats_fhand:
@@ -79,7 +79,7 @@ def parse_agat_stats(agat_results):
 
 
 def parse_agat_incomplete(agat_results):
-    error = error_check(agat_results)
+    error = operation_failed(agat_results)
     if error:
         return error
     results = {"Models START missing": 0,
@@ -97,7 +97,7 @@ def parse_agat_incomplete(agat_results):
 
 
 def parse_agat_premature(agat_results):
-    error = error_check(agat_results)
+    error = operation_failed(agat_results)
     if error:
         return error
     results = {"Models with early STOP": 0}

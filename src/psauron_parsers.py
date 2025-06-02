@@ -1,8 +1,8 @@
-from error_check import error_check
+from error_check import operation_failed
 
 def psauron_stats(psauron):
-    error = error_check(psauron)
-    if error_check:
+    error = operation_failed(psauron)
+    if operation_failed:
         return {"PSAURON SCORE": error}
     with open(psauron["outfile"]) as fhand:
         for line in fhand:

@@ -1,10 +1,10 @@
-from error_check import error_check
+from error_check import operation_failed
 
 def protein_homology_stats(homology, num_transcripts):
     results = {}
     for tag, values in homology.items():
         prots = set()
-        error = error_check(values)
+        error = operation_failed(values)
         if error:
             results[f"ProteinsWith{tag}Hits (%)"] = error
         else:

@@ -1,8 +1,8 @@
-from error_check import error_check
+from error_check import operation_failed
 
 
 def omark_stats(omark):
-    error = error_check(omark)
+    error = operation_failed(omark)
     results = {}
     if error:
         results["OMArk Consistency Results"] = error

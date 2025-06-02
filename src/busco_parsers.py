@@ -1,7 +1,7 @@
-from error_check import error_check
+from error_check import operation_failed
 
 def busco_stats(busco):
-    error = error_check(busco)
+    error = operation_failed(busco)
     if error:
         return error
     results = {}
