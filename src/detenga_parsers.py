@@ -163,8 +163,7 @@ def detenga_stats(num_transcripts, summary):
                 stats["PchMte"] +=1
             if row["Interpro_status"] == "NA" and row["TEsort_domains"] != "NA":
                 stats["P0Mte"] += 1
+        return get_row(stats)
     except FileNotFoundError:
-        results["DETENGA_FPV"] = "Failed"
-        results["DETENGA_FP%"] = "Failed"
-    results = get_row(stats)
-    return results
+        return {"DETENGA_FPV":  "Failed",
+                "DETENGA_FP%": "Failed"}
