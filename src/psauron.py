@@ -11,7 +11,7 @@ def run_psauron(arguments, cds_sequences):
     outfile = outdir / "{}.cds.psauron.csv".format(arguments["ID"])
     cmd = "psauron -i {} -o {}".format(cds_sequences, outfile)
 
-    if outfile.exists():
+    if outfile.is_file():
         msg = "PSAURON analysis done already"
     else:
         run_ = subprocess.run(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.DEVNULL)
