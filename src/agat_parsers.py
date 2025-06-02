@@ -81,7 +81,9 @@ def parse_agat_stats(agat_results):
 def parse_agat_incomplete(agat_results):
     error = operation_failed(agat_results["AGAT incomplete CDS"])
     if error:
-        return error
+        return {"Models START missing": error,
+                "Models STOP missing": error,
+                "Models START & STOP missing": error}
     results = {"Models START missing": 0,
                "Models STOP missing": 0,
                "Models START & STOP missing":0}
@@ -99,7 +101,7 @@ def parse_agat_incomplete(agat_results):
 def parse_agat_premature(agat_results):
     error = operation_failed(agat_results["AGAT stop codons"])
     if error:
-        return error
+        return {"Models with early STOP": error}
     results = {"Models with early STOP": 0}
     with open(agat_results["AGAT stop codons"]["outfile"]) as fhand:
         for line in fhand:
