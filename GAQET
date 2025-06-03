@@ -154,7 +154,19 @@ def main():
     #Run analysis
     overall_start = time.time()
     start_time = time.time()
-    
+    emit_msg(HEADER + "Splitting annotation by features"+ HEADER + "\n", log_fhand)
+    mrna_features = split_annotation(arguments)
+    end_time = time.time()
+    status = mrna_features["status"]
+    emit_msg("#Separate annotation by type, command used: \n\t{}\n".format(mrna_features["command"]), log_fhand)
+    if "Failed" in status:
+        emit_msg(BULLET_FIX + status + "\n", log_fhand)
+    else:
+        emit_msg(BULLET_OK + status + "\n", log_fhand)
+    emit_msg("Time consumed getting  splitting annotation: {}s\n".format(round(end_time-start_time,2)), log_fhand) 
+    #From now, we are using only mRNA features
+    arguments["Annotation"] = mrna_features["outfile"]
+
     start_time = time.time()
     emit_msg(HEADER + "Checking if Assembly file has a correct length format"+ HEADER + "\n", log_fhand)
     correct_seq_length = correct_fasta_length(arguments)
@@ -170,19 +182,6 @@ def main():
                 emit_msg(BULLET_OK + status + "\n", log_fhand)
                 arguments["Assembly"] = reformatted_assembly["outfile"]
             emit_msg("Time consumed reformatting Assembly file : {}s\n".format(round(end_time-start_time,2)), log_fhand) 
-    
-    emit_msg(HEADER + "Splitting annotation by features"+ HEADER + "\n", log_fhand)
-    mrna_features = split_annotation(arguments)
-    end_time = time.time()
-    status = mrna_features["status"]
-    emit_msg("#Separate annotation by type, command used: \n\t{}\n".format(mrna_features["command"]), log_fhand)
-    if "Failed" in status:
-        emit_msg(BULLET_FIX + status + "\n", log_fhand)
-    else:
-        emit_msg(BULLET_OK + status + "\n", log_fhand)
-    emit_msg("Time consumed getting  splitting annotation: {}s\n".format(round(end_time-start_time,2)), log_fhand) 
-    #From now, we are using only mRNA features
-    arguments["Annotation"] = mrna_features["outfile"]
 
     start_time = time.time()
     emit_msg(HEADER + "Getting longest isoforms"+ HEADER + "\n", log_fhand)
