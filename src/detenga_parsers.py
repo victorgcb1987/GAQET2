@@ -113,6 +113,7 @@ def create_summary(interpro_classified, tesort_output):
             row["tesort_complete"] = "NA"
             row["tesort_class"] = "NA"
             row["tesort_strand"] = "NA"
+        row["detenga_status"] = detenga_status(row)
         summary.append(row)
     for transcript, values in tesort_output.items():
         if transcript not in interpro_classified:
@@ -123,22 +124,43 @@ def create_summary(interpro_classified, tesort_output):
                    "tesort_domains": values["domains"],
                    "tesort_complete": values["complete"],
                    "tesort_class": values["classification"],
-                   "tesort_strand": values["strand"]} 
+                   "tesort_strand": values["strand"]}
+            row["detenga_status"] = detenga_status(row) 
             summary.append(row)
     return summary
         
 
+def detenga_status(row):
+    status = "NA"
+    if row["interpro_status"] == "coding_sequence" and row["tesort_domains"] == "NA":
+        status = "PcpM0" 
+    if row["interpro_status"] == "transposable_element" and row["tesort_domains"] == "NA":
+        status = "PteM0"
+    if row["interpro_status"] == "mixed" and row["tesort_domains"] == "NA":
+        status = "PchM0" 
+    if row["interpro_status"] == "coding_sequence" and row["tesort_domains"] != "NA":
+        status = "PcpMte"
+    if row["interpro_status"] == "transposable_element" and row["tesort_domains"] != "NA":
+        status = "PteMte"
+    if row["interpro_status"] == "mixed" and row["tesort_domains"] != "NA":
+        status = "PchMte"
+    if row["interpro_status"] == "NA" and row["tesort_domains"] != "NA":
+        status = "P0Mte"
+    return status
+
+
 def write_summary(summary, out_fhand):
     out_fhand.write("Transcript_ID;Interpro_status;TEsort_class;PFAM_domains;")
     out_fhand.write("PFAM_descriptions;TEsort_domains;TEsort_completness;")
-    out_fhand.write("TEsort_strand\n")
+    out_fhand.write("TEsort_strand;DeTEnGA_status\n")
     out_fhand.flush()
     for row in summary:
         line_total = "" 
         line_total += "{};{};{};{};".format(row["transcript"], row["interpro_status"],
                                             row["tesort_class"], row["pfams_ids"])
-        line_total += "{};{};{};{}\n".format(row["pfams_descriptions"], row["tesort_domains"],
-                                             row["tesort_complete"], row["tesort_strand"])
+        line_total += "{};{};{};{};{}\n".format(row["pfams_descriptions"].replace(";", ","), row["tesort_domains"],
+                                                row["tesort_complete"], row["tesort_strand"],
+                                                row["detenga_status"])
         out_fhand.write(line_total)
         out_fhand.flush()
 
@@ -149,20 +171,7 @@ def detenga_stats(num_transcripts, summary):
              "P0Mte":0, "num_transcripts": num_transcripts}
     try:
         for row in DictReader(open(summary), delimiter=";"):
-            if row["Interpro_status"] == "coding_sequence" and row["TEsort_domains"] == "NA":
-                stats["PcpM0"] +=1
-            if row["Interpro_status"] == "transposable_element" and row["TEsort_domains"] == "NA":
-                stats["PteM0"] += 1
-            if row["Interpro_status"] == "mixed" and row["TEsort_domains"] == "NA":
-                stats["PchM0"] += 1
-            if row["Interpro_status"] == "coding_sequence" and row["TEsort_domains"] != "NA":
-                stats["PcpMte"] +=1
-            if row["Interpro_status"] == "transposable_element" and row["TEsort_domains"] != "NA":
-                stats["PteMte"] +=1
-            if row["Interpro_status"] == "mixed" and row["TEsort_domains"] != "NA":
-                stats["PchMte"] +=1
-            if row["Interpro_status"] == "NA" and row["TEsort_domains"] != "NA":
-                stats["P0Mte"] += 1
+            stats[row["DeTEnGA_status"]] += 1
         return get_row(stats)
     except FileNotFoundError:
         return {"DETENGA_FPV":  "FAILED",
