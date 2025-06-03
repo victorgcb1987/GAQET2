@@ -26,6 +26,13 @@ def check_dependencies(config):
         msg += BULLET_FIX + "Binary gffread not found" + "\n"
         report["ok"] = False
     report["gffread"] = msg       
+    msg = HEADER+"Checking binaries for seqtk" + HEADER+ "\n"
+    if which("seqtk"):
+        msg += BULLET_OK + "Binary seqtk found" + "\n"
+    else:
+        msg += BULLET_FIX + "Binary seqtk not found" + "\n"
+        report["ok"] = False
+    report["seqtk"] = msg
     for analysis in config["Analysis"]:
         msg = HEADER+"Checking binaries for {}".format(analysis) + HEADER  + "\n"
         for binary in BINARIES[analysis]:
