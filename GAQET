@@ -20,14 +20,15 @@ from src.dependencies import check_dependencies
 from src.gffread import run_gffread
 from src.omark import run_omark
 from src.psauron import run_psauron
+from src.seqtk import reformat_fasta_file
 from src.YAML import report_yaml_file
 from src.homology import run_protein_homology
 from src.agat_parsers import parse_agat_stats, parse_agat_incomplete, parse_agat_premature
 from src.busco_parsers import busco_stats
 from src.detenga_parsers import detenga_stats
+from src.homology_parsers import protein_homology_stats
 from src.omark_parsers import omark_stats
 from src.psauron_parsers import psauron_stats
-from src.homology_parsers import protein_homology_stats
 
 
 BULLET_OK = "\t✓\t"
@@ -35,7 +36,7 @@ BULLET_FIX = "\tERROR!\t"
 HEADER = "-"*5
 AVAILABLE_ANALYSIS = ["AGAT", "BUSCO", "PSAURON",
                       "DETENGA", "OMARK", "PROTHOMOLOGY"]
-VERSION = "v0.5.7"
+VERSION = "v0.6.8"
 
 def parse_arguments():
     description = '''\t\t\t###############\n\t\t\t##   GAQET   ##\n\t\t\t###############\n
@@ -156,8 +157,20 @@ def main():
     
     start_time = time.time()
     emit_msg(HEADER + "Checking if Assembly file has a correct length format"+ HEADER + "\n", log_fhand)
-    seq_length = correct_fasta_length(arguments)
-
+    correct_seq_length = correct_fasta_length(arguments)
+    if not correct_seq_length:
+            emit_msg(HEADER + "Reformatting Assembly file with seqtk"+ HEADER + "\n", log_fhand)
+            reformatted_assembly = reformat_fasta_file(arguments)
+            end_time = time.time()
+            status = reformatted_assembly["status"]
+            emit_msg("Reformat Assembly file, command used: \n\t{}\n".format(reformatted_assembly["command"]), log_fhand)
+            if "Failed" in status:
+                emit_msg(BULLET_FIX + status + "\n", log_fhand)
+            else:
+                emit_msg(BULLET_OK + status + "\n", log_fhand)
+                arguments["Assembly"] = reformatted_assembly["outfile"]
+            emit_msg("Time consumed reformatting Assembly file : {}s\n".format(round(end_time-start_time,2)), log_fhand) 
+    
     emit_msg(HEADER + "Splitting annotation by features"+ HEADER + "\n", log_fhand)
     mrna_features = split_annotation(arguments)
     end_time = time.time()
