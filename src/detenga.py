@@ -43,7 +43,7 @@ def run_detenga(config, protein_sequences, mrna_sequences):
     with open(filtered_mRNA_outfile, "w") as filtered_mRNA_outfhand:
         for record in SeqIO.parse(mrna_sequences.absolute(), "fasta"):
             filtered = False
-            if "N" not in record.seq.upper():
+            if "N" in record.seq.upper():
                 filtered = True
                 sequences_removed_Ns.append(record.id)
             if len(record.seq) >= 100000:
