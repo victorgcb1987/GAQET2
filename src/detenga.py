@@ -42,14 +42,16 @@ def run_detenga(config, protein_sequences, mrna_sequences):
     
     with open(filtered_mRNA_outfile, "w") as filtered_mRNA_outfhand:
         for record in SeqIO.parse(mrna_sequences.absolute(), "fasta"):
+            filtered = False
             if "N" not in record.seq.upper():
-                SeqIO.write(record, filtered_mRNA_outfhand, "fasta")
-            else:
+                filtered = True
                 sequences_removed_Ns.append(record.id)
-            if len(record.seq) <= 100000:
-                SeqIO.write(record, filtered_mRNA_outfhand, "fasta")
-            else:
+            if len(record.seq) >= 100000:
+                filtered = True
                 sequences_removed_length.append(record.id)
+            if not filtered:
+                SeqIO.write(record, filtered_mRNA_outfhand, "fasta")
+            
 
     if sequences_removed_Ns:
         msg = "Warning: the following sequences have Ns in the sequence and has been removed from TEsorter analysis:\n {}\n".format("\n".join(sequences_removed_Ns))
