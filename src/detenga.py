@@ -2,6 +2,7 @@ import argparse
 import os
 import sys
 
+from Bio import SeqIO
 from pathlib import Path
 
 from src.detenga_parsers import (get_pfams_from_interpro_query, parse_TEsort_output, 
@@ -31,20 +32,33 @@ def run_detenga(config, protein_sequences, mrna_sequences):
     if not outdir.exists():
         outdir.mkdir(parents=True, exist_ok=True)
 
+
     #Run TEsorter
+
+    filtered_mRNA_outfile = outdir / "{}.mRNA.noNs.fasta".format(Path(config["Assembly"]).stem)
+    sequences_removed = []
+    msg = ""
+    with open(filtered_mRNA_outfile, "w") as filtered_mRNA_outfhand:
+        for record in SeqIO.parse(mrna_sequences.absolute(), "fasta"):
+            if "N" not in record.seq.upper():
+                SeqIO.write(record, filtered_mRNA_outfhand, "fasta")
+            else:
+                sequences_removed.append(record.id)
+    if sequences_removed:
+        msg = "Warning: the following sequences have Ns in the sequence and has been removed from TEsorter analysis:\n {}\n".format("n".join(sequences_removed))
     base_dir = Path(os.getcwd())
-    tesorter_outfile = outdir / "{}.{}.cls.tsv".format(mrna_sequences.name, config["DETENGA_db"])
-    cmd = "TEsorter {} -db {} -p {}".format(mrna_sequences.absolute(), config["DETENGA_db"], str(config["Threads"]))
+    tesorter_outfile = outdir / "{}.{}.cls.tsv".format(filtered_mRNA_outfile.name, config["DETENGA_db"])
+    cmd = "TEsorter {} -db {} -p {}".format(filtered_mRNA_outfile.absolute(), config["DETENGA_db"], str(config["Threads"]))
 
     if tesorter_outfile.is_file():
-        msg = "DeTEnGA TEsorter step already done"
+        msg += "DeTEnGA TEsorter step already done"
     else:
         os.chdir(outdir)
         run_ = subprocess.run(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.DEVNULL)
         if run_.returncode == 0:
-            msg = "DeTEnGA TEsorter step run successfully"
+            msg += "DeTEnGA TEsorter step run successfully"
         else:
-            msg = "DeTEnGA TEsorter step Failed: \n {}".format(run_.stderr)
+            msg += "DeTEnGA TEsorter step Failed: \n {}".format(run_.stderr)
         os.chdir(base_dir)
     report["TEsorter"] = {"command": cmd,
                           "status": msg,
