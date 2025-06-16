@@ -35,7 +35,7 @@ def run_detenga(config, protein_sequences, mrna_sequences):
 
     #Run TEsorter
 
-    filtered_mRNA_outfile = outdir / "{}.mRNA.noNs.fasta".format(Path(config["Assembly"]).stem)
+    filtered_mRNA_outfile = outdir / "{}.mRNA.noNs.no100k.fasta".format(Path(config["Assembly"]).stem)
     sequences_removed_Ns = []
     sequences_removed_length = []
     msg = ""
