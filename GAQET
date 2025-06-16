@@ -90,7 +90,7 @@ def get_arguments():
     yaml = parser.yaml
     with open(Path(parser.yaml)) as yaml_fhand:
         yaml = load_yaml(yaml_fhand)
-        
+
     if parser.species:
         yaml["ID"] = parser.species
     if parser.genome:
@@ -121,7 +121,7 @@ def emit_msg(string, log_fhand):
 
 def main():
     sys.tracebacklimit = 0
-    if '--version' in sys.argv or "-v":
+    if '--version' in sys.argv or "-v" in sys.argv:
         print(VERSION)
         sys.exit(0)
     arguments, config_report = get_arguments()
