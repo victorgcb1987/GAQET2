@@ -48,8 +48,9 @@ def get_pfams_from_interpro_query(fhand):
     for line in fhand:
         line = line.split("\t")
         if line[3] == "Pfam":
-            gen, code, description, start, end = line[0], line[4], line[5], line[6], line[7]
-            genes[gen].append([code, description, start, end])
+            gen, code, description, start, end, evalue = line[0], line[4], line[5], line[6], line[7], line[8]
+            if evalue <= 0.005:
+                genes[gen].append([code, description, start, end])
     sorted_genes = {
                     key: sorted(value, key=lambda x: int(x[2]))  # Ordena por el tercer valor (convertido a entero)
                     for key, value in genes.items()}
