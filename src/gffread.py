@@ -54,7 +54,7 @@ def run_gffread(config):
                                     out_fhand.write(f">{base_id}_{seen[base_id]}\n")
                                 else:
                                     out_fhand.write(line)
-                outfile = outfile_renamed
+                    outfile = outfile_renamed
                 msg = "GFFread, mode {} run successfully".format(kind)
             else:
                 msg = "GFFread, mode {} Failed: \n {}".format(kind, run_.stderr)
