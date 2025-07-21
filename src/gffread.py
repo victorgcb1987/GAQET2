@@ -36,24 +36,25 @@ def run_gffread(config):
                                                       outfile,
                                                       config["Assembly"],
                                                       annotation)
-            outfile_renamed = outdir / "{}.{}.renamed.fasta".format(Path(config["Assembly"]).stem, kind)
-            with open(outfile) as fhand:
-                with open(outfile_renamed, "w") as out_fhand:
-                    seen = defaultdict(int)
-                    for line in fhand:
-                        if line.startswith(">"):
-                            header = line.strip()
-                            base_id = header[1:].split()[0]
-                            seen[base_id] += 1
-                            out_fhand.write(f">{base_id}_{seen[base_id]}\n")
-                        else:
-                            out_fhand.write(line)
-            outfile = outfile_renamed
         if outfile.exists():
             msg = "{} sequences already extracted".format(kind)
         else:
             run_ = subprocess.run(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.DEVNULL)
             if run_.returncode == 0:
+                if "busco" in kind:
+                    outfile_renamed = outdir / "{}.{}.renamed.fasta".format(Path(config["Assembly"]).stem, kind)
+                    with open(outfile) as fhand:
+                        with open(outfile_renamed, "w") as out_fhand:
+                            seen = defaultdict(int)
+                            for line in fhand:
+                                if line.startswith(">"):
+                                    header = line.strip()
+                                    base_id = header[1:].split()[0]
+                                    seen[base_id] += 1
+                                    out_fhand.write(f">{base_id}_{seen[base_id]}\n")
+                                else:
+                                    out_fhand.write(line)
+                outfile = outfile_renamed
                 msg = "GFFread, mode {} run successfully".format(kind)
             else:
                 msg = "GFFread, mode {} Failed: \n {}".format(kind, run_.stderr)
