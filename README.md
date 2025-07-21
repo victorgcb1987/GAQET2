@@ -48,7 +48,7 @@ pip install ete3
 pip install PyYAML
 ```
 
-**Interproscan**: we recommend using the github version instead of any conda installation (https://interproscan-docs.readthedocs.io/en/latest/HowToDownload.html)
+**Interproscan**: we recommend using the github version instead of any conda installation (https://github.com/ebi-pf-team/interproscan-docs/blob/v5/docs/HowToDownload.rst)
 Then, add interproscan.sh to your PATH variable:
 
 `export PATH=$PATH:/path/to/interproscan.sh`
