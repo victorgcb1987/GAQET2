@@ -31,6 +31,11 @@ def run_gffread(config):
                                                       outfile,
                                                       config["Assembly"],
                                                       annotation)
+        else:
+            cmd = "gffread -{} {} -g {} {}".format(values["mode"],
+                                                      outfile,
+                                                      config["Assembly"],
+                                                      annotation)
             outfile_renamed = outdir / "{}.{}.renamed.fasta".format(Path(config["Assembly"]).stem, kind)
             with open(outfile) as fhand:
                 with open(outfile_renamed, "w") as out_fhand:
@@ -44,11 +49,6 @@ def run_gffread(config):
                         else:
                             out_fhand.write(line)
             outfile = outfile_renamed
-        else:
-            cmd = "gffread -{} {} -g {} {}".format(values["mode"],
-                                                      outfile,
-                                                      config["Assembly"],
-                                                      annotation)
         if outfile.exists():
             msg = "{} sequences already extracted".format(kind)
         else:
