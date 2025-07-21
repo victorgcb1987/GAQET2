@@ -1,5 +1,8 @@
 import subprocess
+
+from collections import defaultdict
 from pathlib import Path
+
 
 
 def run_gffread(config):
@@ -28,6 +31,19 @@ def run_gffread(config):
                                                       outfile,
                                                       config["Assembly"],
                                                       annotation)
+            outfile_renamed = outdir / "{}.{}.renamed.fasta".format(Path(config["Assembly"]).stem, kind)
+            with open(outfile) as fhand:
+                with open(outfile_renamed, "w") as out_fhand:
+                    seen = defaultdict(int)
+                    for line in fhand:
+                        if line.startswith(">"):
+                            header = line.strip()
+                            base_id = header[1:].split()[0]
+                            seen[base_id] += 1
+                            out_fhand.write(f">{base_id}_{seen[base_id]}\n")
+                        else:
+                            out_fhand.write(line)
+            outfile = outfile_renamed
         else:
             cmd = "gffread -{} {} -g {} {}".format(values["mode"],
                                                       outfile,
