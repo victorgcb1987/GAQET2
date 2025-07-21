@@ -36,7 +36,7 @@ BULLET_FIX = "\tERROR!\t"
 HEADER = "-"*5
 AVAILABLE_ANALYSIS = ["AGAT", "BUSCO", "PSAURON",
                       "DETENGA", "OMARK", "PROTHOMOLOGY"]
-VERSION = "v0.8.10"
+VERSION = "v0.10.10"
 
 def parse_arguments():
     description = '''\t\t\t###############\n\t\t\t##   GAQET   ##\n\t\t\t###############\n
@@ -238,7 +238,7 @@ def main():
         if analysis == "BUSCO":
             emit_msg(HEADER + "Running BUSCO"+ HEADER + "\n", log_fhand)
             start_time = time.time()
-            busco = run_busco(arguments, gffread["proteins_longest_isoform"]["outfile"])
+            busco = run_busco(arguments, gffread["proteins_longest_busco"]["outfile"])
             end_time = time.time()
             for lineage, values in busco.items():
                 status = values["status"]

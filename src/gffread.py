@@ -8,7 +8,8 @@ def run_gffread(config):
               "mrna": {"mode": "w", "command": "", "status": "", "outfile": ""},
               "cds_longest_isoform": {"mode": "x", "command": "", "status": "", "outfile": ""}, 
               "proteins_longest_isoform": {"mode": "y", "command": "", "status": "", "outfile": ""},
-              "mrna_longest_isoform": {"mode": "w", "command": "", "status": "", "outfile": ""}}
+              "mrna_longest_isoform": {"mode": "w", "command": "", "status": "", "outfile": ""},
+              "proteins_longest_busco": {"mode": "y", "command": "", "status": "", "outfile": ""}}
     outdir = Path(config["Basedir"]) / "input_sequences"
 
 
@@ -22,10 +23,16 @@ def run_gffread(config):
             annotation = config["Annotation_Longest"]
         else:
             annotation = config["Annotation"]
-        cmd = "gffread -{} {} -J -g {} {}".format(values["mode"],
-                                               outfile,
-                                               config["Assembly"],
-                                               annotation)
+        if "busco" not in kind:
+            cmd = "gffread -{} {} -J -g {} {}".format(values["mode"],
+                                                      outfile,
+                                                      config["Assembly"],
+                                                      annotation)
+        else:
+            cmd = "gffread -{} {} -g {} {}".format(values["mode"],
+                                                      outfile,
+                                                      config["Assembly"],
+                                                      annotation)
         if outfile.exists():
             msg = "{} sequences already extracted".format(kind)
         else:
