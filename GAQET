@@ -253,7 +253,7 @@ def main():
                 busco_sequences = gffread["proteins_longest_busco"]["outfile"]
             else:
                 busco_sequences = gffread["proteins_longest_isoform"]["outfile"]
-                busco = run_busco(arguments, busco_sequences)
+            busco = run_busco(arguments, busco_sequences)
             end_time = time.time()
             for lineage, values in busco.items():
                 status = values["status"]
