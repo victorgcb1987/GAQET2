@@ -146,7 +146,7 @@ def main():
     header = "\t\t\t###############\n\t\t\t##   GAQET   ##\n\t\t\t###############\n\n" + VERSION + "\n" + start + "\n"
     emit_msg(header, log_fhand)
     emit_msg(config_report + "\n", log_fhand)
-    emit_msg(command_used, log_fhand)
+    emit_msg(f"Command used: {command_used}", log_fhand)
 
     if "ERROR!" in config_report:
         raise RuntimeError(error_msg)
