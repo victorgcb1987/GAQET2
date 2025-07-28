@@ -36,7 +36,7 @@ BULLET_FIX = "\tERROR!\t"
 HEADER = "-"*5
 AVAILABLE_ANALYSIS = ["AGAT", "BUSCO", "PSAURON",
                       "DETENGA", "OMARK", "PROTHOMOLOGY"]
-VERSION = "v0.10.11"
+VERSION = "v0.10.12"
 
 def parse_arguments():
     description = '''\t\t\t###############\n\t\t\t##   GAQET   ##\n\t\t\t###############\n
@@ -101,6 +101,9 @@ def get_arguments():
         yaml["OMARK_taxid"] = parser.taxid
     if parser.outbase:
         yaml["Basedir"] = parser.outbase
+    else:
+        basedir = create_basedir_fpath()
+        yaml["Basedir"] = basedir
     config_report = report_yaml_file(yaml)
     #subs whitespaces with _ in ID∫
     yaml["ID"] = "_".join(yaml["ID"].split())
@@ -125,11 +128,6 @@ def main():
         print(VERSION)
         sys.exit(0)
     arguments, config_report = get_arguments()
-    try:
-        assert arguments["Basedir"]
-    except:
-        basedir = create_basedir_fpath()
-        arguments["Basedir"] = basedir
     basedir = Path(arguments["Basedir"])
     if not basedir.exists():
         basedir.mkdir(parents=True, exist_ok=True)
