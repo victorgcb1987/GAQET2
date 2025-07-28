@@ -36,7 +36,7 @@ BULLET_FIX = "\tERROR!\t"
 HEADER = "-"*5
 AVAILABLE_ANALYSIS = ["AGAT", "BUSCO", "PSAURON",
                       "DETENGA", "OMARK", "PROTHOMOLOGY"]
-VERSION = "v0.10.12"
+VERSION = "v0.10.13"
 
 def parse_arguments():
     description = '''\t\t\t###############\n\t\t\t##   GAQET   ##\n\t\t\t###############\n
@@ -107,7 +107,14 @@ def get_arguments():
     config_report = report_yaml_file(yaml)
     #subs whitespaces with _ in ID∫
     yaml["ID"] = "_".join(yaml["ID"].split())
-    return yaml, config_report
+    input = Path(parser.yaml)
+    binary = sys.argv.split[0]
+    command_used = f"{binary} -i {parser.yaml} -s {yaml["ID"]} "
+    command_used += f"-t {yaml["OMARK_taxid"]} "
+    command_used += f"-g {yaml["Assembly"]} "
+    command_used += f"-a {yaml["Annotation"]} "
+    command_used += f"-o {yaml["Basedir"]}"
+    return yaml, config_report, command_used
 
 
 def emit_msg(string, log_fhand):
@@ -127,7 +134,7 @@ def main():
     if '--version' in sys.argv or "-v" in sys.argv:
         print(VERSION)
         sys.exit(0)
-    arguments, config_report = get_arguments()
+    arguments, config_report, command_used = get_arguments()
     basedir = Path(arguments["Basedir"])
     if not basedir.exists():
         basedir.mkdir(parents=True, exist_ok=True)
@@ -140,7 +147,7 @@ def main():
     header = "\t\t\t###############\n\t\t\t##   GAQET   ##\n\t\t\t###############\n\n" + VERSION + "\n" + start + "\n"
     emit_msg(header, log_fhand)
     emit_msg(config_report + "\n", log_fhand)
-    emit_msg("Command used: {}\n".format(" ".join(sys.argv)), log_fhand)
+    emit_msg(command_used, log_fhand)
 
     if "ERROR!" in config_report:
         raise RuntimeError(error_msg)
