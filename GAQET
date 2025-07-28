@@ -146,7 +146,8 @@ def main():
     header = "\t\t\t###############\n\t\t\t##   GAQET   ##\n\t\t\t###############\n\n" + VERSION + "\n" + start + "\n"
     emit_msg(header, log_fhand)
     emit_msg(config_report + "\n", log_fhand)
-    emit_msg(f"Command used: {command_used}", log_fhand)
+    emit_msg("You can redo this analysis using the following command: + "\n", log_fhand)
+    emit_msg(f"CMMD: {command_used}\n", log_fhand)
 
     if "ERROR!" in config_report:
         raise RuntimeError(error_msg)
