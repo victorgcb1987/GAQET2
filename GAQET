@@ -107,13 +107,12 @@ def get_arguments():
     config_report = report_yaml_file(yaml)
     #subs whitespaces with _ in ID∫
     yaml["ID"] = "_".join(yaml["ID"].split())
-    input = Path(parser.yaml)
     binary = sys.argv.split[0]
-    command_used = f"{binary} -i {parser.yaml} -s {yaml["ID"]} "
-    command_used += f"-t {yaml["OMARK_taxid"]} "
-    command_used += f"-g {yaml["Assembly"]} "
-    command_used += f"-a {yaml["Annotation"]} "
-    command_used += f"-o {yaml["Basedir"]}"
+    command_used = f"{binary} -i {parser.yaml} -s {yaml['ID']} "
+    command_used += f"-t {yaml['OMARK_taxid']} "
+    command_used += f"-g {yaml['Assembly']} "
+    command_used += f"-a {yaml['Annotation']} "
+    command_used += f"-o {yaml['Basedir']}"
     return yaml, config_report, command_used
 
 
