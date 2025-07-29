@@ -33,7 +33,6 @@ requirements:
     - gffread
     - omark
     - tesorter
-    - interproscan =5.54_87.0
 
 about:
   home: https://github.com/victorgcb1987/GAQET2
