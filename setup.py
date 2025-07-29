@@ -7,8 +7,8 @@ setup(
         install_requires=[],
         entry_points={
                      'console_scripts': [
-                                         'GAQET=GAQET:main',
-                                         'GAQET_PLOT=GAQET_PLOT:main'
+                                         'GAQET=GAQET.gaqet:main',
+                                         'GAQET_PLOT=GAQET.gaqet_plot:main'
                                                                 ],},
         author='Victor Garcia-Carpintero Burgos',
         description='Genome Annotation Quality Evaluation Tool (GAQET)',
