@@ -24,6 +24,8 @@ requirements:
     - seaborn
     - pyyaml
     - blast >=2.12
+    - agat
+    - psauron 
     - diamond
     - busco
     - ete3
