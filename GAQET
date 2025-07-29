@@ -38,6 +38,7 @@ AVAILABLE_ANALYSIS = ["AGAT", "BUSCO", "PSAURON",
                       "DETENGA", "OMARK", "PROTHOMOLOGY"]
 VERSION = "v0.11.13"
 
+
 def parse_arguments():
     description = '''\t\t\t###############\n\t\t\t##   GAQET   ##\n\t\t\t###############\n
             Genome Annotation Quality Evaluation Tools\n
@@ -213,6 +214,7 @@ def main():
         emit_msg(BULLET_OK + status + "\n", log_fhand)
     emit_msg("Time consumed getting longest isoforms: {}s\n".format(round(end_time-start_time,2)), log_fhand) 
 
+
     #change annotation to work with the longest isoform
     arguments["Annotation_Longest"] = longest_isoform["outfile"]
 
@@ -320,6 +322,7 @@ def main():
                     emit_msg(BULLET_OK + status + "\n", log_fhand)
             emit_msg("Time consumed Running Protein homology: {}s\n".format(round(end_time-start_time, 2)), log_fhand)
 
+
     #Get results from analysis
     results = {}
     for analysis in arguments["Analysis"]:
@@ -341,6 +344,7 @@ def main():
         if analysis == "PROTHOMOLOGY":
             results.update(protein_homology_stats(protein_homology, results["Transcript_Models (N)"]))
 
+
     outfile = Path(arguments["Basedir"]) / "{}_GAQET.stats.tsv".format(arguments["ID"])
     with open(outfile, "w") as out_fhand:
         header = ["Species", "NCBI_TaxID", "Assembly_Version", "Annotation_Version"] + [stats for stats in results]
@@ -350,6 +354,7 @@ def main():
         out_fhand.write("{}\n".format("\t".join(row)))
     overall_end = time.time()
     emit_msg("GAQET finished successfully at {}, runtime: {} minutes".format(time.ctime(), str((overall_end-overall_start)/60)), log_fhand)
-            
+
+
 if __name__ == "__main__":
     main()

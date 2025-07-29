@@ -1,0 +1,42 @@
+package:
+  name: gaqet2
+  version: "2.0.0"
+
+source:
+  git_url: https://github.com/victorgcb1987/GAQET2.git
+  git_tag: main
+
+build:
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+
+requirements:
+  host:
+    - python ==3.10.0
+    - pip
+  run:
+    - python ==3.10.0
+    - biopython
+    - pandas
+    - numpy
+    - scipy
+    - matplotlib-base
+    - seaborn
+    - blast >=2.12
+    - diamond
+    - busco
+    - ete3
+    - dendropy
+    - augustus
+    - samtools
+    - seqtk
+    - gffread
+    - omark
+    - tesorter
+    - interproscan =5.54_87.0
+
+about:
+  home: https://github.com/victorgcb1987/GAQET2
+  summary: "Genome Annotation Quality Evaluation Tool (GAQET2)"
+  license: MIT
+  license_file: LICENSE
