@@ -4,6 +4,7 @@ setup(
         name='gaqet',
         version='1.11.13',
         packages=find_packages(),
+        include_package_data=True,
         install_requires=[],
         entry_points={
                      'console_scripts': [

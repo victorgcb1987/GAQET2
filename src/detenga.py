@@ -8,12 +8,13 @@ from pathlib import Path
 from src.detenga_parsers import (get_pfams_from_interpro_query, parse_TEsort_output, 
                          classify_pfams, create_summary, write_summary, get_pfams_from_db)
 
+from importlib.resources import files
 
 import subprocess
 
-REXDB_PFAMS = {"rexdb-plant": Path(os.path.dirname(os.path.realpath(__file__))).parent / "docs" / "Viridiplantae_2.0_pfams.txt",
-               "rexdb-metazoa": Path(os.path.dirname(os.path.realpath(__file__))).parent / "docs" / "Metazoa_3.1_pfams.txt",
-               "rexdb": Path(os.path.dirname(os.path.realpath(__file__))).parent / "docs" / "Combined_pfams.txt"}
+REXDB_PFAMS = {"rexdb-plant": Path(files('GAQET').joinpath("docs/Viridiplantae_2.0_pfams.txt")),
+               "rexdb-metazoa": Path(files('GAQET').joinpath("docs/Metazoa_3.1_pfams.txt")),
+               "rexdb": Path(files('GAQET').joinpath("docs/Combined_pfams.txt"))}
 
 
 EXCLUDE = ["AntiFam", "CDD", "Coils", "FunFam",

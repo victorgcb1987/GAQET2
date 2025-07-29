@@ -3,7 +3,10 @@ import ete3
 
 from pathlib import Path
 
-BUSCO_LINEAGES = Path(os.path.dirname(os.path.realpath(__file__))).parent / "docs" / "busco_lineages.txt"
+from importlib.resources import files
+
+
+BUSCO_LINEAGES = Path(files('GAQET').joinpath("docs/busco_lineages.txt"))
 BULLET_OK = "\t✓\t"
 BULLET_FIX = "\tERROR!\t"
 HEADER = "-"*5
