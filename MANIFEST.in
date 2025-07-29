@@ -1,2 +1,1 @@
-include docs/*
-recursive-include docs *
+recursive-include GAQET/docs *
