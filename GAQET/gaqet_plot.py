@@ -222,7 +222,7 @@ def main():
 
         # AGAT
         angle = bar_angles[metrics.index("Transcripts Flagged as coding sequences (PSAURON)")]
-        gene = row["Gene_Models"] / 400 * scaling_factor_agat
+        gene = row["Gene_Models"] / 300 * scaling_factor_agat
         ax.bar(angle + offset, gene, width=bar_width/len(df_metrics), bottom=bar_bottom,
         color="#2d99ba", edgecolor='black')
         ax.bar(angle + offset, cap_height, width=bar_width/len(df_metrics), bottom=bar_bottom + gene,
