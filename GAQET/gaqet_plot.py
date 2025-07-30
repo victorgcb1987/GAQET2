@@ -236,7 +236,7 @@ def main():
         color=sample_color, edgecolor='white', linewidth=1.5)
         
         angle = bar_angles[0]
-        gene = row["Both sides UTR' (N)"] / 300 * scaling_factor_agat
+        gene = row["Both sides UTR' (N)"] / 400 * scaling_factor_agat
         ax.bar(angle + offset, gene, width=bar_width/len(df_metrics), bottom=bar_bottom,
         color="#D21F22", edgecolor='black')
         ax.bar(angle + offset, cap_height, width=bar_width/len(df_metrics), bottom=bar_bottom + gene,
