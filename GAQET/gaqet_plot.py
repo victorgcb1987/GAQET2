@@ -11,7 +11,7 @@ from argparse import RawTextHelpFormatter
 from matplotlib.patches import Wedge, Rectangle
 from pathlib import Path
 
-VERSION = "v1.1.1"
+VERSION = "v1.1.2"
 
 
 def parse_arguments():
