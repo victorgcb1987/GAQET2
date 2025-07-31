@@ -11,7 +11,7 @@ from argparse import RawTextHelpFormatter
 from matplotlib.patches import Wedge, Rectangle
 from pathlib import Path
 
-VERSION = "v0.1.0"
+VERSION = "v1.1.1"
 
 
 def parse_arguments():
@@ -222,31 +222,35 @@ def main():
 
         # AGAT
         angle = bar_angles[metrics.index("Transcripts Flagged as coding sequences (PSAURON)")]
-        gene = row["Gene_Models"] / 300 * scaling_factor_agat
+        max_gene = df_metrics["Gene_Models"]
+        gene = (row["Gene_Models"] / max_gene) * 100
         ax.bar(angle + offset, gene, width=bar_width/len(df_metrics), bottom=bar_bottom,
         color="#2d99ba", edgecolor='black')
         ax.bar(angle + offset, cap_height, width=bar_width/len(df_metrics), bottom=bar_bottom + gene,
         color=sample_color, edgecolor='white', linewidth=1.5)
         
         angle = bar_angles[metrics.index("No start/stop codon errors (AGAT)")]
-        gene = row["Transcript_Models"] / 300 * scaling_factor_agat
-        ax.bar(angle + offset, gene, width=bar_width/len(df_metrics), bottom=bar_bottom,
+        max_transcripts = df_metrics["Transcript_Models"] 
+        transcripts = (row["Transcript_Models"] / max_transcripts) * 100
+        ax.bar(angle + offset, transcripts, width=bar_width/len(df_metrics), bottom=bar_bottom,
         color="#097c77", edgecolor='black')
-        ax.bar(angle + offset, cap_height, width=bar_width/len(df_metrics), bottom=bar_bottom + gene,
+        ax.bar(angle + offset, cap_height, width=bar_width/len(df_metrics), bottom=bar_bottom + transcripts,
         color=sample_color, edgecolor='white', linewidth=1.5)
         
         angle = bar_angles[0]
-        gene = row["Both sides UTR' (N)"] / 400 * scaling_factor_agat
-        ax.bar(angle + offset, gene, width=bar_width/len(df_metrics), bottom=bar_bottom,
+        max_utr = df_metrics["Both sides UTR' (N)"]
+        utr = (row["Both sides UTR' (N)"] / max_utr) * 100
+        ax.bar(angle + offset, utr, width=bar_width/len(df_metrics), bottom=bar_bottom,
         color="#D21F22", edgecolor='black')
-        ax.bar(angle + offset, cap_height, width=bar_width/len(df_metrics), bottom=bar_bottom + gene,
+        ax.bar(angle + offset, cap_height, width=bar_width/len(df_metrics), bottom=bar_bottom + utr,
         color=sample_color, edgecolor='white', linewidth=1.5)
         
         angle = bar_angles[1]
-        gene = row["Mean CDS Model Length (bp)"] / 25 * scaling_factor_agat
-        ax.bar(angle + offset, gene, width=bar_width/len(df_metrics), bottom=bar_bottom,
+        max_cds_value = df_metrics["Mean CDS Model Length (bp)"].max()
+        cds_length = (row["Mean CDS Model Length (bp)"] / max_cds_value) * 100
+        ax.bar(angle + offset, cds_length, width=bar_width/len(df_metrics), bottom=bar_bottom,
         color="#BDD21F", edgecolor='black')
-        ax.bar(angle + offset, cap_height, width=bar_width/len(df_metrics), bottom=bar_bottom + gene,
+        ax.bar(angle + offset, cap_height, width=bar_width/len(df_metrics), bottom=bar_bottom + cds_length,
         color=sample_color, edgecolor='white', linewidth=1.5)
         
 

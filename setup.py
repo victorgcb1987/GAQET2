@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
         name='gaqet',
-        version='1.11.13',
+        version='1.11.14',
         packages=find_packages(),
         include_package_data=True,
         install_requires=[],
