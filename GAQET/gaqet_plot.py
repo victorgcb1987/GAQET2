@@ -222,24 +222,25 @@ def main():
 
         # AGAT
         angle = bar_angles[metrics.index("Transcripts Flagged as coding sequences (PSAURON)")]
-        max_gene = df_metrics["Gene_Models"]
-        gene = (row["Gene_Models"] / max_gene) * 100
+        max_gene = df_metrics["Gene_Models"].max()
+        gene = row["Gene_Models"] * 70 / max_gene
+        print(gene)
         ax.bar(angle + offset, gene, width=bar_width/len(df_metrics), bottom=bar_bottom,
         color="#2d99ba", edgecolor='black')
         ax.bar(angle + offset, cap_height, width=bar_width/len(df_metrics), bottom=bar_bottom + gene,
         color=sample_color, edgecolor='white', linewidth=1.5)
         
         angle = bar_angles[metrics.index("No start/stop codon errors (AGAT)")]
-        max_transcripts = df_metrics["Transcript_Models"] 
-        transcripts = (row["Transcript_Models"] / max_transcripts) * 100
+        max_transcripts = df_metrics["Transcript_Models"].max()
+        transcripts = row["Transcript_Models"] * 70 / max_transcripts
         ax.bar(angle + offset, transcripts, width=bar_width/len(df_metrics), bottom=bar_bottom,
         color="#097c77", edgecolor='black')
         ax.bar(angle + offset, cap_height, width=bar_width/len(df_metrics), bottom=bar_bottom + transcripts,
         color=sample_color, edgecolor='white', linewidth=1.5)
         
         angle = bar_angles[0]
-        max_utr = df_metrics["Both sides UTR' (N)"]
-        utr = (row["Both sides UTR' (N)"] / max_utr) * 100
+        max_utr = df_metrics["Both sides UTR' (N)"].max()
+        utr = row["Both sides UTR' (N)"] * 70 / max_utr
         ax.bar(angle + offset, utr, width=bar_width/len(df_metrics), bottom=bar_bottom,
         color="#D21F22", edgecolor='black')
         ax.bar(angle + offset, cap_height, width=bar_width/len(df_metrics), bottom=bar_bottom + utr,
@@ -247,7 +248,7 @@ def main():
         
         angle = bar_angles[1]
         max_cds_value = df_metrics["Mean CDS Model Length (bp)"].max()
-        cds_length = (row["Mean CDS Model Length (bp)"] / max_cds_value) * 100
+        cds_length = row["Mean CDS Model Length (bp)"] * 70 / max_cds_value
         ax.bar(angle + offset, cds_length, width=bar_width/len(df_metrics), bottom=bar_bottom,
         color="#BDD21F", edgecolor='black')
         ax.bar(angle + offset, cap_height, width=bar_width/len(df_metrics), bottom=bar_bottom + cds_length,
