@@ -11,7 +11,7 @@ from argparse import RawTextHelpFormatter
 from matplotlib.patches import Wedge, Rectangle
 from pathlib import Path
 
-VERSION = "v1.1.2"
+VERSION = "v1.2.2"
 
 
 def parse_arguments():
@@ -58,7 +58,7 @@ def area_polar_polygon(r_values, theta_values):
     return abs(area)
 
 def main():
-    sys.tracebacklimit = 0
+    sys.tracebacklimit = 1
     if '--version' in sys.argv or "-v" in sys.argv:
         print(VERSION)
         sys.exit(0)
@@ -74,6 +74,8 @@ def main():
         if match:
             label = match.group(1)
             df[f"BUSCO_C_{label}"] = df[col].str.extract(r"C:([\d.]+)").astype(float)
+            df[f"BUSCO_S_{label}"] = df[col].str.extract(r"S:([\d.]+)").astype(float)
+            df[f"BUSCO_D_{label}"] = df[col].str.extract(r"D:([\d.]+)").astype(float)
             df[f"BUSCO_F_{label}"] = df[col].str.extract(r"F:([\d.]+)").astype(float)
             df[f"BUSCO_M_{label}"] = df[col].str.extract(r"M:([\d.]+)").astype(float)
             busco_types.append(label)
@@ -106,7 +108,7 @@ def main():
     metrics = (
         proteins_with_cols +
         ["Proteins fitting their Taxonomic rank (OMARK)"] +
-        [f"BUSCO_C_{bt}" for bt in busco_types] +
+        [f"BUSCO_C_{bt}" for bt in busco_types] + 
         [
             "Proteins with functional domains (DeTEnGA)",
             "Transcripts Flagged as coding sequences (PSAURON)",
@@ -142,12 +144,14 @@ def main():
         "Species",
         "DETENGA_PcpM0", "DETENGA_PteMte",
         "Gene_Models", "Transcript_Models",
-        "OMARK_S", "OMARK_D", "OMARK_M", "Both sides UTR' (N)",
-        "Mean CDS Model Length (bp)"
+        "OMARK_S", "OMARK_D", "OMARK_M",
+        "Both sides UTR' (N)",
+        "Mean CDS Model Length (bp)" 
     ] + metrics
     for bt in busco_types:
-        columns_needed += [f"BUSCO_F_{bt}", f"BUSCO_M_{bt}"]
+        columns_needed += [f"BUSCO_S_{bt}", f"BUSCO_D_{bt}", f"BUSCO_F_{bt}", f"BUSCO_M_{bt}"]
     df_metrics = df[columns_needed].copy()
+    
 
     ## Annotation Colors
     annot_colors = {
@@ -162,22 +166,42 @@ def main():
     angles = np.linspace(0, 2 * np.pi, 8, endpoint=False).tolist()
     angles_closed = angles + [angles[0]]
     bar_angles = np.linspace(0, 2 * np.pi, 8, endpoint=False)
-    if len(df) < 6:
-        bar_width = 0.12
-    else:
-        bar_width = 2 * np.pi / len(df_metrics) * 0.7
+
+    bar_width = 0.7
+
     bar_bottom = 105
-    cap_height = 8
+    cap_height = 6
     outer_radius = 102
     inner_radius = 100
-    scaling_factor_agat = 0.4
 
 
     fig, ax = plt.subplots(figsize=(26, 20), subplot_kw=dict(polar=True))
     fig.subplots_adjust(left=0.20)
     ax.set_ylim(0, 220)
 
+    separator_width = 0.01
+    separator_color = 'black'
+    n_columns = len(df_metrics)
+
+    # Calcula el desplazamiento angular entre columnas
+    angle_step = 2 * np.pi / len(bar_angles)
+    half_step = angle_step / 2
+
+    for angle in bar_angles:
+        # Desplaza la barra separadora a la mitad entre columnas
+        sep_angle = angle + half_step
+        ax.bar(sep_angle, ax.get_ylim()[1], width=separator_width, bottom=bar_bottom,
+            color=separator_color, alpha=0.4, zorder=0)
+
     ## Adding columns
+    # Sort columns by area
+    df_metrics["__Area__"] = df_metrics.apply(
+    lambda row: area_polar_polygon(row[metrics].tolist() + [row[metrics].tolist()[0]], angles_closed),
+    axis=1
+    )
+
+
+    df_metrics = df_metrics.sort_values(by="__Area__", ascending=True).reset_index(drop=True)
 
     for i, row in df_metrics.iterrows():
         values = row[metrics].tolist()
@@ -193,67 +217,88 @@ def main():
         for label in busco_types:
             metric_key = f"BUSCO_C_{label}"
             angle = bar_angles[metrics.index(metric_key)]
-            c = row[f"BUSCO_C_{label}"] * 0.6
-            f = row[f"BUSCO_F_{label}"] * 0.6
-            m = row[f"BUSCO_M_{label}"] * 0.6
-            height = c + f + m
-            ax.bar(angle + offset, c, width=bar_width/len(df_metrics), bottom=bar_bottom, color="#4f83c4", edgecolor='black')
-            ax.bar(angle + offset, f, width=bar_width/len(df_metrics), bottom=bar_bottom + c, color="#c9d380", edgecolor='black')
-            ax.bar(angle + offset, m, width=bar_width/len(df_metrics), bottom=bar_bottom + c + f, color="#c0564b", edgecolor='black')
-            ax.bar(angle + offset, cap_height, width=bar_width/len(df_metrics), bottom=bar_bottom + height, color=sample_color, edgecolor='white', linewidth=1.5)
+            s = row[f"BUSCO_S_{label}"] * 0.5
+            d = row[f"BUSCO_D_{label}"] * 0.5
+            f = row[f"BUSCO_F_{label}"] * 0.5
+            m = row[f"BUSCO_M_{label}"] * 0.5
+            height = s + d + f + m
+            ax.bar(angle + offset, s, width=bar_width/len(df_metrics), bottom=bar_bottom, color="#4481cc", edgecolor='black')
+            ax.bar(angle + offset, d, width=bar_width/len(df_metrics), bottom=bar_bottom + s, color="#91b8e8", edgecolor='black')
+            ax.bar(angle + offset, f, width=bar_width/len(df_metrics), bottom=bar_bottom + s + d, color="#c9d380", edgecolor='black')
+            ax.bar(angle + offset, m, width=bar_width/len(df_metrics), bottom=bar_bottom + s + d + f, color="#c0564b", edgecolor='black')
+            tip_radius = bar_bottom + height + 3 + cap_height / 2
+            ax.scatter([angle + offset], [tip_radius],
+                        color=sample_color, edgecolors='white',
+                        s=400, zorder=10)
+
 
         # OMARK
         angle = bar_angles[metrics.index("Proteins fitting their Taxonomic rank (OMARK)")]
-        s = row["OMARK_S"] * 0.6
-        d = row["OMARK_D"] * 0.6
-        m = row["OMARK_M"] * 0.6
-        height = s + d + m
+        s = row["OMARK_S"] * 0.5
+        d = row["OMARK_D"] * 0.5
+        m = row["OMARK_M"] * 0.5
+        height = s + d + m 
         ax.bar(angle + offset, s, width=bar_width/len(df_metrics), bottom=bar_bottom, color="#47CE0D", edgecolor='black')
         ax.bar(angle + offset, d, width=bar_width/len(df_metrics), bottom=bar_bottom + s, color="#4F9B53D7", edgecolor='black')
         ax.bar(angle + offset, m, width=bar_width/len(df_metrics), bottom=bar_bottom + s + d, color="#27C6A9", edgecolor='black')
-        ax.bar(angle + offset, cap_height, width=bar_width/len(df_metrics), bottom=bar_bottom + height, color=sample_color, edgecolor='white', linewidth=1.5)
+        tip_radius = bar_bottom + height + 3 + cap_height / 2
+        ax.scatter([angle + offset], [tip_radius],
+           color=sample_color, edgecolors='white',
+           s=400, zorder=10)
 
         # DeTEnGA
         angle = bar_angles[metrics.index("Proteins with functional domains (DeTEnGA)")]
-        ptemte = row["DETENGA_PteMte"] * 0.6
-        height = ptemte
+        ptemte = row["DETENGA_PteMte"]
+        height = 50
         ax.bar(angle + offset, ptemte, width=bar_width/len(df_metrics), bottom=bar_bottom, color="#eba434", edgecolor='black')
-        ax.bar(angle + offset, cap_height, width=bar_width/len(df_metrics), bottom=bar_bottom + height, color=sample_color, edgecolor='white', linewidth=1.5)
+        tip_radius = bar_bottom + height + 3 + cap_height / 2
+        ax.scatter([angle + offset], [tip_radius],
+           color=sample_color, edgecolors='white',
+           s=400, zorder=10)
 
         # AGAT
         angle = bar_angles[metrics.index("Transcripts Flagged as coding sequences (PSAURON)")]
         max_gene = df_metrics["Gene_Models"].max()
-        gene = row["Gene_Models"] * 70 / max_gene
-        print(gene)
+        gene = row["Gene_Models"] * 50 / max_gene
+        height = 50
         ax.bar(angle + offset, gene, width=bar_width/len(df_metrics), bottom=bar_bottom,
         color="#2d99ba", edgecolor='black')
-        ax.bar(angle + offset, cap_height, width=bar_width/len(df_metrics), bottom=bar_bottom + gene,
-        color=sample_color, edgecolor='white', linewidth=1.5)
-        
+        tip_radius = bar_bottom + height + 3 + cap_height / 2
+        ax.scatter([angle + offset], [tip_radius],
+                        color=sample_color, edgecolors='white',
+                        s=400, zorder=10)
+
+
         angle = bar_angles[metrics.index("No start/stop codon errors (AGAT)")]
         max_transcripts = df_metrics["Transcript_Models"].max()
-        transcripts = row["Transcript_Models"] * 70 / max_transcripts
+        transcripts = row["Transcript_Models"] * 50 / max_transcripts
         ax.bar(angle + offset, transcripts, width=bar_width/len(df_metrics), bottom=bar_bottom,
         color="#097c77", edgecolor='black')
-        ax.bar(angle + offset, cap_height, width=bar_width/len(df_metrics), bottom=bar_bottom + transcripts,
-        color=sample_color, edgecolor='white', linewidth=1.5)
-        
+        tip_radius = bar_bottom + height + 3 + cap_height / 2
+        ax.scatter([angle + offset], [tip_radius],
+                        color=sample_color, edgecolors='white',
+                        s=400, zorder=10)
+
         angle = bar_angles[0]
         max_utr = df_metrics["Both sides UTR' (N)"].max()
-        utr = row["Both sides UTR' (N)"] * 70 / max_utr
+        utr = row["Both sides UTR' (N)"] * 50 / max_utr
         ax.bar(angle + offset, utr, width=bar_width/len(df_metrics), bottom=bar_bottom,
         color="#D21F22", edgecolor='black')
-        ax.bar(angle + offset, cap_height, width=bar_width/len(df_metrics), bottom=bar_bottom + utr,
-        color=sample_color, edgecolor='white', linewidth=1.5)
-        
+        tip_radius = bar_bottom + height + 3 + cap_height / 2
+        ax.scatter([angle + offset], [tip_radius],
+                        color=sample_color, edgecolors='white',
+                        s=400, zorder=10)
+
         angle = bar_angles[1]
         max_cds_value = df_metrics["Mean CDS Model Length (bp)"].max()
-        cds_length = row["Mean CDS Model Length (bp)"] * 70 / max_cds_value
+        cds_length = row["Mean CDS Model Length (bp)"] * 50 / max_cds_value
         ax.bar(angle + offset, cds_length, width=bar_width/len(df_metrics), bottom=bar_bottom,
         color="#BDD21F", edgecolor='black')
-        ax.bar(angle + offset, cap_height, width=bar_width/len(df_metrics), bottom=bar_bottom + cds_length,
-        color=sample_color, edgecolor='white', linewidth=1.5)
-        
+        tip_radius = bar_bottom + height + 3 + cap_height / 2
+        ax.scatter([angle + offset], [tip_radius],
+                        color=sample_color, edgecolors='white',
+                        s=400, zorder=10)
+
 
     ## spider plot legend
     ring = Wedge((0, 0), outer_radius, 0, 360, width=outer_radius - inner_radius,
@@ -269,7 +314,8 @@ def main():
 
     # Columns legend
     metric_handles = [
-        Rectangle((0,0),1,1,facecolor="#4f83c4", edgecolor='black', label='BUSCO Complete (%)'),
+        Rectangle((0,0),1,1,facecolor="#4481cc", edgecolor='black', label='BUSCO Complete, Single (%)'),
+        Rectangle((0,0),1,1,facecolor="#91b8e8", edgecolor='black', label='BUSCO Complete, Duplicated(%)'),
         Rectangle((0,0),1,1,facecolor="#c9d380", edgecolor='black', label='BUSCO Fragmented (%)'),
         Rectangle((0,0),1,1,facecolor="#c0564b", edgecolor='black', label='BUSCO Missing (%)'),
         Rectangle((0,0),1,1,facecolor="#e29c2d", edgecolor='black', label='DeTEnGA PteMte (%)'),
@@ -289,11 +335,15 @@ def main():
         area_map[row["Species"]] = area
 
     # Anot legends
+    reverse_df_metrics = df_metrics.sort_values(by="__Area__", ascending=False).reset_index(drop=True)
+
     annotation_handles = [
-        Rectangle((0,0),1,1, color=annot_colors[species], lw=2,
-            label=f"{species} (Area: {area_map[species]:.0f})")
-        for species in df_metrics["Species"]
-    ]
+    plt.Line2D([0], [0], marker='o', linestyle='None',
+               markerfacecolor=annot_colors[species],
+               markeredgecolor='black',
+               markersize=15,
+               label=f"{species} (Area: {area_map[species]:.0f})")
+    for species in reverse_df_metrics["Species"]]
     legend1 = ax.legend(handles=metric_handles, title="Metrics", loc='center left',
                         bbox_to_anchor=(1.20, 0.75), fontsize=24, title_fontsize=26, frameon=False)
     legend2 = ax.legend(handles=annotation_handles, title="Annotations", loc='center left',
@@ -308,6 +358,7 @@ def main():
         values_closed = values + [values[0]]
         area = area_polar_polygon(values_closed, angles_closed)
         areas.append(area)
+
 
     # Circle proportions
     area_total = sum(areas)
