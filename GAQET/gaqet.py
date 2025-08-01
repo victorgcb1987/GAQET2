@@ -36,7 +36,7 @@ BULLET_FIX = "\tERROR!\t"
 HEADER = "-"*5
 AVAILABLE_ANALYSIS = ["AGAT", "BUSCO", "PSAURON",
                       "DETENGA", "OMARK", "PROTHOMOLOGY"]
-VERSION = "v0.11.15"
+VERSION = "v1.11.15"
 
 
 def parse_arguments():

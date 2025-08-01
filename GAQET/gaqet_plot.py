@@ -11,7 +11,7 @@ from argparse import RawTextHelpFormatter
 from matplotlib.patches import Wedge, Rectangle
 from pathlib import Path
 
-VERSION = "v1.2.2"
+VERSION = "v1.3.2"
 
 
 def parse_arguments():
@@ -122,21 +122,21 @@ def main():
     for metric in metrics:
         if "BUSCO" in metric:
             taxon = metric.split("_")[-2]
-            metric = f"{taxon.capitalize()} Completness (BUSCO)"
+            metric = f"{taxon.capitalize()} \nCompletness \n(BUSCO)"
         if "Hits" in metric:
-            metric = metric.replace("ProteinsWith", "").replace("Hits", "").replace("(%)", "") + "\nHomology Hits (DIAMOND)"
-        if "BUSCO" in metric:
-            metric = metric.split()
-            metric = metric[0] + "\n" + " ".join(metric[1:])
+            metric = metric.replace("ProteinsWith", "").replace("Hits", "").replace("(%)", "") + "\nHomology Hits" + "\n(DIAMOND)"
         if "(DeTEnGA)" in metric:
             metric = metric.split()
-            metric = " ".join(metric[0:2]) + "\n" + " ".join(metric[2:])
+            metric = " ".join(metric[0:2]) + "\n" + " ".join(metric[2:-1]) +"\n" + metric[-1]
         if "PSAURON" in metric:
             metric = metric.split()
-            metric = " ".join(metric[0:2]) + "\n" + " ".join(metric[2:])
+            metric = " ".join(metric[0:2]) + "\n" + " ".join(metric[2:-1]) + "\n" + metric[-1]
         if "OMARK" in metric:
             metric = metric.split()
-            metric = " ".join(metric[0:3]) + "\n" + " ".join(metric[2:])
+            metric = " ".join(metric[0:3]) + "\n" + " ".join(metric[3:-1]) + "\n" + metric[-1]
+        if "AGAT" in metric:
+            metric = metric.split()
+            metric = " ".join(metric[0:2]) + "\n" + " ".join(metric[2:-1]) + "\n" + metric[-1]
         metrics_labels.append(metric)
 
     # Metrics for columns
@@ -163,9 +163,15 @@ def main():
 
     ## Ring Definition
 
-    angles = np.linspace(0, 2 * np.pi, 8, endpoint=False).tolist()
+    n_metrics = len(metrics)
+    angle_step = 2 * np.pi / n_metrics
+
+    # Ángulos de las columnas (centro de cada barra)
+    bar_angles = np.linspace(0, 2 * np.pi, n_metrics, endpoint=False)
+
+    # Ángulos del radarplot y etiquetas (entre columnas)
+    angles = (bar_angles + angle_step / 2).tolist()
     angles_closed = angles + [angles[0]]
-    bar_angles = np.linspace(0, 2 * np.pi, 8, endpoint=False)
 
     bar_width = 0.7
 
@@ -187,11 +193,11 @@ def main():
     angle_step = 2 * np.pi / len(bar_angles)
     half_step = angle_step / 2
 
-    for angle in bar_angles:
-        # Desplaza la barra separadora a la mitad entre columnas
-        sep_angle = angle + half_step
-        ax.bar(sep_angle, ax.get_ylim()[1], width=separator_width, bottom=bar_bottom,
-            color=separator_color, alpha=0.4, zorder=0)
+    # for angle in bar_angles:
+    #     # Desplaza la barra separadora a la mitad entre columnas
+    #     sep_angle = angle + half_step
+    #     ax.bar(sep_angle, ax.get_ylim()[1], width=separator_width, bottom=bar_bottom,
+    #         color=separator_color, alpha=0.4, zorder=0)
 
     ## Adding columns
     # Sort columns by area
@@ -307,9 +313,28 @@ def main():
     ax.set_yticks([20, 40, 60, 80, 100])
     ax.set_yticklabels([f"{lvl}%" for lvl in [20, 40, 60, 80, 100]], fontsize=10)
     ax.yaxis.grid(True, linestyle='dotted', linewidth=0.8, color='gray')
-    ax.set_xticks(bar_angles)
-    ax.set_xticklabels(metrics_labels, fontsize=24)
+    ax.set_xticks(angles)
+    ax.set_xticklabels(metrics_labels, fontsize=24, fontweight="bold")
     ax.spines['polar'].set_visible(False)
+
+    radio_texto = bar_bottom + 100  # distancia radial por encima de las columnas
+
+    
+    col_names = ["UTR", "CDS", "OMArk"] + [f"{taxon.split('_')[0].capitalize()}\nBUSCO" for taxon in busco_types] + ["Transposons", "Gene Models", "Transcripts models"]
+    for angulo, etiqueta in zip(bar_angles, col_names):
+        ax.text(
+            angulo,                           # posición angular (alineado con cada columna)
+            radio_texto,                      # radio: más alejado del centro
+            etiqueta,       # solo la primera línea del texto
+            fontsize=20,
+            ha='center',
+            va='center',
+            rotation=0,
+            rotation_mode=None,
+            color='black',
+            clip_on=False,
+            zorder=20
+    )
 
 
     # Columns legend
