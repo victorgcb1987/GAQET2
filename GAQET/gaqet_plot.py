@@ -340,7 +340,7 @@ def main():
     # Columns legend
     metric_handles = [
         Rectangle((0,0),1,1,facecolor="#4481cc", edgecolor='black', label='BUSCO Complete, Single (%)'),
-        Rectangle((0,0),1,1,facecolor="#91b8e8", edgecolor='black', label='BUSCO Complete, Duplicated(%)'),
+        Rectangle((0,0),1,1,facecolor="#91b8e8", edgecolor='black', label='BUSCO Complete, Duplicated (%)'),
         Rectangle((0,0),1,1,facecolor="#c9d380", edgecolor='black', label='BUSCO Fragmented (%)'),
         Rectangle((0,0),1,1,facecolor="#c0564b", edgecolor='black', label='BUSCO Missing (%)'),
         Rectangle((0,0),1,1,facecolor="#e29c2d", edgecolor='black', label='DeTEnGA PteMte (%)'),
