@@ -11,8 +11,8 @@ from argparse import RawTextHelpFormatter
 from matplotlib.patches import Wedge, Rectangle
 from pathlib import Path
 
-VERSION = "v1.3.2"
 
+VERSION = "v1.3.2"
 
 def parse_arguments():
     description = '''\t\t\t#################\n\t\t\t## GAQET  PLOT ##\n\t\t\t#################\n
@@ -344,9 +344,9 @@ def main():
         Rectangle((0,0),1,1,facecolor="#c9d380", edgecolor='black', label='BUSCO Fragmented (%)'),
         Rectangle((0,0),1,1,facecolor="#c0564b", edgecolor='black', label='BUSCO Missing (%)'),
         Rectangle((0,0),1,1,facecolor="#e29c2d", edgecolor='black', label='DeTEnGA PteMte (%)'),
-        Rectangle((0,0),1,1,facecolor='#60ba66', edgecolor='black', label='OMARK Single (%)'),
-        Rectangle((0,0),1,1,facecolor="#1c221c", edgecolor='black', label='OMARK Duplicated (%)'),
-        Rectangle((0,0),1,1,facecolor='#c8eac7', edgecolor='black', label='OMARK Missing (%)'),
+        Rectangle((0,0),1,1,facecolor='#47CE0D', edgecolor='black', label='OMARK Single (%)'),
+        Rectangle((0,0),1,1,facecolor="#4F9B53D7", edgecolor='black', label='OMARK Duplicated (%)'),
+        Rectangle((0,0),1,1,facecolor='#27C6A9', edgecolor='black', label='OMARK Missing (%)'),
         Rectangle((0,0),1,1,facecolor="#2d99ba", edgecolor='black', label='AGAT Gene models (N)'),
         Rectangle((0,0),1,1,facecolor="#097c77", edgecolor='black', label='AGAT Transcript models (N)'),
         Rectangle((0,0),1,1,facecolor="#D21F22", edgecolor='black', label="AGAT Both sides UTR' (N)"),
