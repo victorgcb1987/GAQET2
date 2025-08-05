@@ -58,7 +58,3 @@ PF13842 DDE_Tnp_1-like zinc finger
 PF13961 Domain of unknown function (DUF4219)
 PF18701 Family of unknown function (DUF5641)
 PF23309 Domain of unknown function (DUF7083)
-
-
-
-
