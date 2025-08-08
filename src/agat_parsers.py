@@ -121,6 +121,7 @@ def generate_additional_features_reports(features, outdir):
             for line in fhand:
                 if line.strip():
                     value = line.rstrip().split()[-1]
+                    print(line, value)
                 if ":" in line:
                     break
                 elif "Number of gene" in line:
