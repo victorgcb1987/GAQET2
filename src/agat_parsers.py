@@ -135,7 +135,7 @@ def generate_additional_features_reports(features, outdir):
                     metrics["Single exon gene models (N)"] = value
                 elif f"mean exons per {feature}" in line:
                     metrics["Average exons per transcript (N)"] = value 
-            with open(outdir / f"{feature}.metrics.tsv") as out_fhand:
+            with open(outdir / f"{feature}.metrics.tsv", "w") as out_fhand:
                 out_fhand.write(f"Feature\t{feature}\n")
                 for metric, value in metrics.items():
                     out_fhand.write(f"{metric}\t{value}\n")
