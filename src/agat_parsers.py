@@ -113,32 +113,31 @@ def parse_agat_premature(agat_results):
 
 
 def generate_additional_features_reports(features, outdir):
+    translations = {"lncRNA": "lnc_rna", "miRNA": "mirna",
+                    "rRNA": "rrna", "tRNA": "trna"}
     for feature, results in features.items():
         metrics = {"Gene models (N)": "NA", "Average Gene length (bp)": "NA",
                    "Transcript models (N)": "NA", "Exons (N)": "NA", 
                    "Average exons per transcript (N)": "NA", "Single exon gene models (N)": "NA"}
         with open(results["outfile"]) as fhand:
+            translated_feature = translations[feature]
             for line in fhand:
                 if line.strip():
                     value = line.rstrip().split()[-1]
                 if ":" in line:
                     break
-                if feature == "lncRNA":
-                    feature = "lnc_rna"
                 elif "Number of gene" in line:
                     metrics["Gene models (N)"] = value
                 elif "mean gene length (bp)" in line:
                     metrics["Average Gene length (bp)"] = value
-                elif f"Number of {feature}" in line:
+                elif f"Number of {translated_feature}" in line:
                     metrics["Transcript models (N)"] = value
                 elif "Number of exon" in line:
                     metrics["Exons (N)"] = value
-                elif f"Number of single exon {feature}" in line:
+                elif f"Number of single exon {translated_feature}" in line:
                     metrics["Single exon gene models (N)"] = value
-                elif f"mean exons per {feature}" in line:
+                elif f"mean exons per {translated_feature}" in line:
                     metrics["Average exons per transcript (N)"] = value 
-            if feature == "lnc_rna":
-                feature = "lncRNA"
             with open(outdir / f"{feature}.metrics.tsv", "w") as out_fhand:
                 out_fhand.write(f"Feature\t{feature}\n")
                 for metric, value in metrics.items():
