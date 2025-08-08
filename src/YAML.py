@@ -66,13 +66,10 @@ def check_busco_lineages(yaml):
     return errors
 
 
-def check_available_analysis(yaml, reviewer=False):
+def check_available_analysis(yaml):
     errors = []
-    if not reviewer:
-        available_analysis = ["AGAT", "BUSCO", "PSAURON",
+    available_analysis = ["AGAT", "BUSCO", "PSAURON",
                               "DETENGA", "OMARK", "PROTHOMOLOGY"]
-    else:
-        available_analysis = ["AGAT"]
     if not yaml["Analysis"]:
         return [BULLET_FIX + "No analysis found in YAML config file"]
     else:
@@ -185,5 +182,4 @@ def report_yaml_reviewer_file(yaml):
     report += [HEADER + "Checking if all required inputs are present" + HEADER]
     report += check_required_reviewer_inputs(yaml)
     report += [HEADER + "Checking if all analysis are valid" + HEADER]
-    report += check_available_analysis(yaml, reviewer=True)
     return "\n".join(report)
