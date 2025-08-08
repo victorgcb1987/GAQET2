@@ -158,6 +158,7 @@ def generate_reviewer_metrics(additional_metrics, arguments, outdir):
 
 
 def main():
+    print("XXXX")
     sys.tracebacklimit = 1
     if '--version' in sys.argv or "-v" in sys.argv:
         print(VERSION)
