@@ -30,6 +30,30 @@ def check_required_inputs(yaml):
         errors = [BULLET_OK + "All required inputs are present"]
     return errors
 
+def check_required_reviewer_inputs(yaml):
+    errors = []
+    required_inputs = ["Assembly", "Annotation"]
+    if "Species" not in yaml:
+        errors.append(BULLET_FIX + "Field {} is required".format("ID"))
+    elif not yaml["Species"]:
+        errors.append(BULLET_FIX + "Field {} is empty".format("ID"))
+    for input in required_inputs:
+        if input not in yaml:
+            errors.append(BULLET_FIX + "Field {} is required".format(input))
+        else:
+            path = Path(yaml[input])
+            if not path.is_file():
+                errors.append(BULLET_FIX + "Path for field {} doesn't exists: {}".format(input, str(path)))
+    if "Basedir" not in yaml:
+        errors.append(BULLET_FIX + "Field {} is required".format("Basedir"))
+    else:
+        path = Path(yaml[input])
+        if not path.is_dir():
+            errors.append(BULLET_FIX + "Path for field {} doesn't exists: {}".format(input, str(path)))
+    if len(errors) == 0:
+        errors = [BULLET_OK + "All required inputs are present"]
+    return errors
+
 
 def check_busco_lineages(yaml):
     errors = []
@@ -42,10 +66,13 @@ def check_busco_lineages(yaml):
     return errors
 
 
-def check_available_analysis(yaml):
+def check_available_analysis(yaml, reviewer=False):
     errors = []
-    available_analysis = ["AGAT", "BUSCO", "PSAURON",
-                          "DETENGA", "OMARK", "PROTHOMOLOGY"]
+    if not reviewer:
+        available_analysis = ["AGAT", "BUSCO", "PSAURON",
+                              "DETENGA", "OMARK", "PROTHOMOLOGY"]
+    else:
+        available_analysis = ["AGAT"]
     if not yaml["Analysis"]:
         return [BULLET_FIX + "No analysis found in YAML config file"]
     else:
@@ -150,4 +177,13 @@ def report_yaml_file(yaml):
         if "PROTHOMOLOGY" in yaml["Analysis"]:
             report += [HEADER + "Checking if protein databases exists" + HEADER]
             report += check_prothomology_dbs(yaml)
+    return "\n".join(report)
+
+
+def report_yaml_reviewer_file(yaml):
+    report = []
+    report += [HEADER + "Checking if all required inputs are present" + HEADER]
+    report += check_required_reviewer_inputs(yaml)
+    report += [HEADER + "Checking if all analysis are valid" + HEADER]
+    report += check_available_analysis(yaml, reviewer=True)
     return "\n".join(report)

@@ -110,3 +110,31 @@ def run_agat(config):
     report["AGAT incomplete CDS"] = {"command": cmd, "status": msg, 
                                      "outfile": incomplete_cds_outfile}
     return report
+
+
+def run_agat_reviewer(features, basedir):
+    report = {}
+    outdir = basedir / "AGAT_run"
+    if not outdir.exists():
+        outdir.mkdir(parents=True, exist_ok=True)
+    for feature, filepath in features.items():
+
+    #Running AGAT STATS
+        stats_outfile = outdir / "{}.01_agat_stats.txt".format(feature)
+        cmd = "agat_sp_statistics.pl --gff {} -o {}".format(filepath, stats_outfile)
+
+        if stats_outfile.is_file():
+            msg = f"AGAT stats for {feature} already done"
+
+        else:
+            run_ = subprocess.run(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.DEVNULL)
+            #Is process has gone well
+            if run_.returncode == 0:
+                msg = f"AGAT stats for {feature} run successfully"
+            #But if not
+            else:
+                msg = f"AGAT stats for {feature} Failed: \n {run_.stdout}"
+    
+        report[feature] = {"command": cmd, "status": msg, 
+                           "outfile": stats_outfile}
+    return report

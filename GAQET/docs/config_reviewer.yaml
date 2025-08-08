@@ -1,0 +1,10 @@
+Taxon:
+  - Species: ""
+  - Class: ""
+  - Order: ""
+  - NCBI_taxid: ""
+  - ToLID: ""
+Assembly: "/path/to/assembly.fasta"
+Annotation: "/path/to/annotation.gff"
+Repeats: "/path/to/repeats.tsv"
+Basedir: "/path/to/outdir"
