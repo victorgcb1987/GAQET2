@@ -121,7 +121,6 @@ def generate_additional_features_reports(features, outdir):
             for line in fhand:
                 if line.strip():
                     value = line.rstrip().split()[-1]
-                    print(line, value)
                 if ":" in line:
                     break
                 elif "Number of gene" in line:
@@ -129,7 +128,7 @@ def generate_additional_features_reports(features, outdir):
                 elif "mean gene length (bp)" in line:
                     metrics["Average Gene length (bp)"] = value
                 elif f"Number of {feature}" in line:
-                    metrics["Transcript models (N)": 0] = value
+                    metrics["Transcript models (N)"] = value
                 elif "Number of exon" in line:
                     metrics["Exons (N)"] = value
                 elif f"Number of single exon {feature}" in line:
