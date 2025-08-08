@@ -123,6 +123,8 @@ def generate_additional_features_reports(features, outdir):
                     value = line.rstrip().split()[-1]
                 if ":" in line:
                     break
+                if feature == "lncrna":
+                    feature = "lnc_rna"
                 elif "Number of gene" in line:
                     metrics["Gene models (N)"] = value
                 elif "mean gene length (bp)" in line:
