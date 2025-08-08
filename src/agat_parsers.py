@@ -128,7 +128,7 @@ def generate_additional_features_reports(features, outdir):
                 elif "mean gene length (bp)" in line:
                     metrics["Average Gene length (bp)"] = value
                 elif f"Number of {feature}" in line:
-                    metrics[ "Transcript models (N)": 0] = value
+                    metrics["Transcript models (N)": 0] = value
                 elif "Number of exon" in line:
                     metrics["Exons (N)"] = value
                 elif f"Number of single exon {feature}" in line:
