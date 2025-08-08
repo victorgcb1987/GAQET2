@@ -129,8 +129,8 @@ def emit_msg(string, log_fhand):
 
 def get_additional_features(basedir):
     additional_features = {"trna": "trna.gff", 
-                           "rRNA": "rRNA.gff",
-                           "miRNA": "miRNA.gff",
+                           "rRNA": "rrna.gff",
+                           "miRNA": "mirna.gff",
                            "lncRNA": "lnc_rna.gff",
                            }
     features_to_analyze = {}
