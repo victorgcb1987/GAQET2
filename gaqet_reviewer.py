@@ -172,12 +172,5 @@ def main():
     generate_additional_features_reports(additional_agat_reports, outdir)
 
 
-
-
-
-
-    pass
-
-
 if __name__ == "___main__":
     main()
