@@ -143,7 +143,7 @@ def get_additional_features(basedir):
     return features_to_analyze
 
 def generate_reviewer_metrics(additional_metrics, arguments, outdir):
-    with open(outdir / "Metadata.tsv") as out_fhand:
+    with open(outdir / "Metadata.tsv","w") as out_fhand:
         with open(arguments["Annotation"], "rb") as annotation_fhand:
             annotation_md5 = hashlib.file_digest(annotation_fhand, "sha256").hexdigest()
         with open(arguments["Assembly"], "rb") as assembly_fhand:
@@ -165,7 +165,7 @@ def main():
     arguments, config_report, command_used = get_arguments()
     basedir = Path(arguments["Basedir"])
     outdir = basedir / "REVIEWER"
-    general_metrics = glob(basedir/"*.GAQET.stats.tsv")[0]
+    general_metrics = next(basedir.glob("*.GAQET.stats.tsv"))
     generate_reviewer_metrics(general_metrics, arguments, outdir)
     additional_features = get_additional_features(basedir)
     additional_agat_reports = run_agat_reviewer(additional_features, basedir)
