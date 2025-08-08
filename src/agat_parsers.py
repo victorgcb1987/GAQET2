@@ -113,11 +113,11 @@ def parse_agat_premature(agat_results):
 
 
 def generate_additional_features_reports(features, outdir):
-    for feature, filepath in features.items():
+    for feature, results in features.items():
         metrics = {"Gene models (N)": "NA", "Average Gene length (bp)": "NA",
                    "Transcript models (N)": "NA", "Exons (N)": "NA", 
                    "Average exons per transcript (N)": "NA", "Single exon gene models (N)": "NA"}
-        with open(filepath) as fhand:
+        with open(results["outfile"]) as fhand:
             for line in fhand:
                 value = line.rstrip().split()[-1]
                 if ":" in line:
