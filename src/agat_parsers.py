@@ -114,6 +114,7 @@ def parse_agat_premature(agat_results):
 
 def generate_additional_features_reports(features, outdir):
     for feature, results in features.items():
+        print(feature)
         metrics = {"Gene models (N)": "NA", "Average Gene length (bp)": "NA",
                    "Transcript models (N)": "NA", "Exons (N)": "NA", 
                    "Average exons per transcript (N)": "NA", "Single exon gene models (N)": "NA"}
