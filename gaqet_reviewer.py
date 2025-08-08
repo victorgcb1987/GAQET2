@@ -165,6 +165,8 @@ def main():
     arguments, config_report, command_used = get_arguments()
     basedir = Path(arguments["Basedir"])
     outdir = basedir / "REVIEWER"
+    if not outdir.exists():
+        outdir.mkdir(parents=True, exist_ok=True)
     general_metrics = next(basedir.glob("*GAQET.stats.tsv"))
     generate_reviewer_metrics(general_metrics, arguments, outdir)
     additional_features = get_additional_features(basedir)
