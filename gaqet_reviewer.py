@@ -104,7 +104,7 @@ def get_arguments():
 
     config_report = report_yaml_reviewer_file(yaml)
     #subs whitespaces with _ in ID∫
-    yaml["ID"] = "_".join(yaml["ID"].split())
+    yaml["Species"] = "_".join(yaml["Species"].split())
     binary = sys.argv[0]
     command_used = f"{binary} -i {parser.yaml} -s {yaml['Species']} "
     command_used += f"-c {yaml['Class']} "
