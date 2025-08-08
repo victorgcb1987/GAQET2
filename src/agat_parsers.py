@@ -114,7 +114,6 @@ def parse_agat_premature(agat_results):
 
 def generate_additional_features_reports(features, outdir):
     for feature, results in features.items():
-        print(feature)
         metrics = {"Gene models (N)": "NA", "Average Gene length (bp)": "NA",
                    "Transcript models (N)": "NA", "Exons (N)": "NA", 
                    "Average exons per transcript (N)": "NA", "Single exon gene models (N)": "NA"}
@@ -124,7 +123,7 @@ def generate_additional_features_reports(features, outdir):
                     value = line.rstrip().split()[-1]
                 if ":" in line:
                     break
-                if feature == "lncrna":
+                if feature == "lncRNA":
                     feature = "lnc_rna"
                 elif "Number of gene" in line:
                     metrics["Gene models (N)"] = value
@@ -139,6 +138,8 @@ def generate_additional_features_reports(features, outdir):
                 elif f"mean exons per {feature}" in line:
                     metrics["Average exons per transcript (N)"] = value 
             with open(outdir / f"{feature}.metrics.tsv", "w") as out_fhand:
+                if feature == "lnc_rna":
+                    feature = "lncRNA"
                 out_fhand.write(f"Feature\t{feature}\n")
                 for metric, value in metrics.items():
                     out_fhand.write(f"{metric}\t{value}\n")
