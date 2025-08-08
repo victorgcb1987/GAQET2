@@ -119,7 +119,8 @@ def generate_additional_features_reports(features, outdir):
                    "Average exons per transcript (N)": "NA", "Single exon gene models (N)": "NA"}
         with open(results["outfile"]) as fhand:
             for line in fhand:
-                value = line.rstrip().split()[-1]
+                if line.strip():
+                    value = line.rstrip().split()[-1]
                 if ":" in line:
                     break
                 elif "Number of gene" in line:
