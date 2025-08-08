@@ -165,7 +165,7 @@ def main():
     arguments, config_report, command_used = get_arguments()
     basedir = Path(arguments["Basedir"])
     outdir = basedir / "REVIEWER"
-    general_metrics = glob("*.GAQET.stats.tsv")[0]
+    general_metrics = glob(basedir/"*.GAQET.stats.tsv")[0]
     generate_reviewer_metrics(general_metrics, arguments, outdir)
     additional_features = get_additional_features(basedir)
     additional_agat_reports = run_agat_reviewer(additional_features, basedir)
