@@ -100,8 +100,6 @@ def get_arguments():
     if parser.repeats:
         yaml["Repeats"] = parser.repeats
     
-    print(yaml)
-
     config_report = report_yaml_reviewer_file(yaml)
     #subs whitespaces with _ in ID∫
     yaml["Species"] = "_".join(yaml["Species"].split())
@@ -142,18 +140,28 @@ def get_additional_features(basedir):
             features_to_analyze[feature] = filepath
     return features_to_analyze
 
+
+def md5_of(path):
+    h = hashlib.md5()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(8192), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
 def generate_reviewer_metrics(additional_metrics, arguments, outdir):
     with open(outdir / "Metadata.tsv","w") as out_fhand:
-        with open(arguments["Annotation"], "rb") as annotation_fhand:
-            annotation_md5 = hashlib.file_digest(annotation_fhand, "sha256").hexdigest()
-        with open(arguments["Assembly"], "rb") as assembly_fhand:
-            assembly_md5 = hashlib.file_digest(assembly_fhand, "sha256").hexdigest()
+        annotation_md5 = md5_of(arguments["Annotation"])
+        assembly_md5 = md5_of(arguments["Assembly"])
         out_fhand.write(f"Species\t{arguments['Species']}\n")
         out_fhand.write(f"Class\t{arguments['Class']}\n")
         out_fhand.write(f"Order\t{arguments['Order']}\n")
         out_fhand.write(f"NCBI_taxid\t{arguments['NCBI_taxid']}\n")
         out_fhand.write(f"ToLID\t{arguments['ToLID']}\n")
-        out_fhand.write(f"Annotation_file\t{arguments['ToLID']}\n")
+        out_fhand.write(f"Assembly_file\t{Path(arguments['Assembly']).name}\n")
+        out_fhand.write(f"Assembly_md5\t{assembly_md5}\n")
+        out_fhand.write(f"Annotation_file\t{Path(arguments['Annotation']).name}\n")
+        out_fhand.write(f"Annotation_md5\t{annotation_md5}\n")
 
 
 
