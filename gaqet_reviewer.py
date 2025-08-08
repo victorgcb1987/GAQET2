@@ -7,7 +7,7 @@ from pathlib import Path
 from yaml import safe_load as load_yaml
 
 from src.agat import run_agat_reviewer
-from src.agat import generate_additional_features_reports
+from src.agat_parsers import generate_additional_features_reports
 from src.YAML import report_yaml_reviewer_file
 
 
