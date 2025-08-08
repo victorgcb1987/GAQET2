@@ -100,7 +100,7 @@ def get_arguments():
     if parser.repeats:
         yaml["Repeats"] = parser.repeats
     
-    
+    print(yaml)
 
     config_report = report_yaml_reviewer_file(yaml)
     #subs whitespaces with _ in ID∫
