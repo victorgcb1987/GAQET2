@@ -119,6 +119,7 @@ With the YAML file you can **run GAQET** as follows:
 ```bash
 GAQET --YAML {yaml_file}
 ```
+#### GAQET arguments
 Some YAML config file values can be override by using **GAQET arguments**:
 
 
@@ -132,6 +133,7 @@ Some YAML config file values can be override by using **GAQET arguments**:
 
 
 
+#### Command usage
 ```bash
 GAQET --YAML {yaml_file} -s {species} -g {assembly.fasta} -a annotation.gff -t {NBCI_taxid} -o {outdir}
 ```
