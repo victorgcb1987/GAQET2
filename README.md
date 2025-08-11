@@ -114,11 +114,6 @@ DETENGA_db: "rexdb-plant"
 | DETENGA_db | DeTEnGA database for interpro checks. Only needed if DETENGA is in Analysis    |
 
 
-With the YAML file you can **run GAQET** as follows:
-
-```bash
-GAQET --YAML {yaml_file}
-```
 #### GAQET arguments
 Some YAML config file values can be override by using **GAQET arguments**:
 
@@ -135,6 +130,13 @@ Everyone of this arguments **are optional**.
 
 
 #### Command usage
+
+With the YAML file you can **run GAQET** as follows:
+```bash
+GAQET --YAML {yaml_file}
+```
+You can override YAML parameter using the following optional commands. This is useful, for example when you want to reutilize things like databases in the YAML file but you want to change the name of the species or the NCBI taxid:
+
 ```bash
 GAQET --YAML {yaml_file} -s {species} -g {assembly.fasta} -a annotation.gff -t {NBCI_taxid} -o {outdir}
 ```
