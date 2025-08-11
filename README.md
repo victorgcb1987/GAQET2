@@ -23,6 +23,7 @@ GAQET2 is a Python-based tool designed to evaluate the quality of genome annotat
 - DeTEnGA == 1.0 (https://github.com/victorgcb1987/DeTEnGA). Already bundled with GAQET
 
 ## Installation
+### InterproScan
 **Interproscan**: we recommend using the github version instead of any conda installation (https://github.com/ebi-pf-team/interproscan-docs/blob/v5/docs/HowToDownload.rst)
 Then, add interproscan.sh to your PATH variable:
 
@@ -31,7 +32,7 @@ export PATH=$PATH:/path/to/interproscan.sh
 ```
 Even if you use the conda installation, **interproscan should be installed manually**. That's because conda installion doesn't have included the databases needed to run this program.
 
-### Manual installation (Not reccommended)
+### Manual installation (Not recommended)
 If you are feelling adventurous enough you can install GAQET manually, but we are not offering support for this kind of installation.
 
 First, clone this repository:
