@@ -23,35 +23,33 @@ GAQET2 is a Python-based tool designed to evaluate the quality of genome annotat
 - DeTEnGA == 1.0 (https://github.com/victorgcb1987/DeTEnGA). Already bundled with GAQET
 
 ## Installation
+**Interproscan**: we recommend using the github version instead of any conda installation (https://github.com/ebi-pf-team/interproscan-docs/blob/v5/docs/HowToDownload.rst)
+Then, add interproscan.sh to your PATH variable:
 
-Clone this repository:
+```bash
+export PATH=$PATH:/path/to/interproscan.sh
+```
+Even if you use the conda installation, **interproscan should be installed manually**. That's because conda installion doesn't have included the databases needed to run this program.
+
+### Manual installation (Not reccommended)
+If you are feelling adventurous enough you can install GAQET manually, but we are not offering support for this kind of installation.
+
+First, clone this repository:
 
 ```bash
 git clone https://github.com/victorgcb1987/GAQET2.git
 ```
+Then, install all the requierements shown in the requirements section. 
 
-Create a conda enviroment:
+Then, go to your installation directory and run 
 
 ```bash
-conda create -c bioconda -n GAQET agat
-conda activate GAQET
-conda install -c bioconda psauron
-conda install -c bioconda busco
-conda install -c bioconda gffread
-conda install -c bioconda tesorter
-conda install -c bioconda diamond
-conda install -c bioconda omark
-conda install -c bioconda busco
-conda install python==3.10
-pip install psauron
-pip install ete3
-pip install PyYAML
+python setup.py install
 ```
 
-**Interproscan**: we recommend using the github version instead of any conda installation (https://github.com/ebi-pf-team/interproscan-docs/blob/v5/docs/HowToDownload.rst)
-Then, add interproscan.sh to your PATH variable:
 
-`export PATH=$PATH:/path/to/interproscan.sh`
+
+
 
 ---
 
