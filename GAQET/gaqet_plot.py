@@ -12,7 +12,7 @@ from matplotlib.patches import Wedge, Rectangle
 from pathlib import Path
 
 
-VERSION = "v1.3.2"
+VERSION = "v1.3.3"
 
 def parse_arguments():
     description = '''\t\t\t#################\n\t\t\t## GAQET  PLOT ##\n\t\t\t#################\n
@@ -286,8 +286,7 @@ def main():
                         s=400, zorder=10)
 
         angle = bar_angles[0]
-        max_utr = df_metrics["Both sides UTR' (N)"].max()
-        utr = row["Both sides UTR' (N)"] * 50 / max_utr
+        utr = row["Both sides UTR' (N)"] * 50 / row["Transcript_Models"]
         ax.bar(angle + offset, utr, width=bar_width/len(df_metrics), bottom=bar_bottom,
         color="#D21F22", edgecolor='black')
         tip_radius = bar_bottom + height + 3 + cap_height / 2
@@ -320,7 +319,7 @@ def main():
     radio_texto = bar_bottom + 100  # distancia radial por encima de las columnas
 
     
-    col_names = ["UTR", "CDS", "OMArk"] + [f"{taxon.split('_')[0].capitalize()}\nBUSCO" for taxon in busco_types] + ["Transposons", "Gene Models", "Transcripts models"]
+    col_names = ["Transcripts with\nboth sides UTR", "Average CDS\nlength", "OMArk"] + [f"{taxon.split('_')[0].capitalize()}\nBUSCO" for taxon in busco_types] + ["Transposons", "Gene Models", "Transcripts models"]
     for angulo, etiqueta in zip(bar_angles, col_names):
         ax.text(
             angulo,                           # posición angular (alineado con cada columna)
@@ -349,7 +348,7 @@ def main():
         Rectangle((0,0),1,1,facecolor='#27C6A9', edgecolor='black', label='OMARK Missing (%)'),
         Rectangle((0,0),1,1,facecolor="#2d99ba", edgecolor='black', label='AGAT Gene models (N)'),
         Rectangle((0,0),1,1,facecolor="#097c77", edgecolor='black', label='AGAT Transcript models (N)'),
-        Rectangle((0,0),1,1,facecolor="#D21F22", edgecolor='black', label="AGAT Both sides UTR' (N)"),
+        Rectangle((0,0),1,1,facecolor="#D21F22", edgecolor='black', label="AGAT Both sides UTR' (%)"),
         Rectangle((0,0),1,1,facecolor="#BDD21F", edgecolor='black', label="AGAT Mean CDS Model Length (bp)")
     ]
     area_map = {}
