@@ -32,9 +32,6 @@ export PATH=$PATH:/path/to/interproscan.sh
 ```
 Even if you use the conda installation, **interproscan should be installed manually**. That's because conda installion doesn't have included the databases needed to run this program.
 
-
-
-
 ### Manual installation (Not recommended)
 If you are feelling adventurous enough you can install GAQET manually, but we are not offering support for this kind of installation.
 
@@ -51,6 +48,16 @@ Then, go to your installation directory and run
 python setup.py install
 ```
 
+### Conda installation (Strongly recommended)
+
+First, install **Interproscan** as shown using the link provided in the Interproscan section.
+Then, create a conda enviroment, activate it and install GAQET:
+
+```bash
+conda create -n GAQET
+conda activate GAQET
+conda install -c victorgcb gaqet
+```
 
 
 
