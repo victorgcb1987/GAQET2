@@ -126,7 +126,7 @@ Some YAML config file values can be override by using **GAQET arguments**:
 | --taxid, -t          | Override NCBI taxid                    |
 | --outbase, -o   | Override YAML outbase       |
 
-Everyone of this arguments **are optional**.
+Every one of this arguments **are optional**.
 
 
 #### Command usage
@@ -146,3 +146,5 @@ One way to reuse easily a YAML file is to add it to a env variable, for example 
 export YAML_PATH=/path/to/YAML/file
 GAQET --YAML YAML_PATH -s {species} -g {assembly.fasta} -a annotation.gff -t {NCBI_taxid} -o {outdir}
 ```
+
+#### GAQET benchmarking output
