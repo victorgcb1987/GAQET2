@@ -58,8 +58,12 @@ conda create -n GAQET
 conda activate GAQET
 conda install -c victorgcb gaqet
 ```
+you can check if GAQET is installed by running:
 
-
+```bash
+GAQET -v
+```
+If GAQET is properly installed, this command should show you the GAQET version.
 
 
 ---
