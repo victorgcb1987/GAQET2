@@ -69,7 +69,8 @@ If GAQET is properly installed, this command should show you the GAQET version.
 ---
 
 ## Usage
-
+### GAQET Benchmarking 
+#### YAML file
 GAQET uses as a primary input a **YAML** file as follows:
 ```yaml
 ID: "SpeciesName"
