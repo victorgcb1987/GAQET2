@@ -131,6 +131,7 @@ Some YAML config file values can be override by using **GAQET arguments**:
 | --taxid, -t          | Override NCBI taxid                    |
 | --outbase, -o   | Override YAML outbase       |
 
+Everyone of this arguments **are optional**.
 
 
 #### Command usage
