@@ -1,6 +1,6 @@
 # GAQET2 - Genome Annotation Quality Evaluation Tool
 
-GAQET2 is a Python-based tool designed to evaluate the quality of genome annotations. Using GFF and FASTA files, GAQET2 generates statistical reports to help identify common errors and artifacts in gene structural annotations.
+GAQET2 is a Python-based tool designed to evaluate the quality of genome annotations. Using GFF and FASTA files, GAQET2 generates statistical reports to help identify common errors and artifacts in structural gene annotations.
 
 
 ## Requirements
