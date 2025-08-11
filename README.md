@@ -152,7 +152,7 @@ The ouput directories should be similar to this one:
 
 
 outpudir:  
-  |----input_sequences/  
+    |----input_sequences/  
   |----AGAT_run/  
   |----BUSCOCompleteness_run/  
   |----DETENGA_run/  
