@@ -162,3 +162,5 @@ The ouput directories should be similar to this one:
  ├── 📄 GAQET.log.txt  
  ├── 📄 {species}_GAQET.stats.tsv  
 
+ Each of the ```*_run``` directories contains the output of each analysis run. the log.txt file contains things like run errors or time consumed running analysis. Al programs outputs are parsed and their results are stored in a tsv file, the ```{species}_GAQET.stats.tsv``` file.
+
