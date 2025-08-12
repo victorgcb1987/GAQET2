@@ -19,7 +19,8 @@
   - [OMArk Consistency metrics explanation](#omark-consistency-metrics-explanation)
   - [OMArk Completness metrics explanation](#omark-completness-metrics-explanation)
 - [GAQET PLOT](#gaqet-plot)
-  - [USAGE](#usage-1)
+  - [Usage](#usage-1)
+  - [Output figure and explanation](#output_figure_and_explanation)
 
 
 # GAQET2 - Genome Annotation Quality Evaluation Tool
@@ -271,11 +272,14 @@ The gene set is classified in hierarchical orthologous groups (**HOGs**). Each H
 
  # GAQET PLOT
  You can get an intuitive representation of the most important metrics describred before using GAQET PLOT.
- ## USAGE
+ ## Usage
 GAQET PLOT requires as input a TSV file as shown in [in the example included with this repository](GAQET/docs/Arabidopsis_seed_stats.tsv). Then you can run GAQET_PLOT as:  
 ```bash
 GAQET_PLOT -i {input_tsv} -o output_figure.{extension}
 ```
 Figure format is defined by the extension. By default is ```jpeg```
+
+## Output figure and explanation
+Running this script should generate a figure similar to this one:  
  
  
