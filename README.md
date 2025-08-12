@@ -151,13 +151,14 @@ GAQET --YAML YAML_PATH -s {species} -g {assembly.fasta} -a annotation.gff -t {NC
 The ouput directories should be similar to this one:
 
 
-outpudir:  
-&nbsp;&nbsp;&nbsp;|----input_sequences/  
-&nbsp;&nbsp;&nbsp;|----AGAT_run/  
-&nbsp;&nbsp;&nbsp;|----BUSCOCompleteness_run/  
-&nbsp;&nbsp;&nbsp;|----DETENGA_run/  
-&nbsp;&nbsp;&nbsp;|----DIAMOND_run/  
-&nbsp;&nbsp;&nbsp;|----OMARK_run/  
-&nbsp;&nbsp;&nbsp;|----PSAURON_run/  
-&nbsp;&nbsp;&nbsp;|----GAQET.log.txt  
-&nbsp;&nbsp;&nbsp;|----{species}_GAQET.stats.tsv  
+📂 outpudir
+ ├── 📂 input_sequences
+ ├── 📂 AGAT_run
+ ├── 📂 BUSCOCompleteness_run
+ ├── 📂 DETENGA_run
+ ├── 📂 DIAMOND_run
+ ├── 📂 OMARK_run
+ ├── 📂 PSAURON_run
+ ├── 📄 GAQET.log.txt
+ └── 📄 {species}_GAQET.stats.tsv
+
