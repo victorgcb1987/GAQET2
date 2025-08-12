@@ -234,14 +234,14 @@ Check https://doi.org/10.1038/s41587-024-02147-w for an in-depth explanation
 
 ## ## OMArk Completness metrics explanation
 Completeness describes how our proteome overlaps with a conserved ancestral gene set of the species’ lineage.   
-The gene set is classified in hierarchical orthologous groups (**HOGs**). Check https://doi.org/10.1038/s41587-024-02147-w for a in-depth explanation
+The gene set is classified in hierarchical orthologous groups (**HOGs**). Each HOG is a single ancestral gene. Check https://doi.org/10.1038/s41587-024-02147-w for a in-depth explanation
  | Nomeclature     | Description                                  |
 |---------------|----------------------------------------------|
- |Cons|Taxonomic consistent hits (%)|
- |Inco| Taxonomic inconsistent hits (%)| 
- |Cont| Contaminantion hits (%)
- |Unkn| Unkown hits (%)|
- |P| Partial hits (%)|  
- |F| Fragmented hits (%)|
+ |{Taxon}-HOGs|Number of HOGs in our species' nearest {taxon}  |
+ |S| HOGs hits by a single query protein (%)| 
+ |D| HOGs hits by more than one query protein (%)|
+ |U| HOGs hits by more than one query protein, unexpected (no HOG duplication evidence exists)(%)|
+ |E| HOGs hits by more than one query protein, expected (HOG duplication evidence exists, known HOG subfamilies)(%)|
+ |M| HOGs without hit (%)|
  
  
