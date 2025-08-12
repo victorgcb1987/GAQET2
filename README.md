@@ -232,6 +232,7 @@ The ouput directories should be similar to this one:
 | OMArk Completeness Results| (OMARK) Taxonomic Completness results. Check table below for nomenclature explanation|
 | OMArk Species Composition | (OMARK) Species Composition in percentage|
 | ProteinsWith{db}Hits (%) | (DIAMOND) Percentage of proteins with a significant hit on database {db}|  
+
 [🔝 Back to Table of Contents](#table-of-contents)
 
  ## DeTEnGA metrics explanation
@@ -246,6 +247,7 @@ Detection of Transposable Elements as Genes on Annotations (DeTEnGA) is an in-ho
  |PcpMTe|Transcripts with non-TEs interpro PFAMs and TE mRNA|
  |PteMte|Transcripts with only TEs interpro PFAMs and TE mRNA|
  |PchMte|Transcripts with mixed TEs and non-TEs pfams and non-TE mRNA|  
+ 
  [🔝 Back to Table of Contents](#table-of-contents)
 
 
@@ -260,6 +262,7 @@ Check https://doi.org/10.1038/s41587-024-02147-w for an in-depth explanation
  |Unkn| Unkown hits (%)|
  |P| Partial hits (%)|  
  |F| Fragmented hits (%)|  
+ 
  [🔝 Back to Table of Contents](#table-of-contents)
 
 
