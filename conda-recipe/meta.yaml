@@ -1,6 +1,6 @@
 package:
   name: gaqet
-  version: "1.13.19"
+  version: "1.13.20"
 
 source:
   git_url: https://github.com/victorgcb1987/GAQET2.git
