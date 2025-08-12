@@ -201,8 +201,8 @@ The ouput directories should be similar to this one:
 | DETENGA_FP% | (DeTEnGA) Classified transcripts in percentages. See table below for nomeclature explanation|
 | OMArk Consistency Results| (OMARK) Taxonomic consistency results. Check table below for nomenclature explanation|
 | OMArk Completeness Results| (OMARK) Taxonomic Completness results. Check table below for nomenclature explanation|
-| OMArk Species Composition | (OMARK) Species Composition in percentages|
-| ProteinsWith{db}Hits (%) | (DIAMOND) % percentage of proteins with a significant hit on database {db}|
+| OMArk Species Composition | (OMARK) Species Composition in percentage|
+| ProteinsWith{db}Hits (%) | (DIAMOND) Percentage of proteins with a significant hit on database {db}|
 
  #### DeTEnGA metrics explanation
 Detection of Transposable Elements as Genes on Annotations (DeTEnGA) is an in-house tool created for coding sequences classification as a Transposable element (TE) or not. This classification is at protein sequence level using interpro and at mRNA level using TEsorter. Table below describes the nomenclature used in DeTEnGA:
