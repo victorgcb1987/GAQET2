@@ -93,7 +93,6 @@ GAQET -v
 If GAQET is properly installed, this command should show you the GAQET version.  
 
 [🔝 Back to Table of Contents](#table-of-contents)
----
 
 ## Usage
 ### GAQET Benchmarking 
