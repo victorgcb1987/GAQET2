@@ -1,3 +1,27 @@
+## 📑 Table of Contents
+- [GAQET2 - Genome Annotation Quality Evaluation Tool](#gaqet2---genome-annotation-quality-evaluation-tool)
+- [Requirements](#requirements)
+  - [Python Dependencies](#python-dependencies)
+  - [Software dependencies](#software-dependencies)
+- [Installation](#installation)
+  - [InterproScan](#interproscan)
+  - [Manual installation (Not recommended)](#manual-installation-not-recommended)
+  - [Conda installation (Strongly recommended)](#conda-installation-strongly-recommended)
+- [Usage](#usage)
+  - [GAQET Benchmarking](#gaqet-benchmarking)
+    - [YAML file](#yaml-file)
+    - [GAQET arguments](#gaqet-arguments)
+    - [Command usage](#command-usage)
+    - [GAQET benchmarking output](#gaqet-benchmarking-output)
+- [GAQET metrics explanation](#gaqet-metrics-explanation)
+  - [General metrics](#general-metrics)
+  - [DeTEnGA metrics explanation](#detenga-metrics-explanation)
+  - [OMArk Consistency metrics explanation](#omark-consistency-metrics-explanation)
+  - [OMArk Completness metrics explanation](#omark-completness-metrics-explanation)
+- [GAQET PLOT](#gaqet-plot)
+  - [USAGE](#usage-1)
+
+
 # GAQET2 - Genome Annotation Quality Evaluation Tool
 
 GAQET2 is a Python-based tool designed to evaluate the quality of genome annotations. Using GFF and FASTA files, GAQET2 generates statistical reports to help identify common errors and artifacts in structural gene annotations.
