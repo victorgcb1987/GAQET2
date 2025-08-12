@@ -1,4 +1,4 @@
-## 📑 Table of Contents
+## Table of Contents
 - [GAQET2 - Genome Annotation Quality Evaluation Tool](#gaqet2---genome-annotation-quality-evaluation-tool)
 - [Requirements](#requirements)
   - [Python Dependencies](#python-dependencies)
@@ -47,6 +47,8 @@ GAQET2 is a Python-based tool designed to evaluate the quality of genome annotat
 - PSAURON == 1.0.4 (https://github.com/salzberg-lab/PSAURON)
 - DeTEnGA == 1.0 (https://github.com/victorgcb1987/DeTEnGA). Already bundled with GAQET
 
+[🔝 Back to Table of Contents](#table-of-contents)
+
 ## Installation
 ### InterproScan
 **Interproscan**: we recommend using the github version instead of any conda installation (https://github.com/ebi-pf-team/interproscan-docs/blob/v5/docs/HowToDownload.rst)
@@ -88,9 +90,9 @@ you can check if GAQET is installed by running:
 ```bash
 GAQET -v
 ```
-If GAQET is properly installed, this command should show you the GAQET version.
+If GAQET is properly installed, this command should show you the GAQET version.  
 
-
+[🔝 Back to Table of Contents](#table-of-contents)
 ---
 
 ## Usage
@@ -187,7 +189,8 @@ The ouput directories should be similar to this one:
  ├── 📄 GAQET.log.txt  
  ├── 📄 {species}_GAQET.stats.tsv  
 
- Each of the ```*_run``` directories contains the output of each analysis run. ```log.txt``` file contains things like run errors or time consumed running analysis. Al programs outputs are parsed and their results are stored in a tsv file, the ```{species}_GAQET.stats.tsv``` file.
+ Each of the ```*_run``` directories contains the output of each analysis run. ```log.txt``` file contains things like run errors or time consumed running analysis. Al programs outputs are parsed and their results are stored in a tsv file, the ```{species}_GAQET.stats.tsv``` file.  
+ [🔝 Back to Table of Contents](#table-of-contents)
 
  # GAQET metrics explanation
  ## General metrics
@@ -228,7 +231,8 @@ The ouput directories should be similar to this one:
 | OMArk Consistency Results| (OMARK) Taxonomic consistency results. Check table below for nomenclature explanation|
 | OMArk Completeness Results| (OMARK) Taxonomic Completness results. Check table below for nomenclature explanation|
 | OMArk Species Composition | (OMARK) Species Composition in percentage|
-| ProteinsWith{db}Hits (%) | (DIAMOND) Percentage of proteins with a significant hit on database {db}|
+| ProteinsWith{db}Hits (%) | (DIAMOND) Percentage of proteins with a significant hit on database {db}|  
+[🔝 Back to Table of Contents](#table-of-contents)
 
  ## DeTEnGA metrics explanation
 Detection of Transposable Elements as Genes on Annotations (DeTEnGA) is an in-house tool created for coding sequences **classification as a Transposable element (TE) or not**. This classification is at protein sequence level using interpro and at mRNA level using TEsorter. Table below describes the nomenclature used in DeTEnGA:
@@ -241,7 +245,8 @@ Detection of Transposable Elements as Genes on Annotations (DeTEnGA) is an in-ho
  |PchM0|Transcripts with mixed TEs and non-TEs pfams and non-TE mRNA|
  |PcpMTe|Transcripts with non-TEs interpro PFAMs and TE mRNA|
  |PteMte|Transcripts with only TEs interpro PFAMs and TE mRNA|
- |PchMte|Transcripts with mixed TEs and non-TEs pfams and non-TE mRNA|
+ |PchMte|Transcripts with mixed TEs and non-TEs pfams and non-TE mRNA|  
+ [🔝 Back to Table of Contents](#table-of-contents)
 
 
  ## OMArk Consistency metrics explanation
@@ -254,7 +259,8 @@ Check https://doi.org/10.1038/s41587-024-02147-w for an in-depth explanation
  |Cont| Contaminantion hits (%)
  |Unkn| Unkown hits (%)|
  |P| Partial hits (%)|  
- |F| Fragmented hits (%)|
+ |F| Fragmented hits (%)|  
+ [🔝 Back to Table of Contents](#table-of-contents)
 
 
 ## OMArk Completness metrics explanation
@@ -267,7 +273,8 @@ The gene set is classified in hierarchical orthologous groups (**HOGs**). Each H
  |D| HOGs hits by more than one query protein (%)|
  |U| HOGs hits by more than one query protein, unexpected (no HOG duplication evidence exists)(%)|
  |E| HOGs hits by more than one query protein, expected (HOG duplication evidence exists, known HOG subfamilies)(%)|
- |M| HOGs without hit (%)|
+ |M| HOGs without hit (%)|  
+ [🔝 Back to Table of Contents](#table-of-contents)
 
 
  # GAQET PLOT
