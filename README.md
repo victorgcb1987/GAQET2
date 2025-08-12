@@ -206,7 +206,7 @@ The ouput directories should be similar to this one:
 | ProteinsWith{db}Hits (%) | (DIAMOND) Percentage of proteins with a significant hit on database {db}|
 
  ## DeTEnGA metrics explanation
-Detection of Transposable Elements as Genes on Annotations (DeTEnGA) is an in-house tool created for coding sequences classification as a Transposable element (TE) or not. This classification is at protein sequence level using interpro and at mRNA level using TEsorter. Table below describes the nomenclature used in DeTEnGA:
+Detection of Transposable Elements as Genes on Annotations (DeTEnGA) is an in-house tool created for coding sequences **classification as a Transposable element (TE) or not**. This classification is at protein sequence level using interpro and at mRNA level using TEsorter. Table below describes the nomenclature used in DeTEnGA:
 
  | Nomeclature     | Description                                  |
 |---------------|----------------------------------------------|
@@ -220,8 +220,21 @@ Detection of Transposable Elements as Genes on Annotations (DeTEnGA) is an in-ho
 
 
  ## OMArk Consistency metrics explanation
-Detection of Transposable Elements as Genes on Annotations (DeTEnGA) is an in-house tool created for coding sequences classification as a Transposable element (TE) or not. This classification is at protein sequence level using interpro and at mRNA level using TEsorter. Table below describes the nomenclature used in DeTEnGA:
+Consistency is a quality measurement and describes the proportion of protein sequences placed into known gene families from the same lineage.  
+Check https://doi.org/10.1038/s41587-024-02147-w for an in-depth explanation
+ | Nomeclature     | Description                                  |
+|---------------|----------------------------------------------|
+ |Cons|Taxonomic consistent hits (%)|
+ |Inco| Taxonomic inconsistent hits (%)| 
+ |Cont| Contaminantion hits (%)
+ |Unkn| Unkown hits (%)|
+ |P| Partial hits (%)|  
+ |F| Fragmented hits (%)|
 
+
+## ## OMArk Completness metrics explanation
+Completeness describes how our proteome overlaps with a conserved ancestral gene set of the species’ lineage.   
+The gene set is classified in hierarchical orthologous groups (**HOGs**). Check https://doi.org/10.1038/s41587-024-02147-w for a in-depth explanation
  | Nomeclature     | Description                                  |
 |---------------|----------------------------------------------|
  |Cons|Taxonomic consistent hits (%)|
