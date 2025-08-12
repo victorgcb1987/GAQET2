@@ -190,7 +190,7 @@ The ouput directories should be similar to this one:
 | Longest CDS Model Length (bp)  | (AGAT) Longest CDS length     |
 | Longest Intron Length (bp))    | (AGAT) Longest coding gene's intron length   |
 | Shortest Gene Model Length (bp)| (AGAT) Shortest coding gene length     |
-| Shortest CDS Length (bp)| (AGAT) | (AGAT) Shortest CDS length     |
+| Shortest CDS Length (bp)         | (AGAT) Shortest CDS length     |
 | Shortest intron Length (bp)      | (AGAT) Shortest intron length     |
 | Models with early STOP (N)       | (AGAT) Number of coding transcripts with premature stop codons     |
 | Models START missing             | (AGAT) Number of coding transcripts lacking start codon     |
