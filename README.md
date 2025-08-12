@@ -164,3 +164,26 @@ The ouput directories should be similar to this one:
 
  Each of the ```*_run``` directories contains the output of each analysis run. ```log.txt``` file contains things like run errors or time consumed running analysis. Al programs outputs are parsed and their results are stored in a tsv file, the ```{species}_GAQET.stats.tsv``` file.
 
+ #### GAQET metrics explanation
+
+ | Parameter     | Description                                  |
+|---------------|----------------------------------------------|
+| Species                     |  Value assigned by the user when running the command  |
+| NCBI_TaxID                  | Value assigned by the user when running the command                     |
+| Assembly_Version            | Actually, the name of the assembly file. GAQET_REVIEWER provides md5sums of this file for better identification                            |
+| Annotation_Version          | Actually, the name of the annotation file. GAQET_REVIEWER provides md5sums of this file for better identification                    |
+| Gene_Models (N)             | (AGAT) Number of coding genes found in the annotation     |
+| Transcript_Models (N)       | (AGAT) Number of coding transcripts found in the annotation     |
+| CDS_Models (N)              | (AGAT) Number of CDS found in the annotation     |
+| UTR5' (N)                   | (AGAT) Number of UTR5' annotated on coding transcripts     |
+| UTR3' (N)                   | (AGAT) Number of UTR3' annotated on coding transcripts     |
+| Both sides UTR' (N)         | (AGAT) Number of coding transcripts models with both UTR's annotated    |
+| Overlapping_Gene_Models (N) | (AGAT) Number of overlapping coding genes     |
+| Single Exon Gene Models (N) | (AGAT) Number of monoexonic coding genes     |
+| Single Exon Transcripts (N) | (AGAT) Number of monoexonic coding transcripts     |
+| Total Gene Space (Mb)       | (AGAT) Coding sequences' total size     |
+| Mean Gene Model Length (bp) | (AGAT) Average coding gene length     |
+| Mean CDS Model Length (bp)             | (AGAT) Number of coding exons found in the annotation     |
+| Exons (N)             | (AGAT) Number of coding exons found in the annotation     |
+
+
