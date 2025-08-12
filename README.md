@@ -168,22 +168,32 @@ The ouput directories should be similar to this one:
 
  | Parameter     | Description                                  |
 |---------------|----------------------------------------------|
-| Species                     |  Value assigned by the user when running the command  |
-| NCBI_TaxID                  | Value assigned by the user when running the command                     |
-| Assembly_Version            | Actually, the name of the assembly file. GAQET_REVIEWER provides md5sums of this file for better identification                            |
-| Annotation_Version          | Actually, the name of the annotation file. GAQET_REVIEWER provides md5sums of this file for better identification                    |
-| Gene_Models (N)             | (AGAT) Number of coding genes found in the annotation     |
-| Transcript_Models (N)       | (AGAT) Number of coding transcripts found in the annotation     |
-| CDS_Models (N)              | (AGAT) Number of CDS found in the annotation     |
-| UTR5' (N)                   | (AGAT) Number of UTR5' annotated on coding transcripts     |
-| UTR3' (N)                   | (AGAT) Number of UTR3' annotated on coding transcripts     |
-| Both sides UTR' (N)         | (AGAT) Number of coding transcripts models with both UTR's annotated    |
-| Overlapping_Gene_Models (N) | (AGAT) Number of overlapping coding genes     |
-| Single Exon Gene Models (N) | (AGAT) Number of monoexonic coding genes     |
-| Single Exon Transcripts (N) | (AGAT) Number of monoexonic coding transcripts     |
-| Total Gene Space (Mb)       | (AGAT) Coding sequences' total size     |
-| Mean Gene Model Length (bp) | (AGAT) Average coding gene length     |
-| Mean CDS Model Length (bp)             | (AGAT) Number of coding exons found in the annotation     |
-| Exons (N)             | (AGAT) Number of coding exons found in the annotation     |
-
+| Species                        |  Value assigned by the user when running the command  |
+| NCBI_TaxID                     | Value assigned by the user when running the command                     |
+| Assembly_Version               | Actually, the name of the assembly file. GAQET_REVIEWER provides md5sums of this file for better identification                            |
+| Annotation_Version             | Actually, the name of the annotation file. GAQET_REVIEWER provides md5sums of this file for better identification                    |
+| Gene_Models (N)                | (AGAT) Number of coding genes found in the annotation     |
+| Transcript_Models (N)          | (AGAT) Number of coding transcripts found in the annotation     |
+| CDS_Models (N)                 | (AGAT) Number of CDS found in the annotation     |
+| UTR5' (N)                      | (AGAT) Number of UTR5' annotated on coding transcripts     |
+| UTR3' (N)                      | (AGAT) Number of UTR3' annotated on coding transcripts     |
+| Both sides UTR' (N)            | (AGAT) Number of coding transcripts models with both UTR's annotated    |
+| Overlapping_Gene_Models (N)    | (AGAT) Number of overlapping coding genes     |
+| Single Exon Gene Models (N)    | (AGAT) Number of monoexonic coding genes     |
+| Single Exon Transcripts (N)    | (AGAT) Number of monoexonic coding transcripts     |
+| Total Gene Space (Mb)          | (AGAT) Coding sequences' total size     |
+| Mean Gene Model Length (bp)    | (AGAT) Average coding gene length     |
+| Mean CDS Model Length (bp)     | (AGAT) Average CDS length     |
+| Mean Exon Length (bp)          | (AGAT) Average coding exon length    |
+| Mean Intron Length (bp)        | (AGAT) Average coding gene's intron length    |
+| Longest Gene Model Length (bp) | (AGAT) Longest coding gene length     |
+| Longest CDS Model Length (bp)  | (AGAT) Longest CDS length     |
+| Longest Intron Length (bp))    | (AGAT) Longest coding gene's intron length   |
+| Shortest Gene Model Length (bp)| (AGAT) Shortest coding gene length     |
+| Shortest CDS Length (bp)| (AGAT) | (AGAT) Shortest CDS length     |
+| Shortest intron Length (bp)      | (AGAT) Shortest intron length     |
+| Models with early STOP (N)       | (AGAT) Number of coding transcripts with premature stop codons     |
+| Models START missing             | (AGAT) Number of coding transcripts lacking start codon     |
+| Models START & STOP missing      | (AGAT) Number of coding transcripts lacking stop and start codon     |
+| Annotation_BUSCO_{DB} | (BUSCO) Busco proteome completness for the database {DB}. Refer to https://busco.ezlab.org/busco_userguide.html#interpreting-the-results to get an output's explanation.| 
 
