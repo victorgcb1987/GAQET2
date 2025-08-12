@@ -197,9 +197,18 @@ The ouput directories should be similar to this one:
 | Models START & STOP missing      | (AGAT) Number of coding transcripts lacking stop and start codon     |
 | Annotation_BUSCO_{DB} | (BUSCO) Busco proteome completness for the database {DB}. Refer to https://busco.ezlab.org/busco_userguide.html#interpreting-the-results to get an output's explanation| 
 | PSAURON SCORE | (PSAURON) Global Annotation's accuracy at detecting ORFs|
-| DETENGA_FPV | (DeTEnGA) Number of classified transcripts:  
- T: Number of coding transcripts    
- PcpM0: Number of transcripts with non-TEs interpro PFAMs and non-TE mRNA  
- PTeM0: Number of transcripts TEs only interpro PFAMs and non-TE mRNA
- PchM0: Number of transcripts with both TEs and non-TEs pfams and non-TE mRNA
- PcpMTe: Number of transcripts with non-TEs interpro PFAMs and TE mRNA|
+| DETENGA_FPV | (DeTEnGA) Number of classified transcripts. See table below for nomeclature explanation|
+
+
+ #### DeTEnGA metrics explanation
+ DeTEnGA is an in-house tool created for coding sequences classification as a Tra
+ | Nomeclature     | Description                                  |
+|---------------|----------------------------------------------|
+ |T|coding transcripts|
+ |PcpM0|Transcripts with non-TEs interpro PFAMs and non-TE mRNA|  
+ |PTeM0|Transcripts TEs only interpro PFAMs and non-TE mRNA|
+ |PchM0|Transcripts with mixed TEs and non-TEs pfams and non-TE mRNA|
+ |PcpMTe|Transcripts with non-TEs interpro PFAMs and TE mRNA|
+ |PteMte|Transcripts with only TEs interpro PFAMs and TE mRNA|
+ |PchMte|Transcripts with mixed TEs and non-TEs pfams and non-TE mRNA|
+ 
