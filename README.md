@@ -209,7 +209,21 @@ Detection of Transposable Elements as Genes on Annotations (DeTEnGA) is an in-ho
 
  | Nomeclature     | Description                                  |
 |---------------|----------------------------------------------|
- |T|coding transcripts|
+ |T|Total number of coding transcripts (includes all calssifications)|
+ |PcpM0|Transcripts with non-TEs interpro PFAMs and non-TE mRNA|  
+ |PTeM0|Transcripts TEs only interpro PFAMs and non-TE mRNA|
+ |PchM0|Transcripts with mixed TEs and non-TEs pfams and non-TE mRNA|
+ |PcpMTe|Transcripts with non-TEs interpro PFAMs and TE mRNA|
+ |PteMte|Transcripts with only TEs interpro PFAMs and TE mRNA|
+ |PchMte|Transcripts with mixed TEs and non-TEs pfams and non-TE mRNA|
+
+
+ #### OMArk Consistency metrics explanation
+Detection of Transposable Elements as Genes on Annotations (DeTEnGA) is an in-house tool created for coding sequences classification as a Transposable element (TE) or not. This classification is at protein sequence level using interpro and at mRNA level using TEsorter. Table below describes the nomenclature used in DeTEnGA:
+
+ | Nomeclature     | Description                                  |
+|---------------|----------------------------------------------|
+ |T|Total number of coding transcripts (includes all calssifications)|
  |PcpM0|Transcripts with non-TEs interpro PFAMs and non-TE mRNA|  
  |PTeM0|Transcripts TEs only interpro PFAMs and non-TE mRNA|
  |PchM0|Transcripts with mixed TEs and non-TEs pfams and non-TE mRNA|
