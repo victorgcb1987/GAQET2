@@ -195,5 +195,11 @@ The ouput directories should be similar to this one:
 | Models with early STOP (N)       | (AGAT) Number of coding transcripts with premature stop codons     |
 | Models START missing             | (AGAT) Number of coding transcripts lacking start codon     |
 | Models START & STOP missing      | (AGAT) Number of coding transcripts lacking stop and start codon     |
-| Annotation_BUSCO_{DB} | (BUSCO) Busco proteome completness for the database {DB}. Refer to https://busco.ezlab.org/busco_userguide.html#interpreting-the-results to get an output's explanation.| 
-
+| Annotation_BUSCO_{DB} | (BUSCO) Busco proteome completness for the database {DB}. Refer to https://busco.ezlab.org/busco_userguide.html#interpreting-the-results to get an output's explanation| 
+| PSAURON SCORE | (PSAURON) Global Annotation's accuracy at detecting ORFs|
+| DETENGA_FPV | (DeTEnGA) Number of classified transcripts:  
+ T: Number of coding transcripts    
+ PcpM0: Number of transcripts with non-TEs interpro PFAMs and non-TE mRNA  
+ PTeM0: Number of transcripts TEs only interpro PFAMs and non-TE mRNA
+ PchM0: Number of transcripts with both TEs and non-TEs pfams and non-TE mRNA
+ PcpMTe: Number of transcripts with non-TEs interpro PFAMs and TE mRNA|
