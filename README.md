@@ -223,12 +223,11 @@ Detection of Transposable Elements as Genes on Annotations (DeTEnGA) is an in-ho
 
  | Nomeclature     | Description                                  |
 |---------------|----------------------------------------------|
- |T|Total number of coding transcripts (includes all calssifications)|
- |PcpM0|Transcripts with non-TEs interpro PFAMs and non-TE mRNA|  
- |PTeM0|Transcripts TEs only interpro PFAMs and non-TE mRNA|
- |PchM0|Transcripts with mixed TEs and non-TEs pfams and non-TE mRNA|
- |PcpMTe|Transcripts with non-TEs interpro PFAMs and TE mRNA|
- |PteMte|Transcripts with only TEs interpro PFAMs and TE mRNA|
- |PchMte|Transcripts with mixed TEs and non-TEs pfams and non-TE mRNA|
-
+ |Cons|Taxonomic consistent hits (%)|
+ |Inco| Taxonomic inconsistent hits (%)| 
+ |Cont| Contaminantion hits (%)
+ |Unkn| Unkown hits (%)|
+ |P| Partial hits (%)|  
+ |F| Fragmented hits (%)|
+ 
  
