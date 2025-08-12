@@ -164,7 +164,8 @@ The ouput directories should be similar to this one:
 
  Each of the ```*_run``` directories contains the output of each analysis run. ```log.txt``` file contains things like run errors or time consumed running analysis. Al programs outputs are parsed and their results are stored in a tsv file, the ```{species}_GAQET.stats.tsv``` file.
 
- #### GAQET metrics explanation
+ # GAQET metrics explanation
+ ## General metrics
 
  | Parameter     | Description                                  |
 |---------------|----------------------------------------------|
@@ -204,7 +205,7 @@ The ouput directories should be similar to this one:
 | OMArk Species Composition | (OMARK) Species Composition in percentage|
 | ProteinsWith{db}Hits (%) | (DIAMOND) Percentage of proteins with a significant hit on database {db}|
 
- #### DeTEnGA metrics explanation
+ ## DeTEnGA metrics explanation
 Detection of Transposable Elements as Genes on Annotations (DeTEnGA) is an in-house tool created for coding sequences classification as a Transposable element (TE) or not. This classification is at protein sequence level using interpro and at mRNA level using TEsorter. Table below describes the nomenclature used in DeTEnGA:
 
  | Nomeclature     | Description                                  |
@@ -218,7 +219,7 @@ Detection of Transposable Elements as Genes on Annotations (DeTEnGA) is an in-ho
  |PchMte|Transcripts with mixed TEs and non-TEs pfams and non-TE mRNA|
 
 
- #### OMArk Consistency metrics explanation
+ ## OMArk Consistency metrics explanation
 Detection of Transposable Elements as Genes on Annotations (DeTEnGA) is an in-house tool created for coding sequences classification as a Transposable element (TE) or not. This classification is at protein sequence level using interpro and at mRNA level using TEsorter. Table below describes the nomenclature used in DeTEnGA:
 
  | Nomeclature     | Description                                  |
