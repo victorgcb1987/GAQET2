@@ -291,6 +291,6 @@ Figure format is defined by the extension. By default is ```jpeg```
 
 ## Output figure and explanation
 Running this script should generate a figure similar to this one:  
-![Texto alternativo](docs/Arabidopsis_plot.png)
+![Texto alternativo](GAQET/docs/Arabidopsis_plot.png)
  
  
