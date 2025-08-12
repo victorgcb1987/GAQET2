@@ -160,5 +160,5 @@ The ouput directories should be similar to this one:
  ├── 📂 OMARK_run  
  ├── 📂 PSAURON_run  
  ├── 📄 GAQET.log.txt  
- └── 📄 {species}_GAQET.stats.tsv  
+ ├── 📄 {species}_GAQET.stats.tsv  
 
