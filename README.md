@@ -248,6 +248,6 @@ The gene set is classified in hierarchical orthologous groups (**HOGs**). Each H
  # GAQET PLOT
  You can get an intuitive representation of the most important metrics describred before using GAQET PLOT.
  ## USAGE
-GAQET PLOT requires as input a TSV file as shown in 
+GAQET PLOT requires as input a TSV file as shown in [in the example included with this repository](GAQET/docs/Arabidopsis_seed_stats.tsv)
  
  
