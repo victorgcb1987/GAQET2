@@ -252,6 +252,6 @@ GAQET PLOT requires as input a TSV file as shown in [in the example included wit
 ```bash
 GAQET_PLOT -i {input_tsv} -o output_figure.{extension}
 ```
-Figure format is defined by the extension. By default is ```jpeg``
+Figure format is defined by the extension. By default is ```jpeg```
  
  
