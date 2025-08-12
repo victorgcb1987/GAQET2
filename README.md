@@ -243,5 +243,11 @@ The gene set is classified in hierarchical orthologous groups (**HOGs**). Each H
  |U| HOGs hits by more than one query protein, unexpected (no HOG duplication evidence exists)(%)|
  |E| HOGs hits by more than one query protein, expected (HOG duplication evidence exists, known HOG subfamilies)(%)|
  |M| HOGs without hit (%)|
+
+
+ # GAQET PLOT
+ You can get an intuitive representation of the most important metrics describred before using GAQET PLOT.
+ ## USAGE
+GAQET PLOT requires as input a TSV file as shown in 
  
  
