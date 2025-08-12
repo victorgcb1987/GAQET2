@@ -198,10 +198,15 @@ The ouput directories should be similar to this one:
 | Annotation_BUSCO_{DB} | (BUSCO) Busco proteome completness for the database {DB}. Refer to https://busco.ezlab.org/busco_userguide.html#interpreting-the-results to get an output's explanation| 
 | PSAURON SCORE | (PSAURON) Global Annotation's accuracy at detecting ORFs|
 | DETENGA_FPV | (DeTEnGA) Number of classified transcripts. See table below for nomeclature explanation|
-
+| DETENGA_FP% | (DeTEnGA) Classified transcripts in percentages. See table below for nomeclature explanation|
+| OMArk Consistency Results| (OMARK) Taxonomic consistency results. Check table below for nomenclature explanation|
+| OMArk Completeness Results| (OMARK) Taxonomic Completness results. Check table below for nomenclature explanation|
+| OMArk Species Composition | (OMARK) Species Composition in percentages|
+| ProteinsWith{db}Hits (%) | (DIAMOND) % percentage of proteins with a significant hit on database {db}|
 
  #### DeTEnGA metrics explanation
- DeTEnGA is an in-house tool created for coding sequences classification as a Tra
+Detection of Transposable Elements as Genes on Annotations (DeTEnGA) is an in-house tool created for coding sequences classification as a Transposable element (TE) or not. This classification is at protein sequence level using interpro and at mRNA level using TEsorter. Table below describes the nomenclature used in DeTEnGA:
+
  | Nomeclature     | Description                                  |
 |---------------|----------------------------------------------|
  |T|coding transcripts|
@@ -211,4 +216,5 @@ The ouput directories should be similar to this one:
  |PcpMTe|Transcripts with non-TEs interpro PFAMs and TE mRNA|
  |PteMte|Transcripts with only TEs interpro PFAMs and TE mRNA|
  |PchMte|Transcripts with mixed TEs and non-TEs pfams and non-TE mRNA|
+
  
