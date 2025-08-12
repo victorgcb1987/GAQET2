@@ -20,7 +20,7 @@
   - [OMArk Completness metrics explanation](#omark-completness-metrics-explanation)
 - [GAQET PLOT](#gaqet-plot)
   - [Usage](#usage-1)
-  - [Output figure and explanation](#output_figure_and_explanation)
+  - [Output figure and explanation](#output-figure-and-explanation)
 
 
 # GAQET2 - Genome Annotation Quality Evaluation Tool
