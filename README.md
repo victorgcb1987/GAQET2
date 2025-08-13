@@ -20,7 +20,7 @@
   - [OMArk Completness metrics explanation](#omark-completness-metrics-explanation)
 - [GAQET PLOT](#gaqet-plot)
   - [Usage](#usage-1)
-  - [Output figure and explanation](#output-figure-and-explanation)
+  - [Output figure and interpretation](#output-figure-and-interpretation)
 
 
 # GAQET2 - Genome Annotation Quality Evaluation Tool
@@ -289,7 +289,7 @@ GAQET_PLOT -i {input_tsv} -o output_figure.{extension}
 ```
 Figure format is defined by the extension. By default is ```jpeg```
 
-## Output figure and explanation
+## Output figure and interpretation
 Running this script should generate a figure similar to this one:  
 ![GAQET_plot](GAQET/docs/Arabidopsis_plot.png)
 
