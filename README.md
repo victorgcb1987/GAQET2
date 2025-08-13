@@ -283,7 +283,7 @@ The gene set is classified in hierarchical orthologous groups (**HOGs**). Each H
  # GAQET PLOT
  You can get an intuitive representation of the most important metrics described before using GAQET PLOT.
  ## Usage
-GAQET PLOT requires as input a TSV file as shown in [in the example included with this repository](GAQET/docs/Arabidopsis_seed_stats.tsv). Then you can run GAQET_PLOT as:  
+GAQET PLOT requires as input a TSV file as shown in [in the example included with this repository](GAQET/docs/Arabidopsis_seed_stats.tsv). Included example shows two columns for BUSCO and Protein Homology, but you can include more columns or even remove all columns of these two kinds. Then you can run GAQET_PLOT as:  
 ```bash
 GAQET_PLOT -i {input_tsv} -o output_figure.{extension}
 ```
