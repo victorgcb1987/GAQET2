@@ -292,5 +292,10 @@ Figure format is defined by the extension. By default is ```jpeg```
 ## Output figure and explanation
 Running this script should generate a figure similar to this one:  
 ![Texto alternativo](GAQET/docs/Arabidopsis_plot.png)
+
+This plot has 3 levels:   
+
+The first one being the ** inner radar plot**. This represents percentages for each of the metrics marked by the radial axis, for example, the ```No start/stop codon errors```. Higher percentages means better.
+The inner ring represents the *** area calculated from the radar plot*** for each annotation represented. Area value is also represented as a numerical value on the legend. This is a global score of the annotation quality and higher means better.  
  
  
