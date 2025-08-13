@@ -91,6 +91,10 @@ you can check if GAQET is installed by running:
 GAQET -v
 ```
 If GAQET is properly installed, this command should show you the GAQET version.  
+You can check and install updates by using:  
+```bash
+conda update -c victorgcb gaqet
+```
 
 [🔝 Back to Table of Contents](#table-of-contents)
 
