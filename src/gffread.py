@@ -5,6 +5,26 @@ from pathlib import Path
 
 
 
+def reformat_annotation(config):
+    outdir = Path(config["Basedir"]) / "input_sequences"
+    annotation = config["Annotation"]
+    outfile = Path(config["Basedir"]) / "input_sequences" / "reformatted_annotation.gff3"
+    report = {"transcripts_to_mRNA": [], "outfile": outfile}
+    if not outdir.exists():
+        outdir.mkdir(parents=True, exist_ok=True)
+    with open(outfile, "w") as out_fhand:
+        with open(annotation) as annot_fhand:
+            for line in annot_fhand:
+                if line.startswith("#"):
+                    out_fhand.write(line)
+                else:
+                    line = line.split()
+                    if line[2] == "transcript":
+                        line[2] == "mRNA"
+                        report["transcripts_to_mRNA"] = line[-1].rstrip()
+                    out_fhand.write("\t".join(line))
+    return report
+
 def run_gffread(config):
     report = {"cds": {"mode": "x", "command": "", "status": "", "outfile": ""}, 
               "proteins": {"mode": "y", "command": "", "status": "", "outfile": ""},

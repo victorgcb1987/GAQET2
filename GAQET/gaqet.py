@@ -17,7 +17,7 @@ from src.busco import run_busco
 from src.error_check import correct_fasta_length
 from src.detenga import run_detenga
 from src.dependencies import check_dependencies
-from src.gffread import run_gffread
+from src.gffread import run_gffread, reformat_annotation
 from src.omark import run_omark
 from src.psauron import run_psauron
 from src.seqtk import reformat_fasta_file
@@ -172,6 +172,14 @@ def main():
    
     #Run analysis
     overall_start = time.time()
+    start_time = time.time()
+    emit_msg(HEADER + "Reformatting transcript features to mRNA"+ HEADER + "\n", log_fhand)
+    reformatted_annotation = reformat_annotation(arguments)
+    end_time = time.time()
+    emit_msg("#Changed transcript features to mRNA", log_fhand)
+    emit_msg("The following transcripts have been changed:\n {}".format("\n".join(reformatted_annotation["changed_transcripts"])), log_fhand)
+    arguments["Annotation"] = reformatted_annotation["outfile"]
+
     start_time = time.time()
     emit_msg(HEADER + "Splitting annotation by features"+ HEADER + "\n", log_fhand)
     mrna_features = split_annotation(arguments)
