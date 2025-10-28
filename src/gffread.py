@@ -19,6 +19,7 @@ def reformat_annotation(config):
                     out_fhand.write(line)
                 else:
                     line = line.split()
+                    print(line)
                     if line[2] == "transcript":
                         line[2] == "mRNA"
                         report["transcripts_to_mRNA"] = line[-1].rstrip()
