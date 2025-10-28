@@ -6,9 +6,9 @@ from pathlib import Path
 
 
 def reformat_annotation(config):
-    outdir = Path(config["Basedir"]) / "input_sequences"
+    outdir = Path(config["Basedir"]) / "reformatted_annotation"
     annotation = config["Annotation"]
-    outfile = Path(config["Basedir"]) / "input_sequences" / "reformatted_annotation.gff3"
+    outfile = outdir / "reformatted_annotation.gff3"
     report = {"transcripts_to_mRNA": [], "outfile": outfile}
     if not outdir.exists():
         outdir.mkdir(parents=True, exist_ok=True)
