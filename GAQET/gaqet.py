@@ -177,7 +177,7 @@ def main():
     reformatted_annotation = reformat_annotation(arguments)
     end_time = time.time()
     emit_msg("#Changed transcript features to mRNA", log_fhand)
-    emit_msg("The following transcripts have been changed:\n {}".format("\n".join(reformatted_annotation["changed_transcripts"])), log_fhand)
+    emit_msg("The following transcripts have been changed:\n {}".format("\n".join(reformatted_annotation["transcripts_to_mRNA"])), log_fhand)
     arguments["Annotation"] = reformatted_annotation["outfile"]
 
     start_time = time.time()
