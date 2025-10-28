@@ -22,7 +22,7 @@ def reformat_annotation(config):
                     if line[2] == "transcript":
                         line[2] == "mRNA"
                         report["transcripts_to_mRNA"] = line[-1].rstrip()
-                    out_fhand.write("\t".join(line))
+                    out_fhand.write("\t".join(line)+"\n")
     return report
 
 def run_gffread(config):
