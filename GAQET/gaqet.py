@@ -36,7 +36,7 @@ BULLET_FIX = "\tERROR!\t"
 HEADER = "-"*5
 AVAILABLE_ANALYSIS = ["AGAT", "BUSCO", "PSAURON",
                       "DETENGA", "OMARK", "PROTHOMOLOGY"]
-VERSION = "v1.11.18"
+VERSION = "v1.11.17"
 
 
 def parse_arguments():
@@ -102,7 +102,7 @@ def get_arguments():
     if parser.genome:
         yaml["Assembly"] = parser.genome
     if parser.annotation:
-        yaml["Annotation"] = parser.annotatio
+        yaml["Annotation"] = parser.annotation
     if parser.taxid:
         yaml["OMARK_taxid"] = parser.taxid
     if parser.outbase:
