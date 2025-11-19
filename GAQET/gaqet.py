@@ -36,7 +36,7 @@ BULLET_FIX = "\tERROR!\t"
 HEADER = "-"*5
 AVAILABLE_ANALYSIS = ["AGAT", "BUSCO", "PSAURON",
                       "DETENGA", "OMARK", "PROTHOMOLOGY"]
-VERSION = "v1.11.17"
+VERSION = "v1.11.18"
 
 
 def parse_arguments():
@@ -102,12 +102,12 @@ def get_arguments():
     if parser.genome:
         yaml["Assembly"] = parser.genome
     if parser.annotation:
-        yaml["Annotation"] = parser.annotation
+        yaml["Annotation"] = parser.annotatio
     if parser.taxid:
         yaml["OMARK_taxid"] = parser.taxid
     if parser.outbase:
         yaml["Basedir"] = parser.outbase
-    else:
+    elif not yaml.get("Basedir", ""):
         basedir = create_basedir_fpath()
         yaml["Basedir"] = basedir
     yaml["disable_busco_filter"] = parser.disable_busco_filter
