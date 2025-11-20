@@ -11,8 +11,11 @@ def run_busco(arguments, protein_sequences):
         outdir.mkdir()
     os.chdir(outdir)
     report = {}
-    for lineage in arguments["BUSCO_lineages"]:
-
+    for analysis in arguments["BUSCO_lineages"]:
+        try:
+            lineage = analysis.name
+        except:
+            lineage = analysis
         outfile = Path(lineage) / "run_{}".format(lineage) / "short_summary.txt"
         
         cmd = "busco --cpu {} -i {} -o {} -m prot -l {} --tar".format(arguments["Threads"],
