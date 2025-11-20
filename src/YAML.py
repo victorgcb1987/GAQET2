@@ -60,7 +60,12 @@ def check_busco_lineages(yaml):
     available_lineages = [lineage.split()[0].split(".")[0] for lineage in open(BUSCO_LINEAGES)]
     for lineage in yaml["BUSCO_lineages"]:
         if lineage not in available_lineages:
-            errors.append(BULLET_FIX + "BUSCO lineage {} doesn't exists")
+            try: 
+                lineage_path = Path(lineage)
+            except:
+                lineage_path = ""
+            if not lineage_path or not lineage_path.exists():    
+                errors.append(BULLET_FIX + "BUSCO lineage {} doesn't exists")
     if len(errors) == 0:
         errors.append(BULLET_OK + "BUSCO lineages are valid")
     return errors
