@@ -12,11 +12,11 @@ def run_busco(arguments, protein_sequences):
     os.chdir(outdir)
     report = {}
     for analysis in arguments["BUSCO_lineages"]:
-        print(analysis)
-        print(analysis.name)
-        try:
-            lineage = analysis.name
-        except:
+        #check if lineage_analysis is a directory
+        lineage = Path(analysis)
+        if lineage.exists():
+            lineage = lineage.name
+        else:
             lineage = analysis
         outfile = Path(lineage) / "run_{}".format(lineage) / "short_summary.txt"
         
