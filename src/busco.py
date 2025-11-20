@@ -12,6 +12,7 @@ def run_busco(arguments, protein_sequences):
     os.chdir(outdir)
     report = {}
     for analysis in arguments["BUSCO_lineages"]:
+        print(analysis)
         try:
             lineage = analysis.name
         except:
