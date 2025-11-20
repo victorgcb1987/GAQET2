@@ -65,7 +65,7 @@ def check_busco_lineages(yaml):
             except:
                 lineage_path = ""
             if not lineage_path or not lineage_path.exists():    
-                errors.append(BULLET_FIX + "BUSCO lineage {} doesn't exists")
+                errors.append(BULLET_FIX + "BUSCO lineage {} doesn't exists".format(lineage_path))
     if len(errors) == 0:
         errors.append(BULLET_OK + "BUSCO lineages are valid")
     return errors
