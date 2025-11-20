@@ -5,7 +5,7 @@ from pathlib import Path
 
 def run_busco(arguments, protein_sequences):
     execution_path = os.getcwd()
-    print(protein_sequences.resolve())
+    proteins_path = protein_sequences.resolve()
     outdir = Path(arguments["Basedir"]) / "BUSCOCompleteness_run"
     if not outdir.exists():
         outdir.mkdir()
@@ -20,7 +20,7 @@ def run_busco(arguments, protein_sequences):
         outfile = lineage_outdir / "run_{}".format(lineage) / "short_summary.txt"
         
         cmd = "busco --cpu {} -i {} -o run_{} -m prot -l {} --force --tar".format(arguments["Threads"],
-                                                                            protein_sequences.resolve(),
+                                                                            proteins_path,
                                                                             lineage,
                                                                             lineage)
         if outfile.exists():
