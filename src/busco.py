@@ -12,7 +12,7 @@ def run_busco(arguments, protein_sequences):
     os.chdir(outdir)
     report = {}
     for lineage in arguments["BUSCO_lineages"]:
-        lineage_outdir = outdir.resolve() / lineage
+        lineage_outdir = outdir / lineage
         #Busco have problems with fullpaths
         #if not lineage_outdir.exists():
         #    lineage_outdir.mkdir(parents=True, exist_ok=True)
@@ -23,7 +23,7 @@ def run_busco(arguments, protein_sequences):
                                                                       proteins_path,
                                                                       lineage,
                                                                       lineage)
-        print(outfile)
+        print(outfile.resolve())
         if outfile.exists():
             msg = "Busco on lineage {} done already".format(lineage)
         else:
