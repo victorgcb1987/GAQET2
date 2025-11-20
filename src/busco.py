@@ -15,14 +15,14 @@ def run_busco(arguments, protein_sequences):
         #check if lineage_analysis is a directory
         lineage = Path(analysis)
         if lineage.exists():
-            lineage = lineage.name
+            outname = lineage.name
         else:
             lineage = analysis
-        outfile = Path(lineage) / "run_{}".format(lineage) / "short_summary.txt"
+        outfile = Path(outname) / "run_{}".format(lineage) / "short_summary.txt"
         
         cmd = "busco --cpu {} -i {} -o {} -m prot -l {} --tar".format(arguments["Threads"],
                                                                       proteins_path,
-                                                                      lineage,
+                                                                      outname,
                                                                       lineage)
         if outfile.exists():
             msg = "Busco on lineage {} done already".format(lineage)
