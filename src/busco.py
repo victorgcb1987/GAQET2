@@ -19,7 +19,7 @@ def run_busco(arguments, protein_sequences):
         outfile = lineage_outdir / "run_{}".format(lineage) / "short_summary.txt"
         
         cmd = "busco --cpu {} -i {} -o run_{} -m prot -l {} --force --tar".format(arguments["Threads"],
-                                                                            protein_sequences,
+                                                                            protein_sequences.resolve(),
                                                                             lineage,
                                                                             lineage)
         if outfile.exists():
