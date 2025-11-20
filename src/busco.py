@@ -18,7 +18,7 @@ def run_busco(arguments, protein_sequences):
             outname = lineage.name
         else:
             lineage = analysis
-        outfile = Path(outname) / "run_{}".format(lineage) / "short_summary.txt"
+        outfile = Path(outname) / "run_{}".format(outname) / "short_summary.txt"
         
         cmd = "busco --cpu {} -i {} -o {} -m prot -l {} --tar".format(arguments["Threads"],
                                                                       proteins_path,
