@@ -13,6 +13,7 @@ def run_busco(arguments, protein_sequences):
     report = {}
     for analysis in arguments["BUSCO_lineages"]:
         print(analysis)
+        print(analysis.name)
         try:
             lineage = analysis.name
         except:
