@@ -12,12 +12,12 @@ def run_busco(arguments, protein_sequences):
     os.chdir(outdir)
     report = {}
     for lineage in arguments["BUSCO_lineages"]:
-        lineage_outdir = outdir / lineage
+        #lineage_outdir = outdir / lineage
         #Busco have problems with fullpaths
         #if not lineage_outdir.exists():
         #    lineage_outdir.mkdir(parents=True, exist_ok=True)
 
-        outfile = lineage_outdir / "run_{}".format(lineage) / "short_summary.txt"
+        outfile = lineage / "run_{}".format(lineage) / "short_summary.txt"
         
         cmd = "busco --cpu {} -i {} -o {} -m prot -l {} --tar".format(arguments["Threads"],
                                                                       proteins_path,
