@@ -13,16 +13,16 @@ def run_busco(arguments, protein_sequences):
     report = {}
     for lineage in arguments["BUSCO_lineages"]:
         lineage_outdir = outdir / lineage
+        print(lineage_outdir.resolve())
         #Busco have problems with fullpaths
-        if not lineage_outdir.exists():
-            lineage_outdir.mkdir(parents=True, exist_ok=True)
+        #if not lineage_outdir.exists():
+        #    lineage_outdir.mkdir(parents=True, exist_ok=True)
 
         outfile = lineage_outdir / "run_{}".format(lineage) / "short_summary.txt"
         
-        cmd = "busco --cpu {} -i {} -o run_{} -m prot -l {} --force --tar".format(arguments["Threads"],
-                                                                            proteins_path,
-                                                                            lineage,
-                                                                            lineage)
+        cmd = "busco --cpu {} -i {} -o ./ -m prot -l {} --force --tar".format(arguments["Threads"],
+                                                                              proteins_path,
+                                                                              lineage)
         if outfile.exists():
             msg = "Busco on lineage {} done already".format(lineage)
         else:
