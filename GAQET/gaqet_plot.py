@@ -12,7 +12,8 @@ from matplotlib.patches import Wedge, Rectangle
 from pathlib import Path
 
 
-VERSION = "v1.3.3"
+VERSION = "v1.4.0"
+
 
 def parse_arguments():
     description = '''\t\t\t#################\n\t\t\t## GAQET  PLOT ##\n\t\t\t#################\n
@@ -65,9 +66,13 @@ def main():
     arguments = get_arguments()
     df = pd.read_csv(arguments["input"], sep="\t")
 
+    missing_analises = []
     ## Data Reading
     # BUSCO
     busco_columns = [col for col in df.columns if col.startswith("Annotation_BUSCO_")]
+    if len(busco_columns) > 2:
+        print("\033[31mWARNING: more than 2 BUSCO columns found, showing only the first 2 columns\033[0m")
+        busco_columns = busco_columns[0:2]
     busco_types = []
     for col in busco_columns:
         match = re.search(r"Annotation_BUSCO_(\w+)", col)
@@ -79,32 +84,90 @@ def main():
             df[f"BUSCO_F_{label}"] = df[col].str.extract(r"F:([\d.]+)").astype(float)
             df[f"BUSCO_M_{label}"] = df[col].str.extract(r"M:([\d.]+)").astype(float)
             busco_types.append(label)
+    #padding if missing busco
+   
+    missing_busco = 1
+    busco_features = ["BUSCO_C_", "BUSCO_S_", "BUSCO_D_",
+                      "BUSCO_F_", "BUSCO_M_"]
+    while len(busco_columns) < 2:
+        print("\033[31mWARNING: Number of BUSCO analysis found is less than 2, placeholders will be generated\033[0m")
+        label = "BUSCO_ _{}Missing".format(missing_busco)
+        for feature in busco_features:
+            df[f"{feature}{label}"] = 0.0
+        busco_types.append(label)
+        busco_columns.append(label)
+        missing_busco += 1
+        missing_analises.append(label)
 
     # DeTEnGA
-    df["DETENGA_PcpM0"] = df["DETENGA_FP%"].str.extract(r"PcpM0:\s*([\d.]+)").astype(float)
-    df["DETENGA_PteMte"] = df["DETENGA_FP%"].str.extract(r"PteMte:\s*([\d.]+)").astype(float)
+    try:
+        df["DETENGA_PcpM0"] = df["DETENGA_FP%"].str.extract(r"PcpM0:\s*([\d.]+)").astype(float)
+        df["DETENGA_PteMte"] = df["DETENGA_FP%"].str.extract(r"PteMte:\s*([\d.]+)").astype(float)
+    except KeyError:
+        print("\033[31mWARNING: DeTEnGA analysis not found, placeholder will be generated\033[0m")
+        df["DETENGA_PcpM0"] = 0.0
+        df["DETENGA_PteMte"] = 0.0
+        missing_analises.append("DETENGA")
     df["Proteins with functional domains (DeTEnGA)"] = df["DETENGA_PcpM0"]
 
 
     # OMArk
-    df["Proteins fitting their Taxonomic rank (OMARK)"] = df["OMArk Species Composition"].str.extract(r":\s*([\d.]+)%").astype(float)
-    df["OMARK_S"] = df["OMArk Completeness Results"].str.extract(r"S:([\d.]+)%").astype(float)
-    df["OMARK_D"] = df["OMArk Completeness Results"].str.extract(r"D:([\d.]+)%").astype(float)
-    df["OMARK_M"] = df["OMArk Completeness Results"].str.extract(r"M:([\d.]+)%").astype(float)
+    try:
+        df["Proteins fitting their Taxonomic rank (OMARK)"] = df["OMArk Species Composition"].str.extract(r":\s*([\d.]+)%").astype(float)
+        df["OMARK_S"] = df["OMArk Completeness Results"].str.extract(r"S:([\d.]+)%").astype(float)
+        df["OMARK_D"] = df["OMArk Completeness Results"].str.extract(r"D:([\d.]+)%").astype(float)
+        df["OMARK_M"] = df["OMArk Completeness Results"].str.extract(r"M:([\d.]+)%").astype(float)
+    except KeyError:
+        print("\033[31mWARNING: Omark analysis not found, placeholder will be generated\033[0m")
+        df["Proteins fitting their Taxonomic rank (OMARK)"] = 0.0
+        df["OMARK_S"] = 0.0
+        df["OMARK_D"] = 0.0
+        df["OMARK_M"] = 0.0
+        missing_analises.append("OMARK")
 
     # PSAURON
-    df["Transcripts Flagged as coding sequences (PSAURON)"] = df["PSAURON SCORE"]
+    try:
+        df["Transcripts Flagged as coding sequences (PSAURON)"] = df["PSAURON SCORE"]
+    except KeyError:
+        print("\033[31mWARNING: PSAURON analysis not found, placeholder will be generated\033[0m")
+        df["Transcripts Flagged as coding sequences (PSAURON)"] = 0.0
+        missing_analises.append("PSAURON")
+
 
     # AGAT
-    df["No start/stop codon errors (AGAT)"] = 100 - 100 * (
-        df["Models START missing"] + df["Models STOP missing"] + df["Models START & STOP missing"]
-    ) / df["Transcript_Models (N)"]
-    df["Gene_Models"] = df["Gene_Models (N)"]
-    df["Transcript_Models"] = df["Transcript_Models (N)"]
-    df["Both sides UTR'"] = df["Both sides UTR' (N)"]
+    try:
+        df["No start/stop codon errors (AGAT)"] = 100 - 100 * (
+            df["Models START missing"] + df["Models STOP missing"] + df["Models START & STOP missing"]
+        ) / df["Transcript_Models (N)"]
+    except KeyError:
+        print("\033[31mWARNING: START/STOP codons analyses not found, placeholder will be generated\033[0m")
+        df["No start/stop codon errors (AGAT)"] = 0.0
+        missing_analises.append("STOP")
+    try:
+        df["Gene_Models"] = df["Gene_Models (N)"]
+        df["Transcript_Models"] = df["Transcript_Models (N)"]
+        df["Both sides UTR'"] = df["Both sides UTR' (N)"]
+    except KeyError:
+        print("\033[31mWARNING: AGAT analysis not found, placeholder will be generated\033[0m")
+        df["Gene_Models"] = 0
+        df["Transcript_Models"] = 0
+        df["Both sides UTR' (N)"] = 0
+        df["Mean CDS Model Length (bp)"] = 0
+
+        missing_analises.append("MODELS")
 
     # Homology Hits
     proteins_with_cols = [col for col in df.columns if col.startswith("ProteinsWith")]
+    index = 1
+    if len(proteins_with_cols) < 2:
+        print("\033[31mWARNING: Number of Protein Homology analyses less than 2, placeholder will be generated\033[0m")
+    while len(proteins_with_cols) < 2:
+        new_col = f"MissingWithHomology_{index}"
+        df[new_col] = 0
+        proteins_with_cols.append(new_col)
+        index += 1
+        missing_analises.append(new_col)
+
     metrics = (
         proteins_with_cols +
         ["Proteins fitting their Taxonomic rank (OMARK)"] +
@@ -121,22 +184,39 @@ def main():
     metrics_labels = []
     for metric in metrics:
         if "BUSCO" in metric:
-            taxon = metric.split("_")[-2]
-            metric = f"{taxon.capitalize()} \nCompletness \n(BUSCO)"
+            if "Missing" in metric:
+                taxon = ""
+            else:
+                taxon = metric.split("_")[-2]
+                metric = f"{taxon.capitalize()} \nCompletness \n(BUSCO)"
         if "Hits" in metric:
             metric = metric.replace("ProteinsWith", "").replace("Hits", "").replace("(%)", "") + "\nHomology Hits" + "\n(DIAMOND)"
         if "(DeTEnGA)" in metric:
-            metric = metric.split()
-            metric = " ".join(metric[0:2]) + "\n" + " ".join(metric[2:-1]) +"\n" + metric[-1]
+            if "DETENGA" in missing_analises:
+                metric = ""
+            else:
+                metric = metric.split()
+                metric = " ".join(metric[0:2]) + "\n" + " ".join(metric[2:-1]) +"\n" + metric[-1]
         if "PSAURON" in metric:
-            metric = metric.split()
-            metric = " ".join(metric[0:2]) + "\n" + " ".join(metric[2:-1]) + "\n" + metric[-1]
+            if "PSAURON" in missing_analises:
+                metric = ""
+            else:
+                metric = metric.split()
+                metric = " ".join(metric[0:2]) + "\n" + " ".join(metric[2:-1]) + "\n" + metric[-1]
         if "OMARK" in metric:
-            metric = metric.split()
-            metric = " ".join(metric[0:3]) + "\n" + " ".join(metric[3:-1]) + "\n" + metric[-1]
+            if "OMARK" in missing_analises:
+                metric = ""
+            else:
+                metric = metric.split()
+                metric = " ".join(metric[0:3]) + "\n" + " ".join(metric[3:-1]) + "\n" + metric[-1]
         if "AGAT" in metric:
-            metric = metric.split()
-            metric = " ".join(metric[0:2]) + "\n" + " ".join(metric[2:-1]) + "\n" + metric[-1]
+            if "STOP" in missing_analises:
+                metric = ""
+            else:
+                metric = metric.split()
+                metric = " ".join(metric[0:2]) + "\n" + " ".join(metric[2:-1]) + "\n" + metric[-1]
+        if "Missing" in metric:
+            metric = ""
         metrics_labels.append(metric)
 
     # Metrics for columns
@@ -265,7 +345,10 @@ def main():
         # AGAT
         angle = bar_angles[metrics.index("Transcripts Flagged as coding sequences (PSAURON)")]
         max_gene = df_metrics["Gene_Models"].max()
-        gene = row["Gene_Models"] * 50 / max_gene
+        if max_gene == 0:
+            gene = 0
+        else:
+            gene = row["Gene_Models"] * 50 / max_gene
         height = 50
         ax.bar(angle + offset, gene, width=bar_width/len(df_metrics), bottom=bar_bottom,
         color="#2d99ba", edgecolor='black')
@@ -277,7 +360,11 @@ def main():
 
         angle = bar_angles[metrics.index("No start/stop codon errors (AGAT)")]
         max_transcripts = df_metrics["Transcript_Models"].max()
-        transcripts = row["Transcript_Models"] * 50 / max_transcripts
+        if max_transcripts == 0:
+            transcripts = 0
+            
+        else:
+            transcripts = row["Transcript_Models"] * 50 / max_transcripts
         ax.bar(angle + offset, transcripts, width=bar_width/len(df_metrics), bottom=bar_bottom,
         color="#097c77", edgecolor='black')
         tip_radius = bar_bottom + height + 3 + cap_height / 2
@@ -286,7 +373,10 @@ def main():
                         s=400, zorder=10)
 
         angle = bar_angles[0]
-        utr = row["Both sides UTR' (N)"] * 50 / row["Transcript_Models"]
+        if row["Transcript_Models"] == 0:
+            utr = 0
+        else:
+            utr = row["Both sides UTR' (N)"] * 50 / row["Transcript_Models"]
         ax.bar(angle + offset, utr, width=bar_width/len(df_metrics), bottom=bar_bottom,
         color="#D21F22", edgecolor='black')
         tip_radius = bar_bottom + height + 3 + cap_height / 2
@@ -296,7 +386,10 @@ def main():
 
         angle = bar_angles[1]
         max_cds_value = df_metrics["Mean CDS Model Length (bp)"].max()
-        cds_length = row["Mean CDS Model Length (bp)"] * 50 / max_cds_value
+        if max_cds_value == 0:
+            cds_length = 0
+        else:
+            cds_length = row["Mean CDS Model Length (bp)"] * 50 / max_cds_value
         ax.bar(angle + offset, cds_length, width=bar_width/len(df_metrics), bottom=bar_bottom,
         color="#BDD21F", edgecolor='black')
         tip_radius = bar_bottom + height + 3 + cap_height / 2
@@ -318,13 +411,31 @@ def main():
 
     radio_texto = bar_bottom + 100  # distancia radial por encima de las columnas
 
-    
-    col_names = ["Transcripts with\nboth sides UTR", "Average CDS\nlength", "OMArk"] + [f"{taxon.split('_')[0].capitalize()}\nBUSCO" for taxon in busco_types] + ["Transposons", "Gene Models", "Transcripts models"]
+    col_names = []
+    if "MODELS" not in missing_analises:
+        col_names = ["Transcripts with\nboth sides UTR", "Average CDS\nlength"]
+        tail = ["Transposons", "Gene Models", "Transcripts models"]
+    else:
+        col_names = ["",""]
+        tail = ["","",""]
+    if "OMARK" not in missing_analises:
+        col_names += ["OMARK"]
+    else:
+        col_names += [""]
+    for taxon in busco_types:
+        if "Missing" not in taxon:
+            col_names += [f"{taxon.split('_')[0].capitalize()}\nBUSCO"]
+        else:
+            col_names += [""]
+    if "DETENGA" in missing_analises:
+        tail[0] = ""
+    col_names += tail
+    #col_names = ["Transcripts with\nboth sides UTR", "Average CDS\nlength", "OMArk"] + [f"{taxon.split('_')[0].capitalize()}\nBUSCO" if "Missing" not in taxon else "" for taxon in busco_types] + ["Transposons", "Gene Models", "Transcripts models"]
     for angulo, etiqueta in zip(bar_angles, col_names):
         ax.text(
-            angulo,                           # posición angular (alineado con cada columna)
-            radio_texto,                      # radio: más alejado del centro
-            etiqueta,       # solo la primera línea del texto
+            angulo,                           
+            radio_texto,                      
+            etiqueta,      
             fontsize=20,
             ha='center',
             va='center',
