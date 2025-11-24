@@ -12,7 +12,7 @@ from matplotlib.patches import Wedge, Rectangle
 from pathlib import Path
 
 
-VERSION = "v1.4.0"
+VERSION = "v1.4.1"
 
 
 def parse_arguments():
@@ -167,6 +167,10 @@ def main():
         proteins_with_cols.append(new_col)
         index += 1
         missing_analises.append(new_col)
+    
+    if len(proteins_with_cols) > 2:
+        print("\033[31mWARNING: more than 2 Homology analyses found, showing only the first 2 columns\033[0m")
+        proteins_with_cols = proteins_with_cols[0:2]
 
     metrics = (
         proteins_with_cols +
