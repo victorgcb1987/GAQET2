@@ -18,11 +18,13 @@ def reformat_annotation(config):
                 if line.startswith("#"):
                     out_fhand.write(line)
                 else:
-                    line = line.split()
+                    line = line.rstrip().split()
+                    description = " ".join(line[8:])
                     if line[2] == "transcript":
                         line[2] = "mRNA"
-                        report["transcripts_to_mRNA"].append(line[-1].rstrip())
-                    out_fhand.write("\t".join(line)+"\n")
+                        report["transcripts_to_mRNA"].append(description)
+                    line = "\t".join(line[0:8]) + "\t" + description + "\n"
+                    out_fhand.write(line)
     return report
 
 def run_gffread(config):
