@@ -1,6 +1,6 @@
 package:
   name: gaqet
-  version: "1.16.3"
+  version: "1.16.4"
 
 source:
   git_url: https://github.com/victorgcb1987/GAQET2.git
@@ -24,18 +24,18 @@ requirements:
     - seaborn
     - pyyaml
     - blast >=2.12
-    - agat
-    - psauron 
-    - diamond
-    - busco
+    - agat ==1.5.1
+    - psauron ==1.1.0
+    - diamond ==2.1.13
+    - busco ==6.0.0
     - ete3
     - dendropy
-    - augustus
-    - samtools
-    - seqtk
-    - gffread
-    - omark
-    - tesorter
+    - augustus ==3.5.0
+    - samtools ==1.22.1
+    - seqtk ==1.5
+    - gffread ==0.12.7
+    - omark ==0.3.1
+    - tesorter ==1.4.7
 
 about:
   home: https://github.com/victorgcb1987/GAQET2
