@@ -15,7 +15,7 @@ requirements:
     - python ==3.10.0
     - pip
   run:
-    - omark ==0.5.0
+    - omark ==0.4.1
     - python ==3.10.0
     - biopython
     - pandas
