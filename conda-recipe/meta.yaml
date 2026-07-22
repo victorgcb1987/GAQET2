@@ -15,7 +15,7 @@ requirements:
     - python ==3.10.0
     - pip
   run:
-    - omark ==0.4.1
+    - omark ==0.5.0
     - python ==3.10.0
     - biopython
     - pandas
@@ -27,7 +27,7 @@ requirements:
     - blast >=2.12
     - agat ==1.5.1
     - psauron ==1.1.0
-    - diamond ==2.1.13
+    - diamond ==2.0.15
     - busco ==6.0.0
     - ete3
     - dendropy
