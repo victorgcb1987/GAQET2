@@ -15,6 +15,7 @@ requirements:
     - python ==3.10.0
     - pip
   run:
+    - libzlib >=1.3.1,<2.0a0
     - omark ==0.5.0
     - python ==3.10.0
     - biopython
