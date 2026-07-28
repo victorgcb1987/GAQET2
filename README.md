@@ -1,4 +1,4 @@
-#WARNING! right now OMARK bundled with GAQET is not working with latest LUCA database (MAY 2026). Please, use the previous version of LUCA found here: https://omabrowser.org/All.Jul2024/LUCA.h5 
+
 
 ## Table of Contents
 - [GAQET2 - Genome Annotation Quality Evaluation Tool](#gaqet2---genome-annotation-quality-evaluation-tool)
@@ -25,6 +25,7 @@
   - [Output figure and interpretation](#output-figure-and-interpretation)
 
 
+# WARNING! right now OMARK bundled with GAQET is not working with latest LUCA database (MAY 2026). Please, use the previous version of LUCA found here: https://omabrowser.org/All.Jul2024/LUCA.h5 
 # GAQET2 - Genome Annotation Quality Evaluation Tool
 
 GAQET2 is a Python-based tool designed to evaluate the quality of genome annotations. Using GFF and FASTA files, GAQET2 generates statistical reports to help identify common errors and artifacts in structural gene annotations.
