@@ -1,3 +1,5 @@
+#WARNING! right now OMARK bundled with GAQET is not working with latest LUCA database (MAY 2026). Please, use the previous version of LUCA found here: https://omabrowser.org/All.Jul2024/LUCA.h5 
+
 ## Table of Contents
 - [GAQET2 - Genome Annotation Quality Evaluation Tool](#gaqet2---genome-annotation-quality-evaluation-tool)
 - [Requirements](#requirements)
