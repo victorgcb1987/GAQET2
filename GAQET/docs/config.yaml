@@ -18,4 +18,7 @@ DETENGA_db: "rexdb-plant"
 PROTHOMOLOGY_tags:
   - TREMBL: ""
   - SWISSPROT: ""
+# Optional: intron length (bp) threshold used to compute the
+# "% Introns < {Intron_Threshold}bp (AGAT)" metric. Defaults to 100 if omitted.
+Intron_Threshold: 100
 Threads: 1

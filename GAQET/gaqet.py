@@ -23,7 +23,7 @@ from src.psauron import run_psauron
 from src.seqtk import reformat_fasta_file
 from src.YAML import report_yaml_file
 from src.homology import run_protein_homology
-from src.agat_parsers import parse_agat_stats, parse_agat_incomplete, parse_agat_premature
+from src.agat_parsers import parse_agat_stats, parse_agat_incomplete, parse_agat_premature, parse_agat_introns
 from src.busco_parsers import busco_stats
 from src.detenga_parsers import detenga_stats
 from src.homology_parsers import protein_homology_stats
@@ -36,7 +36,7 @@ BULLET_FIX = "\tERROR!\t"
 HEADER = "-"*5
 AVAILABLE_ANALYSIS = ["AGAT", "BUSCO", "PSAURON",
                       "DETENGA", "OMARK", "PROTHOMOLOGY"]
-VERSION = "v1.13.3"
+VERSION = "v1.15.0"
 
 
 def parse_arguments():
@@ -338,6 +338,8 @@ def main():
             results.update(parse_agat_stats(agat))
             results.update(parse_agat_premature(agat))
             results.update(parse_agat_incomplete(agat))
+            intron_threshold = arguments.get("Intron_Threshold", 100)
+            results.update(parse_agat_introns(agat, intron_threshold))
         if analysis == "BUSCO":
             busco_results = busco_stats(busco)
             for lineage, stats in busco_results.items():

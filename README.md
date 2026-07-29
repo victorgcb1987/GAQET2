@@ -128,6 +128,7 @@ PROTHOMOLOGY_tags:
   - SWISSPROT: "/path/to/uniprot_swssprot.dmnd"
   - MYDB: "/path/to/mydb.dmnd"
 DETENGA_db: "rexdb-plant"
+Intron_Threshold: 100
 
 
 ```
@@ -145,6 +146,7 @@ DETENGA_db: "rexdb-plant"
 | BUSCO_lineages | List of BUSCO clades to run. Only needed if BUSCO is in Analysis      |
 | PROTHOMOLOGY_tags | List of name and path to DIAMOND proteins database. Only needed if  PROTHOMOLOGY is in Analysis     |
 | DETENGA_db | DeTEnGA database for interpro checks. Only needed if DETENGA is in Analysis    |
+| Intron_Threshold | (Optional) Intron length (bp) cutoff used to compute the % of introns shorter than this value. Only needed if AGAT is in Analysis. Defaults to 100 if omitted |
 
 
 #### GAQET arguments
@@ -227,6 +229,8 @@ The ouput directories should be similar to this one:
 | Shortest Gene Model Length (bp)| (AGAT) Shortest coding gene length     |
 | Shortest CDS Length (bp)         | (AGAT) Shortest CDS length     |
 | Shortest intron Length (bp)      | (AGAT) Shortest intron length     |
+| Introns (N)                      | (AGAT) Total number of introns found in the annotation     |
+| % Introns < {Intron_Threshold}bp (AGAT) | (AGAT) Percentage of introns shorter than the configured `Intron_Threshold` (bp)     |
 | Models with early STOP (N)       | (AGAT) Number of coding transcripts with premature stop codons     |
 | Models START missing             | (AGAT) Number of coding transcripts lacking start codon     |
 | Models START & STOP missing      | (AGAT) Number of coding transcripts lacking stop and start codon     |

@@ -109,6 +109,26 @@ def run_agat(config):
     
     report["AGAT incomplete CDS"] = {"command": cmd, "status": msg, 
                                      "outfile": incomplete_cds_outfile}
+
+    #Running AGAT add introns (materializes intron features so their
+    #individual lengths can be parsed downstream)
+    introns_outfile = outdir / "{}.01_agat_introns.gff3".format(config["ID"])
+    cmd = "agat_sp_add_introns.pl --gff {} --out {}".format(annot, introns_outfile)
+
+    if introns_outfile.is_file():
+        msg = "AGAT add introns already done"
+
+    else:
+        run_ = subprocess.run(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.DEVNULL)
+        #Is process has gone well
+        if run_.returncode == 0:
+            msg = "AGAT add introns run successfully"
+        #But if not
+        else:
+            msg = "AGAT add introns Failed: \n {}".format(run_.stdout)
+
+    report["AGAT introns"] = {"command": cmd, "status": msg,
+                              "outfile": introns_outfile}
     return report
 
 

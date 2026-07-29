@@ -12,7 +12,11 @@ from matplotlib.patches import Wedge, Rectangle
 from pathlib import Path
 
 
-VERSION = "v1.4.1"
+VERSION = "v2.0"
+
+# Use a sans-serif font family throughout, suitable for publication figures
+plt.rcParams["font.family"] = "sans-serif"
+plt.rcParams["font.sans-serif"] = ["Arial", "Helvetica", "DejaVu Sans", "Liberation Sans"]
 
 
 def parse_arguments():
@@ -45,6 +49,7 @@ def get_arguments():
 
 
 def area_polar_polygon(r_values, theta_values):
+    """Calculate area of polygon in polar coordinates (kept for backward compatibility)."""
     r_values = np.array(r_values)
     theta_values = np.array(theta_values)
 
@@ -57,6 +62,70 @@ def area_polar_polygon(r_values, theta_values):
         r_values[:-1] * r_values[1:] * np.sin(theta_values[1:] - theta_values[:-1])
     )
     return abs(area)
+
+def calculate_weighted_score(row, metrics, weights=None, missing_analises=None):
+    """Calculate weighted average score for annotation quality.
+    
+    Formula: Score = (metric1*W1 + metric2*W2 + ... + metricN*Wn) / number_of_available_metrics
+    
+    Dynamically adjusts the number of metrics based on what's actually available,
+    excluding metrics from missing analyses.
+    
+    Args:
+        row: pandas Series with metric values
+        metrics: list of metric column names
+        weights: dict with metric names as keys and weights (0-1) as values.
+                 If None, all metrics get equal weight of 1.0
+        missing_analises: list of missing analysis types to exclude from calculation
+    
+    Returns:
+        float: Score between 0 and 100
+    """
+    if weights is None:
+        weights = {metric: 1.0 for metric in metrics}
+    
+    if missing_analises is None:
+        missing_analises = []
+    
+    # Filter out metrics from missing analyses
+    available_metrics = []
+    for metric in metrics:
+        # Check if this metric belongs to a missing analysis
+        is_missing = False
+        
+        if "BUSCO" in metric and any("BUSCO" in str(m) for m in missing_analises):
+            is_missing = True
+        elif "OMARK" in metric and "OMARK" in missing_analises:
+            is_missing = True
+        elif "PSAURON" in metric and "PSAURON" in missing_analises:
+            is_missing = True
+        elif "STOP" in metric and "STOP" in missing_analises:
+            is_missing = True
+        elif "DETENGA" in metric and "DETENGA" in missing_analises:
+            is_missing = True
+        elif any(m in metric for m in missing_analises if m.startswith("MissingWithHomology")):
+            is_missing = True
+        
+        if not is_missing:
+            available_metrics.append(metric)
+    
+    total_weight = 0
+    weighted_sum = 0
+    
+    for metric in available_metrics:
+        weight = weights.get(metric, 1.0)
+        value = row[metric]
+        weighted_sum += value * weight
+        total_weight += weight
+    
+    # Ensure total weight doesn't exceed number of available metrics
+    if len(available_metrics) > 0 and total_weight > len(available_metrics):
+        raise ValueError(f"Total weight ({total_weight}) cannot exceed number of available metrics ({len(available_metrics)})")
+    
+    # Calculate final score using only available metrics
+    score = (weighted_sum / len(available_metrics)) if len(available_metrics) > 0 else 0
+    
+    return score
 
 def main():
     sys.tracebacklimit = 1
@@ -250,10 +319,10 @@ def main():
     n_metrics = len(metrics)
     angle_step = 2 * np.pi / n_metrics
 
-    # Ángulos de las columnas (centro de cada barra)
+    # Bar enter
     bar_angles = np.linspace(0, 2 * np.pi, n_metrics, endpoint=False)
 
-    # Ángulos del radarplot y etiquetas (entre columnas)
+    # Radar plot angles
     angles = (bar_angles + angle_step / 2).tolist()
     angles_closed = angles + [angles[0]]
 
@@ -269,29 +338,20 @@ def main():
     fig.subplots_adjust(left=0.20)
     ax.set_ylim(0, 220)
 
-    separator_width = 0.01
-    separator_color = 'black'
-    n_columns = len(df_metrics)
 
     # Calcula el desplazamiento angular entre columnas
     angle_step = 2 * np.pi / len(bar_angles)
-    half_step = angle_step / 2
 
-    # for angle in bar_angles:
-    #     # Desplaza la barra separadora a la mitad entre columnas
-    #     sep_angle = angle + half_step
-    #     ax.bar(sep_angle, ax.get_ylim()[1], width=separator_width, bottom=bar_bottom,
-    #         color=separator_color, alpha=0.4, zorder=0)
-
-    ## Adding columns
-    # Sort columns by area
-    df_metrics["__Area__"] = df_metrics.apply(
-    lambda row: area_polar_polygon(row[metrics].tolist() + [row[metrics].tolist()[0]], angles_closed),
-    axis=1
+    # Calculate weighted score for sorting (all metrics equal weight by default)
+    # Modify the weights dict below to customize weights for each metric
+    weights = {metric: 1.0 for metric in metrics}  # Equal weights for all metrics
+    
+    df_metrics["__Score__"] = df_metrics.apply(
+        lambda row: calculate_weighted_score(row, metrics, weights, missing_analises),
+        axis=1
     )
 
-
-    df_metrics = df_metrics.sort_values(by="__Area__", ascending=True).reset_index(drop=True)
+    df_metrics = df_metrics.sort_values(by="__Score__", ascending=True).reset_index(drop=True)
 
     for i, row in df_metrics.iterrows():
         values = row[metrics].tolist()
@@ -407,10 +467,10 @@ def main():
                 transform=ax.transData._b, color='black', alpha=0.3)
     ax.add_artist(ring)
     ax.set_yticks([20, 40, 60, 80, 100])
-    ax.set_yticklabels([f"{lvl}%" for lvl in [20, 40, 60, 80, 100]], fontsize=10)
+    ax.set_yticklabels([f"{lvl}%" for lvl in [20, 40, 60, 80, 100]], fontsize=18)
     ax.yaxis.grid(True, linestyle='dotted', linewidth=0.8, color='gray')
     ax.set_xticks(angles)
-    ax.set_xticklabels(metrics_labels, fontsize=24, fontweight="bold")
+    ax.set_xticklabels(metrics_labels, fontsize=32, fontweight="bold")
     ax.spines['polar'].set_visible(False)
 
     radio_texto = bar_bottom + 100  # distancia radial por encima de las columnas
@@ -440,7 +500,7 @@ def main():
             angulo,                           
             radio_texto,                      
             etiqueta,      
-            fontsize=20,
+            fontsize=26,
             ha='center',
             va='center',
             rotation=0,
@@ -466,37 +526,26 @@ def main():
         Rectangle((0,0),1,1,facecolor="#D21F22", edgecolor='black', label="AGAT Both sides UTR' (%)"),
         Rectangle((0,0),1,1,facecolor="#BDD21F", edgecolor='black', label="AGAT Mean CDS Model Length (bp)")
     ]
-    area_map = {}
-    for i, row in df_metrics.iterrows():
-        values = row[metrics].tolist()
-        values_closed = values + [values[0]]
-        area = area_polar_polygon(values_closed, angles_closed)
-        area_map[row["Species"]] = area
+    # Reuse already computed scores from df_metrics
+    area_map = dict(zip(df_metrics["Species"], df_metrics["__Score__"]))
+    areas = df_metrics["__Score__"].tolist()
 
     # Anot legends
-    reverse_df_metrics = df_metrics.sort_values(by="__Area__", ascending=False).reset_index(drop=True)
+    reverse_df_metrics = df_metrics.sort_values(by="__Score__", ascending=False).reset_index(drop=True)
 
     annotation_handles = [
     plt.Line2D([0], [0], marker='o', linestyle='None',
                markerfacecolor=annot_colors[species],
                markeredgecolor='black',
                markersize=15,
-               label=f"{species} (Area: {area_map[species]:.0f})")
+               label=f"{species} (Score: {area_map[species]:.1f})")
     for species in reverse_df_metrics["Species"]]
     legend1 = ax.legend(handles=metric_handles, title="Metrics", loc='center left',
-                        bbox_to_anchor=(1.20, 0.75), fontsize=24, title_fontsize=26, frameon=False)
+                        bbox_to_anchor=(1.20, 0.75), fontsize=28, title_fontsize=32, frameon=False)
     legend2 = ax.legend(handles=annotation_handles, title="Annotations", loc='center left',
-                        bbox_to_anchor=(1.20, 0.25), fontsize=24, title_fontsize=26, frameon=False)
+                        bbox_to_anchor=(1.20, 0.25), fontsize=28, title_fontsize=32, frameon=False)
     ax.add_artist(legend1)
     ax.add_artist(legend2)
-
-    ## Area Draw 
-    areas = []
-    for _, row in df_metrics.iterrows():
-        values = row[metrics].tolist()
-        values_closed = values + [values[0]]
-        area = area_polar_polygon(values_closed, angles_closed)
-        areas.append(area)
 
 
     # Circle proportions

@@ -100,6 +100,42 @@ def parse_agat_incomplete(agat_results):
     return results
 
 
+def parse_agat_introns(agat_results, threshold):
+    """Compute intron count and % of introns shorter than `threshold` bp.
+
+    Relies on the GFF3 produced by agat_sp_add_introns.pl (report key
+    "AGAT introns"), which materializes explicit intron features so their
+    individual lengths can be measured directly, rather than only the
+    aggregate mean/longest/shortest values AGAT stats reports.
+    """
+    result_key = "% Introns < {}bp (AGAT)".format(threshold)
+    error = operation_failed(agat_results["AGAT introns"])
+    if error:
+        return {"Introns (N)": error, result_key: error}
+
+    intron_lengths = []
+    with open(agat_results["AGAT introns"]["outfile"]) as fhand:
+        for line in fhand:
+            if line.startswith("#") or not line.strip():
+                continue
+            fields = line.rstrip("\n").split("\t")
+            if len(fields) < 5 or fields[2] != "intron":
+                continue
+            try:
+                start, end = int(fields[3]), int(fields[4])
+            except ValueError:
+                continue
+            intron_lengths.append(abs(end - start) + 1)
+
+    total_introns = len(intron_lengths)
+    if total_introns == 0:
+        return {"Introns (N)": 0, result_key: 0.0}
+
+    shorter_count = sum(1 for length in intron_lengths if length < threshold)
+    percentage = round(100 * shorter_count / total_introns, 2)
+    return {"Introns (N)": total_introns, result_key: percentage}
+
+
 def parse_agat_premature(agat_results):
     error = operation_failed(agat_results["AGAT stop codons"])
     if error:
