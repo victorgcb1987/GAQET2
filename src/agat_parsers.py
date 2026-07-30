@@ -108,7 +108,7 @@ def parse_agat_introns(agat_results, threshold):
     individual lengths can be measured directly, rather than only the
     aggregate mean/longest/shortest values AGAT stats reports.
     """
-    result_key = "% Introns < {}bp (AGAT)".format(threshold)
+    result_key = "% Introns < {}bp".format(threshold)
     error = operation_failed(agat_results["AGAT introns"])
     if error:
         return {"Introns (N)": error, result_key: error}
