@@ -541,9 +541,11 @@ def main():
                label=f"{species} (Score: {area_map[species]:.1f})")
     for species in reverse_df_metrics["Species"]]
     legend1 = ax.legend(handles=metric_handles, title="Metrics", loc='center left',
-                        bbox_to_anchor=(1.20, 0.75), fontsize=28, title_fontsize=32, frameon=False)
+                        bbox_to_anchor=(1.20, 0.75), fontsize=28, frameon=False,
+                        title_fontproperties={'size': 32, 'weight': 'bold'}, alignment='center')
     legend2 = ax.legend(handles=annotation_handles, title="Annotations", loc='center left',
-                        bbox_to_anchor=(1.20, 0.25), fontsize=28, title_fontsize=32, frameon=False)
+                        bbox_to_anchor=(1.20, 0.25), fontsize=28, frameon=False,
+                        title_fontproperties={'size': 32, 'weight': 'bold'}, alignment='center')
     ax.add_artist(legend1)
     ax.add_artist(legend2)
 
