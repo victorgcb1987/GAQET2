@@ -16,6 +16,7 @@ requirements:
     - pip
   run:
     - python ==3.10.0
+    - setuptools<=81.0.0
     - biopython
     - pandas
     - numpy
