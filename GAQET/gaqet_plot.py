@@ -12,7 +12,7 @@ from matplotlib.patches import Wedge, Rectangle
 from pathlib import Path
 
 
-VERSION = "v2.0"
+VERSION = "v2.0.1"
 
 # Use a sans-serif font family throughout, suitable for publication figures
 plt.rcParams["font.family"] = "sans-serif"
@@ -470,7 +470,7 @@ def main():
     ax.set_yticklabels([f"{lvl}%" for lvl in [20, 40, 60, 80, 100]], fontsize=18)
     ax.yaxis.grid(True, linestyle='dotted', linewidth=0.8, color='gray')
     ax.set_xticks(angles)
-    ax.set_xticklabels(metrics_labels, fontsize=32, fontweight="bold")
+    ax.set_xticklabels(metrics_labels, fontsize=30, fontweight="bold")
     ax.spines['polar'].set_visible(False)
 
     radio_texto = bar_bottom + 100  # distancia radial por encima de las columnas
