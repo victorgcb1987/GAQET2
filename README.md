@@ -1,4 +1,4 @@
-
+[![DOI](https://zenodo.org/badge/955280617.svg)](https://doi.org/10.5281/zenodo.22255001)
 
 ## Table of Contents
 - [GAQET2 - Genome Annotation Quality Evaluation Tool](#gaqet2---genome-annotation-quality-evaluation-tool)
