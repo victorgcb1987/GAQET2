@@ -160,6 +160,7 @@ Some YAML config file values can be override by using **GAQET arguments**:
 | --annotation, -a          | Override YAML Annotation                            |
 | --taxid, -t          | Override NCBI taxid                    |
 | --outbase, -o   | Override YAML outbase       |
+| --compress_intermediate, -c   | When the run finishes, pack all intermediate results in `GAQET_intermediate_results.tar.gz` and delete them. Kept uncompressed in the output directory: `{species}_GAQET.stats.tsv`, `GAQET.log.txt` and the DeTEnGA summary `{species}_TE_summary.csv`. A compressed run can't be resumed. Also available in the YAML as `Compress_intermediate: true`       |
 
 Every one of this arguments **are optional**.
 

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import argparse
+import shutil
 import sys
 import time
 
@@ -12,6 +13,7 @@ from pathlib import Path
 from pathlib import Path
 from yaml import safe_load as load_yaml
 
+from src.compress import compress_intermediate
 from src.agat import run_agat, get_longest_isoform, split_annotation
 from src.busco import run_busco
 from src.error_check import correct_fasta_length
@@ -75,6 +77,14 @@ def parse_arguments():
                         help=help_busco_switch)
 
     
+    help_compress = ("(Optional) when GAQET finishes, pack all intermediate results into "
+                     "GAQET_intermediate_results.tar.gz and delete them. The stats table, the log "
+                     "file and the DeTEnGA summary stay uncompressed in the output directory. "
+                     "A compressed run can't be resumed. Can also be set in the YAML "
+                     "(Compress_intermediate: true)")
+    parser.add_argument("--compress_intermediate", "-c", action='store_true',
+                        help=help_compress)
+
     help_version = "Print version and exit"
     parser.add_argument("--version", "-v", type=str,
                         help=help_version, default="")
@@ -111,6 +121,7 @@ def get_arguments():
         basedir = create_basedir_fpath()
         yaml["Basedir"] = basedir
     yaml["disable_busco_filter"] = parser.disable_busco_filter
+    yaml["Compress_intermediate"] = parser.compress_intermediate or bool(yaml.get("Compress_intermediate", False))
     config_report = report_yaml_file(yaml)
     #subs whitespaces with _ in ID∫
     yaml["ID"] = "_".join(yaml["ID"].split())
@@ -141,6 +152,7 @@ def main():
         print(VERSION)
         sys.exit(0)
     arguments, config_report, command_used = get_arguments()
+    original_inputs = [Path(arguments["Assembly"]), Path(arguments["Annotation"])]
     basedir = Path(arguments["Basedir"])
     if not basedir.exists():
         basedir.mkdir(parents=True, exist_ok=True)
@@ -364,6 +376,24 @@ def main():
         out_fhand.write("{}\n".format("\t".join(row)))
     overall_end = time.time()
     emit_msg("GAQET finished successfully at {}, runtime: {} minutes".format(time.ctime(), str((overall_end-overall_start)/60)), log_fhand)
+
+    if arguments["Compress_intermediate"]:
+        keep = [outfile, log_fpath]
+        detenga_summary = basedir / "DETENGA_run" / "{}_TE_summary.csv".format(arguments["ID"])
+        if detenga_summary.is_file():
+            kept_summary = basedir / detenga_summary.name
+            shutil.move(str(detenga_summary), str(kept_summary))
+            keep.append(kept_summary)
+        try:
+            archive, n_files, size_before, size_after = compress_intermediate(basedir, keep, original_inputs)
+            if archive is None:
+                emit_msg("#No intermediate results to compress\n", log_fhand)
+            else:
+                emit_msg(BULLET_OK + "Intermediate results ({} files, {:.1f} MB) compressed into {} ({:.1f} MB). "
+                         "Kept uncompressed: {}\n".format(n_files, size_before/1e6, archive.name, size_after/1e6,
+                                                          ", ".join(path.name for path in keep)), log_fhand)
+        except Exception as error:
+            emit_msg(BULLET_FIX + "Compressing intermediate results failed, nothing has been deleted: {}\n".format(error), log_fhand)
 
 
 if __name__ == "__main__":
