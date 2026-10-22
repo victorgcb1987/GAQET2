@@ -8,7 +8,19 @@ from csv import DictReader
 CATEGORIES = {"No_TE(PcpM0)": "PcpM0", "Protein_TE_only(PteM0)": "PteM0",
               "Chimeric_Protein_Only(PchM0)": "PchM0", "mRNA_TE_Only(PcpMte)": "PcpMte",
               "Protein_and_mRNA_TE(PteMte)": "PteMte", "Chimeric_Protein_and_mRNA_TE(PchMte)": "PchMte",
-              "No_Protein_Domains_mRNA_TE(P0Mte)": "P0Mte"}
+              "No_Protein_Domains_mRNA_TE(P0Mte)": "P0Mte",
+              "No_Pfam_Domains_No_mRNA_TE(P0M0)": "P0M0",
+              "Not_analyzed_Ns_in_mRNA(with_Ns)": "with_Ns",
+              "Not_analyzed_longer_than_100kb(longer_than_100kb)": "longer_than_100kb"}
+
+
+def get_transcript_ids(fasta_path):
+    ids = []
+    with open(fasta_path) as fhand:
+        for line in fhand:
+            if line.startswith(">"):
+                ids.append(line.rstrip()[1:].split()[0])
+    return ids
 
 
 def get_pfams_from_db(fpath):
@@ -31,15 +43,28 @@ def create_header():
     return "\t".join(header)+"\n"
 
 
+NOT_ANALYZED = ["with_Ns", "longer_than_100kb"]
+
+
 def get_row(stats):
+    """DETENGA_FPV (counts) and DETENGA_FP% (percentages) cells. Transcripts that could not be
+    analyzed are grouped as Not_analyzed: total[with_Ns: N;longer_than_100kb: N]."""
     results = {}
-    inverse_categories = {value: key for key, value in CATEGORIES.items()}
-    categories = ["T"] + [key for key in inverse_categories]
-    values = [str(stats["num_transcripts"])] + [str(stats[key]) for key in inverse_categories]
-    per_values = [str(stats["num_transcripts"])] + [str(round(float(stats[key]/stats["num_transcripts"])*100, 2)) for key in inverse_categories]
-    summary = "{0}: {1};{2}: {3};{4}: {5};{6}: {7};{8}: {9};{10}: {11};{12}: {13}"
-    results["DETENGA_FPV"] = ";".join([summary.format(*[item for pair in zip(categories, values) for item in pair])])
-    results["DETENGA_FP%"] = ";".join([summary.format(*[item for pair in zip(categories, per_values) for item in pair])])  
+    n_transcripts = stats["num_transcripts"]
+    classes = [value for value in CATEGORIES.values() if value not in NOT_ANALYZED]
+    not_analyzed = sum(stats[key] for key in NOT_ANALYZED)
+
+    def build(values):
+        parts = ["T: {}".format(n_transcripts)] + ["{}: {}".format(key, values[key]) for key in classes]
+        parts.append("Not_analyzed: {}[{}]".format(values["Not_analyzed"],
+                                                   ";".join("{}: {}".format(key, values[key]) for key in NOT_ANALYZED)))
+        return ";".join(parts)
+
+    counts = {key: stats[key] for key in classes + NOT_ANALYZED}
+    counts["Not_analyzed"] = not_analyzed
+    percentages = {key: round(float(value/n_transcripts)*100, 2) for key, value in counts.items()}
+    results["DETENGA_FPV"] = build(counts)
+    results["DETENGA_FP%"] = build(percentages)
     return results
 
 
@@ -79,7 +104,20 @@ def parse_TEsort_output(fhand):
     return output
 
 
-def create_summary(interpro_classified, tesort_output):
+def create_summary(interpro_classified, tesort_output, all_transcripts=None, not_analyzed=None):
+    """Classify every transcript.
+
+    all_transcripts: every transcript given to InterProScan. Those analyzed by TEsorter and
+    InterProScan without any Pfam or TEsorter hit are reported as P0M0 (no Pfam domains, no
+    mRNA TE signal) instead of being dropped from the summary.
+    not_analyzed: {"with_Ns": ids, "longer_than_100kb": ids}, transcripts whose mRNA could not
+    be given to TEsorter. They get that status whatever InterProScan found, because their mRNA
+    TE signal is unknown, so they never count in the classes that depend on it (e.g. P0M0).
+    """
+    not_analyzed_status = {}
+    for status, ids in (not_analyzed or {}).items():
+        for transcript in ids:
+            not_analyzed_status.setdefault(transcript, status)
     summary = []
     for transcript, values in interpro_classified.items():
         row = {"transcript": transcript}
@@ -128,6 +166,24 @@ def create_summary(interpro_classified, tesort_output):
                    "tesort_strand": values["strand"]}
             row["detenga_status"] = detenga_status(row) 
             summary.append(row)
+    if all_transcripts is not None:
+        reported = {row["transcript"] for row in summary}
+        for transcript in all_transcripts:
+            if transcript in reported:
+                continue
+            row = {"transcript": transcript,
+                   "interpro_status": "NA",
+                   "pfams_ids": "NA",
+                   "pfams_descriptions": "NA",
+                   "tesort_domains": "NA",
+                   "tesort_complete": "NA",
+                   "tesort_class": "NA",
+                   "tesort_strand": "NA"}
+            row["detenga_status"] = detenga_status(row)
+            summary.append(row)
+    for row in summary:
+        if row["transcript"] in not_analyzed_status:
+            row["detenga_status"] = not_analyzed_status[row["transcript"]]
     return summary
         
 
@@ -147,6 +203,8 @@ def detenga_status(row):
         status = "PchMte"
     if row["interpro_status"] == "NA" and row["tesort_domains"] != "NA":
         status = "P0Mte"
+    if row["interpro_status"] == "NA" and row["tesort_domains"] == "NA":
+        status = "P0M0"
     return status
 
 
@@ -169,7 +227,8 @@ def write_summary(summary, out_fhand):
 def detenga_stats(num_transcripts, summary):
     stats = {"PcpM0": 0, "PteM0": 0, "PchM0": 0, 
              "PcpMte": 0, "PteMte": 0, "PchMte": 0, 
-             "P0Mte":0, "num_transcripts": num_transcripts}
+             "P0Mte":0, "P0M0": 0, "with_Ns": 0,
+             "longer_than_100kb": 0, "num_transcripts": num_transcripts}
     try:
         for row in DictReader(open(summary), delimiter=";"):
             stats[row["DeTEnGA_status"]] += 1

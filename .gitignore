@@ -1,1 +1,4 @@
 *.pyc
+/GAQET/ignore
+GAQET/.DS_Store
+.DS_Store

@@ -6,7 +6,8 @@ from Bio import SeqIO
 from pathlib import Path
 
 from src.detenga_parsers import (get_pfams_from_interpro_query, parse_TEsort_output, 
-                         classify_pfams, create_summary, write_summary, get_pfams_from_db)
+                         classify_pfams, create_summary, write_summary, get_pfams_from_db,
+                         get_transcript_ids)
 
 from importlib.resources import files
 
@@ -164,7 +165,10 @@ def run_detenga(config, protein_sequences, mrna_sequences):
                                    "outfile": ""}
     outfile = outdir / "{}_TE_summary.csv".format(config["ID"])
     try:
-        te_summary = create_summary(classified_pfams, te_sorter_output)
+        te_summary = create_summary(classified_pfams, te_sorter_output,
+                                        all_transcripts=get_transcript_ids(stop_codons_outfile),
+                                        not_analyzed={"with_Ns": sequences_removed_Ns,
+                                                      "longer_than_100kb": sequences_removed_length})
         with open(outfile, "w") as out_fhand:
             write_summary(te_summary, out_fhand)
             msg = "DeTEnGA create summary step done"

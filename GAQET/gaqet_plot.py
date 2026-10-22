@@ -32,6 +32,20 @@ def parse_arguments():
     parser.add_argument("--output", "-o", type=str,
                         help=help_outbase, default="")
     
+    help_weights = ("Share (percentage) of the Global Annotation Score given to a metric, as key=percentage "
+                    "separated by commas (e.g. busco=40,omark=10). A role key (homology, busco, omark, "
+                    "psauron, detenga, agat) sets the total share of that analysis, split equally among its "
+                    "metrics. Any other key is matched as a substring of one metric name (e.g. swissprot=15, "
+                    "embryophyta=20). The remaining percentage is split equally among the metrics not "
+                    "mentioned. Default: all metrics have the same share")
+    parser.add_argument("--weights", "-w", type=str,
+                        help=help_weights, default="")
+
+    help_exclude = ("Comma separated keys (same matching as --weights) of metrics to leave out of "
+                    "the Global Annotation Score. They are still drawn in the plot")
+    parser.add_argument("--exclude", "-e", type=str,
+                        help=help_exclude, default="")
+
     help_version = "Print version and exit"
     parser.add_argument("--version", "-v", type=str,
                         help=help_version, default="")
@@ -45,7 +59,9 @@ def parse_arguments():
 def get_arguments():
     parser = parse_arguments()
     return {"input": Path(parser.input),
-            "output": Path(parser.output)}
+            "output": Path(parser.output),
+            "weights": parser.weights,
+            "exclude": [key.strip() for key in parser.exclude.split(",") if key.strip()]}
 
 
 def area_polar_polygon(r_values, theta_values):
@@ -63,69 +79,139 @@ def area_polar_polygon(r_values, theta_values):
     )
     return abs(area)
 
-def calculate_weighted_score(row, metrics, weights=None, missing_analises=None):
-    """Calculate weighted average score for annotation quality.
-    
-    Formula: Score = (metric1*W1 + metric2*W2 + ... + metricN*Wn) / number_of_available_metrics
-    
-    Dynamically adjusts the number of metrics based on what's actually available,
-    excluding metrics from missing analyses.
-    
-    Args:
-        row: pandas Series with metric values
-        metrics: list of metric column names
-        weights: dict with metric names as keys and weights (0-1) as values.
-                 If None, all metrics get equal weight of 1.0
-        missing_analises: list of missing analysis types to exclude from calculation
-    
-    Returns:
-        float: Score between 0 and 100
-    """
-    if weights is None:
-        weights = {metric: 1.0 for metric in metrics}
-    
-    if missing_analises is None:
-        missing_analises = []
-    
-    # Filter out metrics from missing analyses
-    available_metrics = []
+ROLES = ("homology", "busco", "omark", "psauron", "detenga", "agat")
+
+# Metrics of these roles are left out of the score when their analysis is missing
+MISSING_FLAGS = {"omark": "OMARK", "psauron": "PSAURON", "detenga": "DETENGA", "agat": "STOP"}
+
+
+def metric_role(metric):
+    """Return the analysis (role) a metric column belongs to."""
+    if metric.startswith(("ProteinsWith", "MissingWithHomology")):
+        return "homology"
+    if "BUSCO" in metric:
+        return "busco"
+    for role, tag in (("omark", "(OMARK)"), ("psauron", "(PSAURON)"),
+                      ("detenga", "(DeTEnGA)"), ("agat", "(AGAT)")):
+        if tag in metric:
+            return role
+    return None
+
+
+def normalize_key(text):
+    return re.sub(r"[^a-z0-9]", "", text.lower())
+
+
+def get_available_metrics(metrics, missing_analises):
+    """Metrics backed by an analysis that was actually run."""
+    available = []
     for metric in metrics:
-        # Check if this metric belongs to a missing analysis
-        is_missing = False
-        
-        if "BUSCO" in metric and any("BUSCO" in str(m) for m in missing_analises):
-            is_missing = True
-        elif "OMARK" in metric and "OMARK" in missing_analises:
-            is_missing = True
-        elif "PSAURON" in metric and "PSAURON" in missing_analises:
-            is_missing = True
-        elif "STOP" in metric and "STOP" in missing_analises:
-            is_missing = True
-        elif "DETENGA" in metric and "DETENGA" in missing_analises:
-            is_missing = True
-        elif any(m in metric for m in missing_analises if m.startswith("MissingWithHomology")):
-            is_missing = True
-        
-        if not is_missing:
-            available_metrics.append(metric)
-    
-    total_weight = 0
-    weighted_sum = 0
-    
-    for metric in available_metrics:
-        weight = weights.get(metric, 1.0)
-        value = row[metric]
-        weighted_sum += value * weight
-        total_weight += weight
-    
-    # Ensure total weight doesn't exceed number of available metrics
-    if len(available_metrics) > 0 and total_weight > len(available_metrics):
-        raise ValueError(f"Total weight ({total_weight}) cannot exceed number of available metrics ({len(available_metrics)})")
-    
-    # Calculate final score using only available metrics
-    score = (weighted_sum / len(available_metrics)) if len(available_metrics) > 0 else 0
-    
-    return score
+        if "Missing" in metric:
+            continue
+        flag = MISSING_FLAGS.get(metric_role(metric))
+        if flag is not None and flag in missing_analises:
+            continue
+        available.append(metric)
+    return available
+
+
+def parse_weights(text):
+    """Parse 'busco=40,omark=10' into [("busco", 40.0), ("omark", 10.0)]."""
+    spec = []
+    for item in [i.strip() for i in text.split(",") if i.strip()]:
+        key, sep, value = item.partition("=")
+        try:
+            share = float(value)
+        except ValueError:
+            share = None
+        if not sep or not key.strip() or share is None or not 0 < share <= 100:
+            raise ValueError("Invalid --weights item '{}'. Use key=percentage, with a percentage "
+                             "greater than 0 and up to 100 (e.g. busco=40,omark=10). "
+                             "To leave a metric out of the score use --exclude".format(item))
+        spec.append((key.strip(), share))
+    return spec
+
+
+def match_metrics(key, metrics, available_text):
+    """Metrics selected by a role name (busco, omark...) or by a substring of a metric name."""
+    nkey = normalize_key(key)
+    if nkey in ROLES:
+        matched = [m for m in metrics if metric_role(m) == nkey]
+        is_role = True
+    else:
+        matched = [m for m in metrics if nkey and nkey in normalize_key(m)]
+        is_role = False
+    if not matched:
+        raise ValueError("'{}' does not match any metric used in this run. Roles: {}. "
+                         "Metrics: {}".format(key, ", ".join(ROLES), available_text))
+    return matched, is_role
+
+
+def resolve_shares(metrics, share_spec=None, exclude=None):
+    """Share of the global annotation score (fraction, adding up to 1) of each scored metric.
+
+    GAS = sum(share_i * metric_i). By default every metric has the same share.
+    share_spec: [(key, percentage)]. A role key (busco, omark, psauron, detenga, agat, homology)
+    sets the total share of that analysis, split equally among its metrics. Any other key is
+    matched as a substring of one metric name and sets the share of that metric alone.
+    The remaining percentage is split equally among the metrics not mentioned.
+    exclude: keys (same matching) of metrics left out of the score.
+    """
+    available_text = "; ".join(metrics)
+    excluded = set()
+    for key in exclude or []:
+        excluded.update(match_metrics(key, metrics, available_text)[0])
+    scored = [m for m in metrics if m not in excluded]
+    if not scored:
+        raise ValueError("All metrics have been excluded from the score")
+
+    shares = {}
+    for key, percentage in share_spec or []:
+        matched, is_role = match_metrics(key, scored, "; ".join(scored))
+        if not is_role and len(matched) > 1:
+            raise ValueError("'{}' matches several metrics ({}). Use a more specific key "
+                             "or a role name".format(key, "; ".join(matched)))
+        for metric in matched:
+            if metric in shares:
+                raise ValueError("Metric '{}' receives more than one share".format(metric))
+            shares[metric] = percentage / len(matched)
+
+    specified = sum(shares.values())
+    remaining = [m for m in scored if m not in shares]
+    if specified > 100 + 1e-9:
+        raise ValueError("The shares given add up to {:.2f}%, more than 100%".format(specified))
+    if remaining:
+        if specified >= 100 - 1e-9:
+            raise ValueError("The shares given use the whole score, no share left for: {}".format("; ".join(remaining)))
+        for metric in remaining:
+            shares[metric] = (100 - specified) / len(remaining)
+    elif abs(specified - 100) > 1e-6:
+        raise ValueError("All metrics have a share, so they must add up to 100% (now {:.2f}%)".format(specified))
+    return {metric: shares[metric] / 100 for metric in scored}
+
+
+def write_share_table(metrics, shares, missing_analises, out_path):
+    """Print and save the share of the score of every metric."""
+    available = set(get_available_metrics(metrics, missing_analises))
+    lines = ["Metric\tRole\tShare_%\tStatus"]
+    for metric in metrics:
+        if metric in shares:
+            status, share = "scored", "{:.2f}".format(shares[metric] * 100)
+        elif metric in available:
+            status, share = "excluded", "0.00"
+        else:
+            status, share = "analysis missing", "0.00"
+        lines.append("{}\t{}\t{}\t{}".format(metric.replace("\n", " "), metric_role(metric), share, status))
+    print("Global Annotation Score, share of each metric:\n" + "\n".join(lines))
+    if out_path:
+        with open(out_path, "w") as fhand:
+            fhand.write("\n".join(lines) + "\n")
+
+
+def calculate_weighted_score(row, shares):
+    """Global Annotation Score (0-100): sum of share * metric value over the scored metrics."""
+    return sum(row[metric] * share for metric, share in shares.items())
+
 
 def main():
     sys.tracebacklimit = 1
@@ -342,12 +428,19 @@ def main():
     # Calcula el desplazamiento angular entre columnas
     angle_step = 2 * np.pi / len(bar_angles)
 
-    # Calculate weighted score for sorting (all metrics equal weight by default)
-    # Modify the weights dict below to customize weights for each metric
-    weights = {metric: 1.0 for metric in metrics}  # Equal weights for all metrics
-    
+    # Global Annotation Score: equal share per metric unless --weights/--exclude are given
+    try:
+        shares = resolve_shares(get_available_metrics(metrics, missing_analises),
+                                parse_weights(arguments["weights"]), arguments["exclude"])
+    except ValueError as error:
+        sys.exit("\033[31mERROR: {}\033[0m".format(error))
+    share_table = ""
+    if str(arguments["output"]):
+        share_table = arguments["output"].with_name(arguments["output"].stem + "_GAS_weights.tsv")
+    write_share_table(metrics, shares, missing_analises, share_table)
+
     df_metrics["__Score__"] = df_metrics.apply(
-        lambda row: calculate_weighted_score(row, metrics, weights, missing_analises),
+        lambda row: calculate_weighted_score(row, shares),
         axis=1
     )
 
