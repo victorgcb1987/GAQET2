@@ -38,6 +38,8 @@ BULLET_FIX = "\tERROR!\t"
 HEADER = "-"*5
 AVAILABLE_ANALYSIS = ["AGAT", "BUSCO", "PSAURON",
                       "DETENGA", "OMARK", "PROTHOMOLOGY"]
+DEFAULT_INTRON_ARTIFACT_THRESHOLD = 30
+DEFAULT_INTRON_REVIEW_THRESHOLD = 50
 VERSION = "v1.15.0"
 
 
@@ -77,6 +79,16 @@ def parse_arguments():
                         help=help_busco_switch)
 
     
+    help_intron_artifact = ("(Optional) Override YAML Intron_Artifact_Threshold: introns with length (bp) "
+                            "equal or below this value are counted as potential artifacts")
+    parser.add_argument("--intron_artifact", type=float,
+                        help=help_intron_artifact, default=None)
+
+    help_intron_floor = ("(Optional) Override YAML Intron_Floor_Threshold: introns with length (bp) "
+                         "equal or below this value are counted in the floor metric")
+    parser.add_argument("--intron_floor", type=float,
+                        help=help_intron_floor, default=None)
+
     help_compress = ("(Optional) when GAQET finishes, pack all intermediate results into "
                      "GAQET_intermediate_results.tar.gz and delete them. The stats table, the log "
                      "file and the DeTEnGA summary stay uncompressed in the output directory. "
@@ -120,6 +132,10 @@ def get_arguments():
     elif not yaml.get("Basedir", ""):
         basedir = create_basedir_fpath()
         yaml["Basedir"] = basedir
+    if parser.intron_artifact is not None:
+        yaml["Intron_Artifact_Threshold"] = parser.intron_artifact
+    if parser.intron_floor is not None:
+        yaml["Intron_Floor_Threshold"] = parser.intron_floor
     yaml["disable_busco_filter"] = parser.disable_busco_filter
     yaml["Compress_intermediate"] = parser.compress_intermediate or bool(yaml.get("Compress_intermediate", False))
     config_report = report_yaml_file(yaml)
@@ -131,6 +147,10 @@ def get_arguments():
     command_used += f"-g {yaml['Assembly']} "
     command_used += f"-a {yaml['Annotation']} "
     command_used += f"-o {yaml['Basedir']}"
+    if "Intron_Artifact_Threshold" in yaml:
+        command_used += f" --intron_artifact {yaml['Intron_Artifact_Threshold']}"
+    if "Intron_Floor_Threshold" in yaml:
+        command_used += f" --intron_floor {yaml['Intron_Floor_Threshold']}"
     return yaml, config_report, command_used
 
 
@@ -350,8 +370,16 @@ def main():
             results.update(parse_agat_stats(agat))
             results.update(parse_agat_premature(agat))
             results.update(parse_agat_incomplete(agat))
-            intron_threshold = arguments.get("Intron_Threshold", 100)
-            results.update(parse_agat_introns(agat, intron_threshold))
+            artifact_threshold = arguments.get("Intron_Artifact_Threshold", DEFAULT_INTRON_ARTIFACT_THRESHOLD)
+            review_threshold = arguments.get("Intron_Floor_Threshold", DEFAULT_INTRON_REVIEW_THRESHOLD)
+            if "Intron_Artifact_Threshold" not in arguments or "Intron_Floor_Threshold" not in arguments:
+                emit_msg("WARNING: Intron_Artifact_Threshold and/or Intron_Floor_Threshold are not in the YAML, "
+                         "using the defaults ({} and {} bp). Intron length limits "
+                         "depend on the lineage, set them for your group.\n".format(artifact_threshold, review_threshold), log_fhand)
+            if artifact_threshold >= review_threshold:
+                emit_msg(BULLET_FIX + "Intron_Artifact_Threshold ({}) should be lower than Intron_Floor_Threshold ({})\n".format(
+                         artifact_threshold, review_threshold), log_fhand)
+            results.update(parse_agat_introns(agat, artifact_threshold, review_threshold))
         if analysis == "BUSCO":
             busco_results = busco_stats(busco)
             for lineage, stats in busco_results.items():

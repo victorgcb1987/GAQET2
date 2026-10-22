@@ -100,18 +100,23 @@ def parse_agat_incomplete(agat_results):
     return results
 
 
-def parse_agat_introns(agat_results, threshold):
-    """Compute intron count and % of introns shorter than `threshold` bp.
+def parse_agat_introns(agat_results, artifact_threshold, review_threshold):
+    """Compute the intron count and the % of introns that are potential artifacts or suspicious.
+
+    artifact_threshold: introns with length <= this value (bp) are in the range of potential artifacts.
+    review_threshold: introns with length <= this value (bp) are within the suspicious intron cutoff
+    (the review band), so this group includes the potential artifacts.
 
     Relies on the GFF3 produced by agat_sp_add_introns.pl (report key
     "AGAT introns"), which materializes explicit intron features so their
     individual lengths can be measured directly, rather than only the
     aggregate mean/longest/shortest values AGAT stats reports.
     """
-    result_key = "% Introns < {}bp".format(threshold)
+    artifact_key = "% Introns <= {:g}bp (potential artifacts)".format(artifact_threshold)
+    review_key = "% Introns <= {:g}bp (floor)".format(review_threshold)
     error = operation_failed(agat_results["AGAT introns"])
     if error:
-        return {"Introns (N)": error, result_key: error}
+        return {"Introns (N)": error, artifact_key: error, review_key: error}
 
     intron_lengths = []
     with open(agat_results["AGAT introns"]["outfile"]) as fhand:
@@ -129,11 +134,13 @@ def parse_agat_introns(agat_results, threshold):
 
     total_introns = len(intron_lengths)
     if total_introns == 0:
-        return {"Introns (N)": 0, result_key: 0.0}
+        return {"Introns (N)": 0, artifact_key: 0.0, review_key: 0.0}
 
-    shorter_count = sum(1 for length in intron_lengths if length < threshold)
-    percentage = round(100 * shorter_count / total_introns, 2)
-    return {"Introns (N)": total_introns, result_key: percentage}
+    artifacts = sum(1 for length in intron_lengths if length <= artifact_threshold)
+    review = sum(1 for length in intron_lengths if length <= review_threshold)
+    return {"Introns (N)": total_introns,
+            artifact_key: round(100 * artifacts / total_introns, 2),
+            review_key: round(100 * review / total_introns, 2)}
 
 
 def parse_agat_premature(agat_results):

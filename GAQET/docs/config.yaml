@@ -18,7 +18,10 @@ DETENGA_db: "rexdb-plant"
 PROTHOMOLOGY_tags:
   - TREMBL: ""
   - SWISSPROT: ""
-# Optional: intron length (bp) threshold used to compute the
-# "% Introns < {Intron_Threshold}bp (AGAT)" metric. Defaults to 100 if omitted.
-Intron_Threshold: 100
+# Optional: intron length limits (bp), they depend on the lineage. They give two metrics:
+# "% Introns <= {Intron_Artifact_Threshold}bp (potential artifacts)": introns this long or shorter
+# "% Introns <= {Intron_Floor_Threshold}bp (floor)": introns this long or shorter (includes the previous ones)
+# Default if omitted: 30 and 50.
+Intron_Artifact_Threshold: 30
+Intron_Floor_Threshold: 50
 Threads: 1

@@ -128,7 +128,8 @@ PROTHOMOLOGY_tags:
   - SWISSPROT: "/path/to/uniprot_swssprot.dmnd"
   - MYDB: "/path/to/mydb.dmnd"
 DETENGA_db: "rexdb-plant"
-Intron_Threshold: 100
+Intron_Artifact_Threshold: 30
+Intron_Floor_Threshold: 50
 
 
 ```
@@ -146,7 +147,8 @@ Intron_Threshold: 100
 | BUSCO_lineages | List of BUSCO clades to run. Only needed if BUSCO is in Analysis      |
 | PROTHOMOLOGY_tags | List of name and path to DIAMOND proteins database. Only needed if  PROTHOMOLOGY is in Analysis     |
 | DETENGA_db | DeTEnGA database for interpro checks. Only needed if DETENGA is in Analysis    |
-| Intron_Threshold | (Optional) Intron length (bp) cutoff used to compute the % of introns shorter than this value. Only needed if AGAT is in Analysis. Defaults to 100 if omitted |
+| Intron_Artifact_Threshold | (Optional) Introns with length (bp) equal or below this value are in the range of potential artifacts. Intron limits depend on the lineage. Only needed if AGAT is in Analysis. Defaults to 30 if omitted |
+| Intron_Floor_Threshold | (Optional) Introns with length (bp) equal or below this value are in the review band (suspicious introns, includes the potential artifacts). Only needed if AGAT is in Analysis. Defaults to 50 if omitted |
 
 
 #### GAQET arguments
@@ -160,6 +162,8 @@ Some YAML config file values can be override by using **GAQET arguments**:
 | --annotation, -a          | Override YAML Annotation                            |
 | --taxid, -t          | Override NCBI taxid                    |
 | --outbase, -o   | Override YAML outbase       |
+| --intron_artifact   | Override YAML `Intron_Artifact_Threshold` (bp)       |
+| --intron_floor   | Override YAML `Intron_Floor_Threshold` (bp)       |
 | --compress_intermediate, -c   | When the run finishes, pack all intermediate results in `GAQET_intermediate_results.tar.gz` and delete them. Kept uncompressed in the output directory: `{species}_GAQET.stats.tsv`, `GAQET.log.txt` and the DeTEnGA summary `{species}_TE_summary.csv`. A compressed run can't be resumed. Also available in the YAML as `Compress_intermediate: true`       |
 
 Every one of this arguments **are optional**.
@@ -231,7 +235,8 @@ The ouput directories should be similar to this one:
 | Shortest CDS Length (bp)         | (AGAT) Shortest CDS length     |
 | Shortest intron Length (bp)      | (AGAT) Shortest intron length     |
 | Introns (N)                      | (AGAT) Total number of introns found in the annotation     |
-| % Introns < {Intron_Threshold}bp (AGAT) | (AGAT) Percentage of introns shorter than the configured `Intron_Threshold` (bp)     |
+| % Introns <= {Intron_Artifact_Threshold}bp (potential artifacts) | (AGAT) Percentage of introns with length equal or below the configured `Intron_Artifact_Threshold` (bp)     |
+| % Introns <= {Intron_Floor_Threshold}bp (floor) | (AGAT) Percentage of introns with length equal or below the configured `Intron_Floor_Threshold` (bp). It includes the potential artifacts     |
 | Models with early STOP (N)       | (AGAT) Number of coding transcripts with premature stop codons     |
 | Models START missing             | (AGAT) Number of coding transcripts lacking start codon     |
 | Models START & STOP missing      | (AGAT) Number of coding transcripts lacking stop and start codon     |
