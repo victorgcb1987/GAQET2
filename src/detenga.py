@@ -55,7 +55,7 @@ def run_detenga(config, protein_sequences, mrna_sequences):
     if sequences_removed_Ns:
         msg = "Warning: the following sequences have Ns in the sequence and has been removed from TEsorter analysis:\n {}\n".format("\n".join(sequences_removed_Ns))
     if sequences_removed_length:
-         msg = "Warning: the following sequences have more than 100k residues has been removed from TEsorter analysis:\n {}\n".format("\n".join(sequences_removed_length))
+         msg += "Warning: the following sequences have more than 100k residues has been removed from TEsorter analysis:\n {}\n".format("\n".join(sequences_removed_length))
 
     base_dir = Path(os.getcwd())
     tesorter_outfile = outdir / "{}.{}.cls.tsv".format(filtered_mRNA_outfile.name, config["DETENGA_db"])
