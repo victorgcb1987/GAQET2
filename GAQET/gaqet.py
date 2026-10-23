@@ -388,7 +388,8 @@ def main():
             if artifact_threshold >= review_threshold:
                 emit_msg(BULLET_FIX + "Intron_Artifact_Threshold ({}) should be lower than Intron_Floor_Threshold ({})\n".format(
                          artifact_threshold, review_threshold), log_fhand)
-            results.update(parse_agat_introns(agat, artifact_threshold, review_threshold))
+            short_introns_prefix = basedir / "{}_short_introns".format(arguments["ID"])
+            results.update(parse_agat_introns(agat, artifact_threshold, review_threshold, short_introns_prefix))
         if analysis == "BUSCO":
             busco_results = busco_stats(busco)
             for lineage, stats in busco_results.items():
@@ -420,6 +421,8 @@ def main():
 
     if arguments["Compress_intermediate"]:
         keep = [outfile, log_fpath]
+        keep += [path for path in (basedir / "{}_short_introns_transcripts.tsv".format(arguments["ID"]),
+                                   basedir / "{}_short_introns_genes.tsv".format(arguments["ID"])) if path.is_file()]
         detenga_summary = basedir / "DETENGA_run" / "{}_TE_summary.csv".format(arguments["ID"])
         if detenga_summary.is_file():
             kept_summary = basedir / detenga_summary.name

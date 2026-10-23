@@ -201,7 +201,10 @@ The ouput directories should be similar to this one:
  ├── 📂 PSAURON_run  
  ├── 📄 GAQET.log.txt  
  ├── 📄 {species}_GAQET.stats.tsv  
+ ├── 📄 {species}_short_introns_transcripts.tsv  
+ ├── 📄 {species}_short_introns_genes.tsv  
 
+ The two ```{species}_short_introns_*.tsv``` files (written when AGAT is run) list the transcripts and the genes with at least one intron equal or shorter than ```Intron_Floor_Threshold``` (it includes the introns in the potential artifacts range, ```Intron_Artifact_Threshold```), with the position and length of those introns.
  Each of the ```*_run``` directories contains the output of each analysis run. ```log.txt``` file contains things like run errors or time consumed running analysis. Al programs outputs are parsed and their results are stored in a tsv file, the ```{species}_GAQET.stats.tsv``` file.  
  [🔝 Back to Table of Contents](#table-of-contents)
 
@@ -237,8 +240,18 @@ The ouput directories should be similar to this one:
 | Shortest CDS Length (bp)         | (AGAT) Shortest CDS length     |
 | Shortest intron Length (bp)      | (AGAT) Shortest intron length     |
 | Introns (N)                      | (AGAT) Total number of introns found in the annotation     |
-| % Introns <= {Intron_Artifact_Threshold}bp (potential artifacts) | (AGAT) Percentage of introns with length equal or below the configured `Intron_Artifact_Threshold` (bp)     |
-| % Introns <= {Intron_Floor_Threshold}bp (floor) | (AGAT) Percentage of introns with length equal or below the configured `Intron_Floor_Threshold` (bp). It includes the potential artifacts     |
+| Introns <= {Intron_Artifact_Threshold}bp (potential artifacts) (N) | (AGAT) Number of introns with length equal or below the configured `Intron_Artifact_Threshold` (bp). |
+| % Introns <= {Intron_Artifact_Threshold}bp (potential artifacts) | (AGAT) Same, as a percentage of all introns (`Introns (N)`) |
+| Transcripts with introns <= {Intron_Artifact_Threshold}bp (potential artifacts) (N) | (AGAT) Number of transcripts (isoforms) with at least one intron in that range |
+| % Transcripts with introns <= {Intron_Artifact_Threshold}bp (potential artifacts) | (AGAT) Same, as a percentage of all transcripts in the annotation (single-exon transcripts included) |
+| Genes with introns <= {Intron_Artifact_Threshold}bp (potential artifacts) (N) | (AGAT) Number of genes with at least one transcript (isoform) with an intron in that range |
+| % Genes with introns <= {Intron_Artifact_Threshold}bp (potential artifacts) | (AGAT) Same, as a percentage of all genes in the annotation |
+| Introns <= {Intron_Floor_Threshold}bp (floor) (N) | (AGAT) Number of introns with length equal or below the configured `Intron_Floor_Threshold` (bp). It includes the potential artifacts. |
+| % Introns <= {Intron_Floor_Threshold}bp (floor) | (AGAT) Same, as a percentage of all introns (`Introns (N)`) |
+| Transcripts with introns <= {Intron_Floor_Threshold}bp (floor) (N) | (AGAT) Number of transcripts (isoforms) with at least one intron in that range |
+| % Transcripts with introns <= {Intron_Floor_Threshold}bp (floor) | (AGAT) Same, as a percentage of all transcripts in the annotation (single-exon transcripts included) |
+| Genes with introns <= {Intron_Floor_Threshold}bp (floor) (N) | (AGAT) Number of genes with at least one transcript (isoform) with an intron in that range |
+| % Genes with introns <= {Intron_Floor_Threshold}bp (floor) | (AGAT) Same, as a percentage of all genes in the annotation |
 | Models with early STOP (N)       | (AGAT) Number of coding transcripts with premature stop codons     |
 | Models START missing             | (AGAT) Number of coding transcripts lacking start codon     |
 | Models START & STOP missing      | (AGAT) Number of coding transcripts lacking stop and start codon     |

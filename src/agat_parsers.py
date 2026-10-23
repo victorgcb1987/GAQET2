@@ -100,47 +100,138 @@ def parse_agat_incomplete(agat_results):
     return results
 
 
-def parse_agat_introns(agat_results, artifact_threshold, review_threshold):
-    """Compute the intron count and the % of introns that are potential artifacts or suspicious.
+def parse_attributes(text):
+    attributes = {}
+    for item in text.strip().split(";"):
+        key, sep, value = item.partition("=")
+        if sep:
+            attributes[key.strip()] = value.strip()
+    return attributes
+
+
+def parse_agat_introns(agat_results, artifact_threshold, review_threshold, summary_prefix=None):
+    """Intron length metrics for two cutoffs: potential artifacts and the floor.
 
     artifact_threshold: introns with length <= this value (bp) are in the range of potential artifacts.
-    review_threshold: introns with length <= this value (bp) are within the suspicious intron cutoff
-    (the review band), so this group includes the potential artifacts.
+    review_threshold: introns with length <= this value (bp) are within the floor (the suspicious
+    intron cutoff, the review band), so this group includes the potential artifacts.
+
+    For each cutoff it reports, as numbers and percentages:
+      - introns with that length (% of all introns),
+      - transcripts with at least one such intron (% of all transcripts),
+      - genes with at least one transcript (isoform) with such an intron (% of all genes).
+    Transcripts and genes are counted from the mRNA features of the file, so single-exon
+    transcripts are in the denominator.
+
+    If summary_prefix is given, two tables list what is inside the floor cutoff (which includes the
+    potential artifacts): <prefix>_transcripts.tsv (one row per transcript with an intron <= the
+    floor cutoff) and <prefix>_genes.tsv (one row per gene with at least one such transcript).
 
     Relies on the GFF3 produced by agat_sp_add_introns.pl (report key
     "AGAT introns"), which materializes explicit intron features so their
     individual lengths can be measured directly, rather than only the
     aggregate mean/longest/shortest values AGAT stats reports.
     """
-    artifact_key = "% Introns <= {:g}bp (potential artifacts)".format(artifact_threshold)
-    review_key = "% Introns <= {:g}bp (floor)".format(review_threshold)
+    cutoffs = [("Introns <= {:g}bp (potential artifacts)".format(artifact_threshold), artifact_threshold),
+               ("Introns <= {:g}bp (floor)".format(review_threshold), review_threshold)]
+
+    def columns(label):
+        lowered = label.lower()
+        return [label + " (N)", "% " + label,
+                "Transcripts with " + lowered + " (N)", "% Transcripts with " + lowered,
+                "Genes with " + lowered + " (N)", "% Genes with " + lowered]
+
     error = operation_failed(agat_results["AGAT introns"])
     if error:
-        return {"Introns (N)": error, artifact_key: error, review_key: error}
+        results = {"Introns (N)": error}
+        for label, threshold in cutoffs:
+            results.update({column: error for column in columns(label)})
+        return results
 
-    intron_lengths = []
+    transcript_gene = {}
+    introns = []
     with open(agat_results["AGAT introns"]["outfile"]) as fhand:
         for line in fhand:
             if line.startswith("#") or not line.strip():
                 continue
             fields = line.rstrip("\n").split("\t")
-            if len(fields) < 5 or fields[2] != "intron":
+            if len(fields) < 9:
                 continue
-            try:
-                start, end = int(fields[3]), int(fields[4])
-            except ValueError:
-                continue
-            intron_lengths.append(abs(end - start) + 1)
+            if fields[2] == "mRNA":
+                attributes = parse_attributes(fields[8])
+                if "ID" in attributes:
+                    transcript_gene[attributes["ID"]] = attributes.get("Parent", "").split(",")[0]
+            elif fields[2] == "intron":
+                try:
+                    start, end = int(fields[3]), int(fields[4])
+                except ValueError:
+                    continue
+                parents = parse_attributes(fields[8]).get("Parent", "").split(",")
+                introns.append((abs(end - start) + 1, [parent for parent in parents if parent],
+                                fields[0], start, end, fields[6]))
 
-    total_introns = len(intron_lengths)
-    if total_introns == 0:
-        return {"Introns (N)": 0, artifact_key: 0.0, review_key: 0.0}
+    total_introns = len(introns)
+    total_transcripts = len(transcript_gene)
+    total_genes = len({gene for gene in transcript_gene.values() if gene})
+    results = {"Introns (N)": total_introns}
+    for label, threshold in cutoffs:
+        selected = [intron[1] for intron in introns if intron[0] <= threshold]
+        transcripts = {parent for parents in selected for parent in parents}
+        genes = {transcript_gene[transcript] for transcript in transcripts if transcript_gene.get(transcript)}
+        counts = [len(selected), len(transcripts), len(genes)]
+        totals = [total_introns, total_transcripts, total_genes]
+        names = columns(label)
+        for index, (count, total) in enumerate(zip(counts, totals)):
+            results[names[2 * index]] = count
+            results[names[2 * index + 1]] = round(100 * count / total, 2) if total else 0.0
+    if summary_prefix is not None:
+        write_short_intron_summary(summary_prefix, introns, transcript_gene, artifact_threshold, review_threshold)
+    return results
 
-    artifacts = sum(1 for length in intron_lengths if length <= artifact_threshold)
-    review = sum(1 for length in intron_lengths if length <= review_threshold)
-    return {"Introns (N)": total_introns,
-            artifact_key: round(100 * artifacts / total_introns, 2),
-            review_key: round(100 * review / total_introns, 2)}
+
+def write_short_intron_summary(prefix, introns, transcript_gene, artifact_threshold, review_threshold):
+    """Tables of the transcripts and genes with introns within the cutoffs (see parse_agat_introns)."""
+    by_transcript = {}
+    for length, parents, seqid, start, end, strand in introns:
+        for parent in parents:
+            by_transcript.setdefault(parent, []).append((length, seqid, min(start, end), max(start, end), strand))
+    transcripts_per_gene = {}
+    for transcript, gene in transcript_gene.items():
+        transcripts_per_gene.setdefault(gene, []).append(transcript)
+
+    transcript_rows, gene_rows = [], {}
+    for transcript in sorted(by_transcript):
+        short = sorted(i for i in by_transcript[transcript] if i[0] <= review_threshold)
+        if not short:
+            continue
+        artifacts = [i for i in short if i[0] <= artifact_threshold]
+        gene = transcript_gene.get(transcript, "")
+        transcript_rows.append([transcript, gene, short[0][1], short[0][4], len(by_transcript[transcript]),
+                                len(artifacts), len(short), min(i[0] for i in short),
+                                ",".join("{}-{}:{}".format(i[2], i[3], i[0]) for i in short)])
+        info = gene_rows.setdefault(gene, {"artifact": [], "floor": [], "shortest": short[0][0]})
+        info["floor"].append(transcript)
+        if artifacts:
+            info["artifact"].append(transcript)
+        info["shortest"] = min(info["shortest"], short[0][0])
+
+    prefix = str(prefix)
+    with open(prefix + "_transcripts.tsv", "w") as fhand:
+        fhand.write("\t".join(["Transcript_ID", "Gene_ID", "Seqid", "Strand", "Introns (N)",
+                               "Introns <= {:g}bp (potential artifacts) (N)".format(artifact_threshold),
+                               "Introns <= {:g}bp (floor) (N)".format(review_threshold),
+                               "Shortest_intron (bp)", "Introns_within_floor (start-end:length)"]) + "\n")
+        for row in transcript_rows:
+            fhand.write("\t".join(str(value) for value in row) + "\n")
+    with open(prefix + "_genes.tsv", "w") as fhand:
+        fhand.write("\t".join(["Gene_ID", "Transcripts (N)",
+                               "Transcripts with introns <= {:g}bp (potential artifacts) (N)".format(artifact_threshold),
+                               "Transcripts with introns <= {:g}bp (floor) (N)".format(review_threshold),
+                               "Shortest_intron (bp)", "Transcripts_within_floor"]) + "\n")
+        for gene in sorted(gene_rows):
+            info = gene_rows[gene]
+            fhand.write("\t".join([gene, str(len(transcripts_per_gene.get(gene, []))), str(len(info["artifact"])),
+                                   str(len(info["floor"])), str(info["shortest"]), ",".join(info["floor"])]) + "\n")
 
 
 def parse_agat_premature(agat_results):
