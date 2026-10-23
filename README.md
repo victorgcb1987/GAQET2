@@ -212,8 +212,10 @@ The ouput directories should be similar to this one:
 |---------------|----------------------------------------------|
 | Species                        |  Value assigned by the user when running the command  |
 | NCBI_TaxID                     | Value assigned by the user when running the command                     |
-| Assembly_Version               | Actually, the name of the assembly file. GAQET_REVIEWER provides md5sums of this file for better identification                            |
-| Annotation_Version             | Actually, the name of the annotation file. GAQET_REVIEWER provides md5sums of this file for better identification                    |
+| Assembly_Version               | Name of the assembly file given by the user (not of the intermediate files GAQET makes)                            |
+| Annotation_Version             | Name of the original annotation file given by the user (not of the mRNA file made after splitting it with AGAT)                    |
+| Assembly_md5                   | md5sum of the assembly file given by the user, to identify it exactly                            |
+| Annotation_md5                 | md5sum of the original annotation file given by the user, to identify it exactly                    |
 | Gene_Models (N)                | (AGAT) Number of coding genes found in the annotation     |
 | Transcript_Models (N)          | (AGAT) Number of coding transcripts found in the annotation     |
 | CDS_Models (N)                 | (AGAT) Number of CDS found in the annotation     |

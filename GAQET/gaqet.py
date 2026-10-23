@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import argparse
+import hashlib
 import shutil
 import sys
 import time
@@ -41,6 +42,14 @@ AVAILABLE_ANALYSIS = ["AGAT", "BUSCO", "PSAURON",
 DEFAULT_INTRON_ARTIFACT_THRESHOLD = 30
 DEFAULT_INTRON_REVIEW_THRESHOLD = 50
 VERSION = "v1.15.0"
+
+
+def md5_of(path, chunk_size=1 << 20):
+    digest = hashlib.md5()
+    with open(path, "rb") as fhand:
+        for chunk in iter(lambda: fhand.read(chunk_size), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def parse_arguments():
@@ -397,9 +406,13 @@ def main():
 
     outfile = Path(arguments["Basedir"]) / "{}_GAQET.stats.tsv".format(arguments["ID"])
     with open(outfile, "w") as out_fhand:
-        header = ["Species", "NCBI_TaxID", "Assembly_Version", "Annotation_Version"] + [stats for stats in results]
+        header = ["Species", "NCBI_TaxID", "Assembly_Version", "Annotation_Version",
+                  "Assembly_md5", "Annotation_md5"] + [stats for stats in results]
         out_fhand.write("{}\n".format("\t".join(header)))
-        row = [arguments["ID"], str(arguments["OMARK_taxid"]), Path(arguments["Assembly"]).name, Path(arguments["Annotation"]).name]
+        # names and md5 of the files given by the user, not of the intermediate files made by GAQET
+        original_assembly, original_annotation = original_inputs
+        row = [arguments["ID"], str(arguments["OMARK_taxid"]), original_assembly.name, original_annotation.name,
+               md5_of(original_assembly), md5_of(original_annotation)]
         row += [str(value) for stats, value in results.items()]
         out_fhand.write("{}\n".format("\t".join(row)))
     overall_end = time.time()
