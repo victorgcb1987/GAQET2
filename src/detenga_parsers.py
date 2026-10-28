@@ -11,7 +11,8 @@ CATEGORIES = {"No_TE(PcpM0)": "PcpM0", "Protein_TE_only(PteM0)": "PteM0",
               "No_Protein_Domains_mRNA_TE(P0Mte)": "P0Mte",
               "No_Pfam_Domains_No_mRNA_TE(P0M0)": "P0M0",
               "Not_analyzed_Ns_in_mRNA(with_Ns)": "with_Ns",
-              "Not_analyzed_longer_than_100kb(longer_than_100kb)": "longer_than_100kb"}
+              "Not_analyzed_longer_than_100kb(longer_than_100kb)": "longer_than_100kb",
+              "Not_analyzed_no_START_no_STOP_or_in-frame_STOP(invalid_CDS)": "invalid_CDS"}
 
 
 def get_transcript_ids(fasta_path):
@@ -43,7 +44,7 @@ def create_header():
     return "\t".join(header)+"\n"
 
 
-NOT_ANALYZED = ["with_Ns", "longer_than_100kb"]
+NOT_ANALYZED = ["with_Ns", "longer_than_100kb", "invalid_CDS"]
 
 
 def get_row(stats):
@@ -110,9 +111,11 @@ def create_summary(interpro_classified, tesort_output, all_transcripts=None, not
     all_transcripts: every transcript given to InterProScan. Those analyzed by TEsorter and
     InterProScan without any Pfam or TEsorter hit are reported as P0M0 (no Pfam domains, no
     mRNA TE signal) instead of being dropped from the summary.
-    not_analyzed: {"with_Ns": ids, "longer_than_100kb": ids}, transcripts whose mRNA could not
-    be given to TEsorter. They get that status whatever InterProScan found, because their mRNA
-    TE signal is unknown, so they never count in the classes that depend on it (e.g. P0M0).
+    not_analyzed: {"with_Ns": ids, "longer_than_100kb": ids, "invalid_CDS": ids}, transcripts whose
+    mRNA could not be given to TEsorter, or whose protein was not extracted (invalid_CDS: no START,
+    no STOP or an in-frame STOP). They get that status whatever InterProScan found, because their
+    mRNA TE signal or protein domains are unknown, so they never count in the classes that depend
+    on them (e.g. P0M0). Those missing from the other inputs are added to the summary.
     """
     not_analyzed_status = {}
     for status, ids in (not_analyzed or {}).items():
@@ -181,6 +184,12 @@ def create_summary(interpro_classified, tesort_output, all_transcripts=None, not
                    "tesort_strand": "NA"}
             row["detenga_status"] = detenga_status(row)
             summary.append(row)
+    reported = {row["transcript"] for row in summary}
+    for transcript in not_analyzed_status:
+        if transcript not in reported:
+            summary.append({"transcript": transcript, "interpro_status": "NA", "pfams_ids": "NA",
+                            "pfams_descriptions": "NA", "tesort_domains": "NA", "tesort_complete": "NA",
+                            "tesort_class": "NA", "tesort_strand": "NA"})
     for row in summary:
         if row["transcript"] in not_analyzed_status:
             row["detenga_status"] = not_analyzed_status[row["transcript"]]
@@ -228,7 +237,7 @@ def detenga_stats(num_transcripts, summary):
     stats = {"PcpM0": 0, "PteM0": 0, "PchM0": 0, 
              "PcpMte": 0, "PteMte": 0, "PchMte": 0, 
              "P0Mte":0, "P0M0": 0, "with_Ns": 0,
-             "longer_than_100kb": 0, "num_transcripts": num_transcripts}
+             "longer_than_100kb": 0, "invalid_CDS": 0, "num_transcripts": num_transcripts}
     try:
         for row in DictReader(open(summary), delimiter=";"):
             stats[row["DeTEnGA_status"]] += 1

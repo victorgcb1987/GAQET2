@@ -1,3 +1,7 @@
+import re
+
+from pathlib import Path
+
 from src.error_check import operation_failed
 
 def parse_agat_stats(agat_results):
@@ -235,15 +239,32 @@ def write_short_intron_summary(prefix, introns, transcript_gene, artifact_thresh
 
 
 def parse_agat_premature(agat_results):
+    """Number of mRNAs with premature (in-frame) stop codons.
+
+    agat_sp_flag_premature_stop_codons.pl writes its counts to <output>_report.txt, not to the GFF
+    given with -o ("We found N cases where mRNAs contain premature stop codons"). If that report is
+    missing (other AGAT versions), the mRNAs carrying the "pseudo" attribute in the GFF are counted."""
     error = operation_failed(agat_results["AGAT stop codons"])
     if error:
         return {"Models with early STOP": error}
-    results = {"Models with early STOP": 0}
-    with open(agat_results["AGAT stop codons"]["outfile"]) as fhand:
+    gff_fpath = Path(agat_results["AGAT stop codons"]["outfile"])
+    report_fpath = gff_fpath.with_name(gff_fpath.stem + "_report.txt")
+    if report_fpath.is_file():
+        with open(report_fpath) as fhand:
+            for line in fhand:
+                match = re.search(r"We found (\d+) cases where mRNAs contain premature stop codons", line)
+                if match:
+                    return {"Models with early STOP": int(match.group(1))}
+    count = 0
+    with open(gff_fpath) as fhand:
         for line in fhand:
-            if "genes have been flagged as pseudogene" in line:
-                results["Models with early STOP"] = int(line.split())
-    return results
+            if line.startswith("#"):
+                continue
+            fields = line.rstrip("\n").split("\t")
+            if len(fields) == 9 and fields[2].lower() in ("mrna", "transcript") and \
+                    "pseudo" in parse_attributes(fields[8]):
+                count += 1
+    return {"Models with early STOP": count}
 
 
 def generate_additional_features_reports(features, outdir):

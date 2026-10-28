@@ -203,6 +203,7 @@ The ouput directories should be similar to this one:
  ├── 📄 {species}_GAQET.stats.tsv  
  ├── 📄 {species}_short_introns_transcripts.tsv  
  ├── 📄 {species}_short_introns_genes.tsv  
+ ├── 📄 {species}_excluded_from_protein_analyses.tsv  
 
  The two ```{species}_short_introns_*.tsv``` files (written when AGAT is run) list the transcripts and the genes with at least one intron equal or shorter than ```Intron_Floor_Threshold``` (it includes the introns in the potential artifacts range, ```Intron_Artifact_Threshold```), with the position and length of those introns.
  Each of the ```*_run``` directories contains the output of each analysis run. ```log.txt``` file contains things like run errors or time consumed running analysis. Al programs outputs are parsed and their results are stored in a tsv file, the ```{species}_GAQET.stats.tsv``` file.  
@@ -252,9 +253,14 @@ The ouput directories should be similar to this one:
 | % Transcripts with introns <= {Intron_Floor_Threshold}bp (floor) | (AGAT) Same, as a percentage of all transcripts in the annotation (single-exon transcripts included) |
 | Genes with introns <= {Intron_Floor_Threshold}bp (floor) (N) | (AGAT) Number of genes with at least one transcript (isoform) with an intron in that range |
 | % Genes with introns <= {Intron_Floor_Threshold}bp (floor) | (AGAT) Same, as a percentage of all genes in the annotation |
-| Models with early STOP (N)       | (AGAT) Number of coding transcripts with premature stop codons     |
+| Models with early STOP           | (AGAT) Number of coding transcripts with premature (in-frame) stop codons, read from the `_report.txt` of `agat_sp_flag_premature_stop_codons.pl` (before this version it was always 0) |
 | Models START missing             | (AGAT) Number of coding transcripts lacking start codon     |
+| Models STOP missing              | (AGAT) Number of coding transcripts lacking stop codon     |
 | Models START & STOP missing      | (AGAT) Number of coding transcripts lacking stop and start codon     |
+| Coding transcripts excluded from protein analyses (N) | (gffread) Coding transcripts left out of DeTEnGA, DIAMOND, PSAURON and OMArk because their CDS has no START, no STOP or an in-frame STOP (`gffread -J`). BUSCO uses them. Listed in `{species}_excluded_from_protein_analyses.tsv` |
+| % Coding transcripts excluded from protein analyses | Same, as a percentage of all coding transcripts |
+| Excluded transcripts with {reason} (N) | Excluded transcripts by reason: no START, no STOP, in-frame STOP, CDS length not multiple of 3, other. A transcript can have more than one reason |
+| Longest isoforms excluded from OMArk (N) | Genes whose longest isoform is excluded, so they are missing from the OMArk input |
 | Annotation_BUSCO_{DB} | (BUSCO) Busco proteome completness for the database {DB}. Refer to https://busco.ezlab.org/busco_userguide.html#interpreting-the-results to get an output's explanation| 
 | PSAURON SCORE | (PSAURON) Global Annotation's accuracy at detecting ORFs|
 | DETENGA_FPV | (DeTEnGA) Number of classified transcripts. See table below for nomeclature explanation|
@@ -263,6 +269,11 @@ The ouput directories should be similar to this one:
 | OMArk Completeness Results| (OMARK) Taxonomic Completness results. Check table below for nomenclature explanation|
 | OMArk Species Composition | (OMARK) Species Composition in percentage|
 | ProteinsWith{db}Hits (%) | (DIAMOND) Percentage of proteins with a significant hit on database {db}|  
+
+Transcripts with no START, no STOP or an in-frame STOP are not given to the protein analyses, and each analysis
+treats them differently: DIAMOND percentages and DeTEnGA classes are computed over all coding transcripts (excluded
+transcripts count as without hits, and as `invalid_CDS` in DeTEnGA); the PSAURON score and OMArk are computed only
+over the transcripts (longest isoforms for OMArk) with a complete CDS. Check the exclusion columns when comparing annotations.
 
 [🔝 Back to Table of Contents](#table-of-contents)
 
@@ -278,6 +289,7 @@ Detection of Transposable Elements as Genes on Annotations (DeTEnGA) is an in-ho
  |PcpMTe|Transcripts with non-TEs interpro PFAMs and TE mRNA|
  |PteMte|Transcripts with only TEs interpro PFAMs and TE mRNA|
  |PchMte|Transcripts with mixed TEs and non-TEs pfams and non-TE mRNA|  
+ |Not_analyzed|Transcripts that could not be classified: with_Ns (mRNA with Ns, not given to TEsorter), longer_than_100kb (mRNA of 100 kb or more, not given to TEsorter) and invalid_CDS (no START, no STOP or an in-frame STOP, protein not extracted)|
  
  [🔝 Back to Table of Contents](#table-of-contents)
 

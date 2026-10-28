@@ -26,7 +26,9 @@ EXCLUDE = ["AntiFam", "CDD", "Coils", "FunFam",
                "SUPERFAMILY"]
 
 
-def run_detenga(config, protein_sequences, mrna_sequences):
+def run_detenga(config, protein_sequences, mrna_sequences, excluded=None):
+    """excluded: coding transcripts left out of protein_sequences by gffread -J (no START, no STOP or
+    an in-frame STOP); they are reported as invalid_CDS so that every coding transcript has a status."""
     report = {"TEsorter": {}, "Stop codons removed": {},
               "InterproScan": {}, "classify_interpro": {},
               "classify_tesorter": {}, "create_summary": {}}
@@ -168,7 +170,8 @@ def run_detenga(config, protein_sequences, mrna_sequences):
         te_summary = create_summary(classified_pfams, te_sorter_output,
                                         all_transcripts=get_transcript_ids(stop_codons_outfile),
                                         not_analyzed={"with_Ns": sequences_removed_Ns,
-                                                      "longer_than_100kb": sequences_removed_length})
+                                                      "longer_than_100kb": sequences_removed_length,
+                                                      "invalid_CDS": list(excluded or [])})
         with open(outfile, "w") as out_fhand:
             write_summary(te_summary, out_fhand)
             msg = "DeTEnGA create summary step done"

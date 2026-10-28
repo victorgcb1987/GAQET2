@@ -20,7 +20,7 @@ from src.busco import run_busco
 from src.error_check import correct_fasta_length
 from src.detenga import run_detenga
 from src.dependencies import check_dependencies
-from src.gffread import run_gffread, reformat_annotation
+from src.gffread import run_gffread, reformat_annotation, excluded_transcripts
 from src.omark import run_omark
 from src.psauron import run_psauron
 from src.seqtk import reformat_fasta_file
@@ -280,6 +280,19 @@ def main():
             emit_msg(BULLET_OK + status + "\n", log_fhand)
     emit_msg("Time consumed extracting CDS and proteins: {}s\n".format(round(end_time-start_time, 2)), log_fhand)
 
+    excluded = excluded_transcripts(arguments, gffread)
+    n_excluded = excluded["stats"]["Coding transcripts excluded from protein analyses (N)"]
+    if n_excluded:
+        reasons = ", ".join("{}: {}".format(label, value) for label, value in excluded["stats"].items()
+                            if label.startswith("Excluded transcripts with"))
+        emit_msg("WARNING: {} coding transcripts ({}%) have no START, no STOP or an in-frame STOP and are left out of "
+                 "DeTEnGA, DIAMOND, PSAURON and OMArk (BUSCO uses them). {}. Longest isoforms left out of OMArk: {}. "
+                 "List: {}\n".format(n_excluded, excluded["stats"]["% Coding transcripts excluded from protein analyses"],
+                                     reasons, excluded["stats"]["Longest isoforms excluded from OMArk (N)"],
+                                     excluded["outfile"]), log_fhand)
+    else:
+        emit_msg(BULLET_OK + "No coding transcript left out of the protein analyses\n", log_fhand)
+
 
     for analysis in arguments["Analysis"]:
         if analysis == "AGAT":
@@ -346,7 +359,8 @@ def main():
         if analysis == "DETENGA":
             emit_msg(HEADER + "Running DeTEnGA"+ HEADER + "\n", log_fhand)
             start_time = time.time()
-            detenga = run_detenga(arguments, gffread["proteins"]["outfile"], gffread["mrna"]["outfile"])
+            detenga = run_detenga(arguments, gffread["proteins"]["outfile"], gffread["mrna"]["outfile"],
+                                  excluded=excluded["transcripts"])
             end_time = time.time()
             for analysis, values in detenga.items():
                 status = values["status"]
@@ -403,6 +417,7 @@ def main():
                                          detenga["create_summary"]["outfile"]))
         if analysis == "PROTHOMOLOGY":
             results.update(protein_homology_stats(protein_homology, results["Transcript_Models (N)"]))
+    results.update(excluded["stats"])
 
 
     outfile = Path(arguments["Basedir"]) / "{}_GAQET.stats.tsv".format(arguments["ID"])
@@ -422,7 +437,8 @@ def main():
     if arguments["Compress_intermediate"]:
         keep = [outfile, log_fpath]
         keep += [path for path in (basedir / "{}_short_introns_transcripts.tsv".format(arguments["ID"]),
-                                   basedir / "{}_short_introns_genes.tsv".format(arguments["ID"])) if path.is_file()]
+                                   basedir / "{}_short_introns_genes.tsv".format(arguments["ID"]),
+                                   excluded["outfile"]) if path.is_file()]
         detenga_summary = basedir / "DETENGA_run" / "{}_TE_summary.csv".format(arguments["ID"])
         if detenga_summary.is_file():
             kept_summary = basedir / detenga_summary.name
