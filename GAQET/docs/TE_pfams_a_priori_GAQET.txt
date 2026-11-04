@@ -1,0 +1,238 @@
+# TE-related Pfam families for DeTEnGA (Pfam-A 38.2), from TE_pfams_a_priori_Pfam38.2.tsv (2026-10-29).
+# Rules: Pfam name or description refers to TEs, or published evidence of TE specificity. Format: PFAM description
+PF00077 Retroviral aspartyl protease
+PF00078 Reverse transcriptase (RNA-dependent DNA polymerase)
+PF00517 Retroviral envelope protein
+PF00540 gag gene protein p17 (matrix protein)
+PF00552 Integrase DNA binding domain
+PF00559 Retroviral Vif (Viral infectivity) protein
+PF00589 Phage integrase family
+PF00607 gag protein p24 N-terminal domain
+PF00665 Integrase core domain
+PF00872 Transposase, Mutator family
+PF01021 Ty transposon capsid protein
+PF01141 Gag polyprotein, inner coat protein p12
+PF01359 Transposase (partial DDE domain)
+PF01385 Probable transposase
+PF01498 Transposase
+PF01526 Tn3 transposase DDE domain
+PF01527 Transposase
+PF01548 Transposase
+PF01609 Transposase DDE domain
+PF01610 Transposase
+PF01710 Transposase
+PF01797 Transposase IS200 like
+PF02022 Integrase Zinc binding domain
+PF02093 Gag P30 core shell protein
+PF02281 Transposase Tn5 dimerisation domain
+PF02316 Mu DNA-binding domain
+PF02337 Retroviral GAG p10 protein
+PF02371 Transposase IS116/IS110/IS902 family
+PF02813 Retroviral M domain
+PF02899 Phage integrase, N-terminal SAM-like domain
+PF02914 Bacteriophage Mu transposase
+PF02920 DNA binding domain of tn916 integrase
+PF02992 Transposase family tnp2
+PF02994 L1 transposable element RBD-like domain
+PF03004 Plant transposase (Ptta/En/Spm family)
+PF03017 TNP1/EN/SPM transposase
+PF03050 Transposase IS66 family 
+PF03078 ATHILA ORF-1 family
+PF03108 MuDR family transposase
+PF03184 DDE superfamily endonuclease
+PF03221 Tc5 transposase DNA-binding domain
+PF03276 Spumavirus gag protein, N-terminal
+PF03384 Drosophila protein of unknown function, DUF287
+PF03400 IS1 transposase
+PF03708 Avian retrovirus envelope protein, gp85 
+PF03716 WCCH motif 
+PF03732 Retrotransposon-derived protein PEG10, N-terminal capsid-like domain
+PF04195 Putative gypsy type transposon
+PF04236 Tc5 transposase C-terminal domain
+PF04693 Archaeal putative transposase ISC1217
+PF04754 Putative transposase, YhgA-like
+PF04827 Plant transposon protein
+PF04937 Domain of unknown function (DUF659)
+PF04986 Putative transposase
+PF05344 Domain of Unknown Function (DUF746)
+PF05380 Pao retrotransposon-like RNaseH-like domain
+PF05598 Transposase domain (DUF772)
+PF05599 Deltaretrovirus Tax protein
+PF05699 hAT family C-terminal dimerisation region
+PF05717 IS66 Orf2 like protein
+PF05754 Domain of unknown function (DUF834)
+PF05928 Zea mays MURB-like protein (MuDR)
+PF06122 Conjugative relaxosome accessory transposon protein
+PF06815 Reverse transcriptase connection domain
+PF06817 Reverse transcriptase thumb domain
+PF07253 Gypsy protein
+PF07282 Cas12f1-like, TNB domain
+PF07592 Rhodopirellula transposase DDE domain
+PF07727 Reverse transcriptase (RNA-dependent DNA polymerase)
+PF07863 Homologues of TraJ from Bacteroides conjugative transposon
+PF08284 Retroviral aspartyl protease
+PF08705 Gag protein p6
+PF08721 TnsA endonuclease C terminal
+PF08723 Gag protein p15
+PF09003 Bacteriophage lambda integrase, Arm DNA-binding domain 
+PF09035 Excisionase from transposon Tn916
+PF09039 Mu DNA binding, I gamma subdomain
+PF09077 Mu B transposition protein, C terminal 
+PF09299 Mu transposase, C-terminal
+PF09322 Domain of unknown function (DUF1979)
+PF09331 Domain of unknown function (DUF1985)
+PF09853 Putative transposon-encoded protein (DUF2080)
+PF10551 MULE transposase domain
+PF10626 Conjugative transposon protein TraO
+PF10683 Hermes transposase DNA-binding domain
+PF11426 Tn7 transposition regulator TnsC
+PF11427 Tc3 transposase
+PF12017 Transposable element P transposase-like, HTH domain
+PF12259 Baculovirus F protein
+PF12382 Retrotransposon peptidase
+PF12384 Ty3 transposon peptidase
+PF12482 Phage integrase protein
+PF12508 Conjugative transposon, TraM  
+PF12596 87kDa Transposase
+PF12642 Conjugative transposon protein TcpC
+PF12759 InsA C-terminal domain
+PF12760 Transposase zinc-ribbon domain
+PF12762 ISXO2-like transposase domain
+PF12784 PD-(D/E)XK nuclease family transposase
+PF12834 Phage integrase, N-terminal
+PF12835 Integrase
+PF12991 Domain of unknown function, B. Theta Gene description (DUF3875)
+PF12992 Domain of unknown function, B. Theta Gene description (DUF3876)
+PF13005 zinc-finger binding domain of transposase IS66 
+PF13006 Insertion element 4 transposase N-terminal
+PF13007 Transposase C of IS166 homeodomain
+PF13009 Putative integrase
+PF13011 leucine-zipper of insertion element IS481
+PF13022 Helix-turn-helix of insertion element transposase
+PF13102 Phage integrase SAM-like domain
+PF13150 Conjugative transposon protein TraL
+PF13333 Integrase core domain
+PF13340 Putative transposase of IS4/5 family (DUF4096)
+PF13358 DDE superfamily endonuclease
+PF13359 DDE superfamily endonuclease
+PF13456 Reverse transcriptase-like
+PF13495 Phage integrase, N-terminal SAM-like domain
+PF13518 Helix-turn-helix domain
+PF13542 Helix-turn-helix domain of transposase family ISL3
+PF13546 DDE superfamily endonuclease
+PF13586 Transposase DDE domain
+PF13610 DDE domain
+PF13612 Transposase DDE domain
+PF13613 Helix-turn-helix of DDE superfamily endonuclease
+PF13655 N-terminal domain of reverse transcriptase
+PF13683 Integrase core domain
+PF13701 Transposase DDE domain group 1
+PF13737 Transposase DDE domain
+PF13751 Transposase DDE domain
+PF13808 DDE_Tnp_1-associated
+PF13817 IS66 C-terminal element
+PF13842 DDE_Tnp_1-like zinc finger
+PF13843 Transposase IS4
+PF13952 Domain of unknown function (DUF4216)
+PF13960 Domain of unknown function (DUF4218)
+PF13961 Domain of unknown function (DUF4219)
+PF13963 Transposase-associated domain
+PF13966 zinc-binding in reverse transcriptase
+PF13975 gag-polyprotein putative aspartyl protease
+PF13976 GAG-pre-integrase domain
+PF14198 Transposon-encoded protein TnpV
+PF14202 Transposon-encoded protein TnpW
+PF14203 Putative transposon-transfer assisting protein
+PF14214 Helitron helicase-like domain at N-terminus
+PF14223 gag-polypeptide of LTR copia-type
+PF14244 Gag-polypeptide of LTR copia-type
+PF14319 Transposase zinc-binding domain
+PF14372 hAT-like transposase, RNase-H fold
+PF14529 Endonuclease-reverse transcriptase 
+PF14659 Phage integrase, N-terminal SAM-like domain
+PF14690 zinc-finger of transposase IS204/IS1001/IS1096/IS1165
+PF14706 Transposase DNA-binding
+PF14787 GAG-polyprotein viral zinc-finger
+PF14882 Integrase repeat unit
+PF15978 Tn7-like transposition protein D
+PF16297 RTL1/3-8/LDOC, capsid-like domain
+PF16795 Archaeal phage integrase
+PF17241 Ty5 Gag N-terminal region
+PF17489 L1 transposable element trimerization domain
+PF17490 L1 transposable element dsRBD-like domain
+PF17738 DUF5575 central RNaseH like domain
+PF17906 HTH domain in Mos1 transposase
+PF17917 RNase H-like domain found in reverse transcriptase
+PF17919 RNase H-like domain found in reverse transcriptase
+PF17921 Integrase zinc binding domain
+PF18103 Retroviral integrase C-terminal SH3 domain
+PF18221 Mutator 2 Fork head associated domain
+PF18430 Putative DNA-binding domain
+PF18454 Major tropism determinant N-terminal domain
+PF18644 Phage integrase SAM-like domain
+PF18697 Murine leukemia virus (MLV) integrase (IN) C-terminal domain
+PF18701 Family of unknown function (DUF5641)
+PF18717 CxC4 like cysteine cluster associated with KDZ transposases
+PF18718 CxC5 like cysteine cluster associated with KDZ transposases
+PF18721 CxC6 like cysteine cluster associated with KDZ transposases
+PF18758 Kyakuja-Dileera-Zisupton transposase
+PF18759 Plavaka transposase
+PF18802 CxC1 like cysteine cluster associated with KDZ transposases
+PF18803 CxC2 like cysteine cluster associated with KDZ transposases
+PF18804 CxC3 like cysteine cluster associated with KDZ transposases
+PF18866 CxC7 like cysteine cluster associated with KDZ transposases
+PF18996 Family of unknown function (DUF5726)
+PF19259 Ty3 transposon capsid-like protein
+PF19317 Gag protein p24 C-terminal domain
+PF20167 Putative plant retrotransposon-related domain
+PF20310 Transposon related HTH domain protein
+PF20672 Spumavirus Gag polyprotein, conserved central domain 
+PF20673 Spumavirus Gag polyprotein, C-terminal
+PF20700 Mutator-like transposase
+PF20783 DUF5575 N-terminal domain
+PF20784 DUF5575 C-terminal domain
+PF21517 Transposable element Tc3 transposase, HTH
+PF21787 TNP-like, RNase H N-terminal domain
+PF21788 TNP-like, GTP-binding insertion domain
+PF21789 TNP-like, RNase H C-terminal domain
+PF21804 Transposase protein
+PF21859 Replitron, HUH endonuclease domain
+PF21860 Replitron, C-terminal domain 
+PF22022 Phage integrase central domain
+PF22296 bAvd-like
+PF22483 Mu transposase, C-terminal domain
+PF22824 DNA transposase THAP9, C-terminal domain
+PF22936 Pol polyprotein, beta-barrel domain
+PF22938 Integrase p58, C-terminal domain
+PF24614 Transposon Tf2-1 polyprotein, C-terminal
+PF24624 Phage integrase, N-terminal domain
+PF24626 Tf2-1-like, SH3 domain
+PF24764 Integrase core domain
+PF25597 Retroviral polymerase SH3-like domain
+PF25787 Sleeping Beauty transposase HTH domain
+PF26003 Phage integrase, N-terminal domain
+PF27039 ZBED1 RNase-like helical domain
+PF27041 ZBED1 RNase-like domain
+PF27135 TnsB transposase helix-turn-helix domain
+PF28119 Transposon-encoded protein TnpC-like
+PF28882 Domain of unknown function (DUF8473)
+PF28962 Mu-like transposase middle domain
+PF29000 Retrotransposon-like protein N-terminal domain
+PF29013 Retrotransposon-like protein 1 C-terminal domain
+PF29702 Transposon Ty4 N-terminal domain
+PF29703 Transposon Ty4 C-terminal domain
+PF29741 R1 retrotransposon ORF1 N-terminal domain
+PF29829 Ty4 retrotransposon middle domain
+PF29843 ORF2p C-terminal domain
+PF29845 ORF2p PUB domain
+PF30021 Retroviral Gag protein N-terminal domain
+PF30374 IS481 family transposase, C-terminal domain
+PF30395 Phage integrase N-terminal domain
+PF30405 Phage integrase core-binding domain
+PF30413 IS1634 family transposase, N-terminal domain
+PF30445 IS2 transposase InsD, N-terminal domain
+PF30461 IS30 family transposase, N-terminal domain
+PF30517 Cyanobacterial transposase-derived protein, C-terminal domain
+PF30863 PEG10/RTL1 protease domain
+PF30901 PEG10/RTL1, C-terminal capsid-like domain
+PF31230 TIGD5 C-terminal domain

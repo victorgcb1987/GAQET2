@@ -143,18 +143,18 @@ def check_OMARK_db(yaml):
 def check_detenga_db(yaml):
     errors = []
     not_defined = False
-    if "OMARK_db" not in yaml:
+    if "DETENGA_db" not in yaml:
         not_defined = True
     elif not yaml["DETENGA_db"]:
         not_defined = True
     if not_defined:
-        return [BULLET_FIX + "DETENGA_db field is not defined"]
+        return [BULLET_FIX + "DETENGA_db field (TEsorter database) is not defined"]
     else:
         detenga_dbs = ["rexdb-plant", "rexdb-metazoa", "rexdb"]
         if yaml["DETENGA_db"] not in detenga_dbs:
-            errors.append(BULLET_FIX + "DETENGA_db database {} doesn't exists. Available options are {}".format(yaml["DETENGA_db"], ",".join(detenga_dbs)))
+            errors.append(BULLET_FIX + "DETENGA_db (TEsorter database) {} doesn't exists. Available options are {}".format(yaml["DETENGA_db"], ",".join(detenga_dbs)))
     if len(errors) == 0:
-        errors = [BULLET_OK +  "DETENGA_db {} found".format(yaml["DETENGA_db"])]
+        errors = [BULLET_OK +  "DETENGA_db (TEsorter database) {} found; TE Pfam list: TE_pfams_a_priori_GAQET.txt".format(yaml["DETENGA_db"])]
     return errors
 
 

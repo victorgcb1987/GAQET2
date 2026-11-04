@@ -5,26 +5,94 @@ from pathlib import Path
 
 
 
+def split_gff_line(line):
+    """The 9 GFF columns. Columns are tab-separated and may contain spaces (e.g. source "Curated Genomic");
+    lines with fewer than 9 tab-separated columns are split on whitespace (space-separated files)."""
+    fields = line.rstrip("\n").split("\t")
+    if len(fields) < 9:
+        fields = line.split()
+    if len(fields) < 9:
+        return None
+    return fields[0:8] + [" ".join(fields[8:])]
+
+
+def gff_attribute(attributes, key):
+    for item in attributes.split(";"):
+        name, _, value = item.strip().partition("=")
+        if name == key:
+            return value
+    return ""
+
+
+def unknown_strand_features(annotation):
+    """IDs of the features with strand "?" (e.g. trans-spliced organelle genes in NCBI GFFs) and of all their
+    descendants. gffread stops at the first "?" strand and writes no sequence at all, so they are removed."""
+    children = defaultdict(list)
+    unknown = set()
+    with open(annotation) as annot_fhand:
+        for line in annot_fhand:
+            if line.startswith("#"):
+                continue
+            fields = split_gff_line(line)
+            if fields is None:
+                continue
+            feature_id = gff_attribute(fields[8], "ID")
+            for parent in filter(None, gff_attribute(fields[8], "Parent").split(",")):
+                children[parent].append(feature_id)
+            if fields[6] == "?" and feature_id:
+                unknown.add(feature_id)
+    removed, pending = set(), list(unknown)
+    while pending:
+        feature_id = pending.pop()
+        if feature_id in removed:
+            continue
+        removed.add(feature_id)
+        pending.extend(child for child in children.get(feature_id, []) if child)
+    return removed
+
+
 def reformat_annotation(config):
+    """Writes the annotation with tab-separated columns, "transcript" features renamed to mRNA and the
+    features with unknown strand ("?") removed together with their descendants (listed in
+    {ID}_unknown_strand_features.tsv)."""
     outdir = Path(config["Basedir"]) / "reformatted_annotation"
     annotation = config["Annotation"]
     outfile = outdir / "reformatted_annotation.gff3"
-    report = {"transcripts_to_mRNA": [], "outfile": outfile}
+    removed_file = Path(config["Basedir"]) / "{}_unknown_strand_features.tsv".format(config["ID"])
+    report = {"transcripts_to_mRNA": [], "outfile": outfile, "removed_outfile": removed_file,
+              "stats": {"Features removed for unknown strand (N)": 0, "Transcripts removed for unknown strand (N)": 0}}
     if not outdir.exists():
         outdir.mkdir(parents=True, exist_ok=True)
+    to_remove = unknown_strand_features(annotation)
+    removed = []
     with open(outfile, "w") as out_fhand:
         with open(annotation) as annot_fhand:
             for line in annot_fhand:
                 if line.startswith("#"):
                     out_fhand.write(line)
-                else:
-                    line = line.rstrip().split()
-                    description = " ".join(line[8:])
-                    if line[2] == "transcript":
-                        line[2] = "mRNA"
-                        report["transcripts_to_mRNA"].append(description)
-                    line = "\t".join(line[0:8]) + "\t" + description + "\n"
-                    out_fhand.write(line)
+                    continue
+                line = split_gff_line(line)
+                if line is None:
+                    continue
+                description = line[8]
+                feature_id = gff_attribute(description, "ID")
+                parents = [parent for parent in gff_attribute(description, "Parent").split(",") if parent]
+                if (line[6] == "?" or (feature_id and feature_id in to_remove)
+                        or any(parent in to_remove for parent in parents)):
+                    removed.append((line[0], line[2], line[3], line[4], line[6], feature_id or ",".join(parents)))
+                    continue
+                if line[2] == "transcript":
+                    line[2] = "mRNA"
+                    report["transcripts_to_mRNA"].append(description)
+                line = "\t".join(line[0:8]) + "\t" + description + "\n"
+                out_fhand.write(line)
+    with open(removed_file, "w") as out_fhand:
+        out_fhand.write("Seqid\tType\tStart\tEnd\tStrand\tID\n")
+        for row in removed:
+            out_fhand.write("\t".join(row) + "\n")
+    report["removed"] = removed
+    report["stats"]["Features removed for unknown strand (N)"] = len(removed)
+    report["stats"]["Transcripts removed for unknown strand (N)"] = sum(row[1] in ("mRNA", "transcript") for row in removed)
     return report
 
 STOP_CODONS = {"TAA", "TAG", "TGA"}

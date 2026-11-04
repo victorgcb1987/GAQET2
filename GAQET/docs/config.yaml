@@ -14,6 +14,8 @@ BUSCO_lineages:
   -  embryophyta_odb10
 OMARK_taxid: ""
 OMARK_db: ""
+# REXdb database of the TEsorter (mRNA) step of DeTEnGA: rexdb-plant, rexdb-metazoa or rexdb (plant + metazoa).
+# The TE Pfam list of the protein step is always GAQET/docs/TE_pfams_a_priori_GAQET.txt, whatever this value.
 DETENGA_db: "rexdb-plant"
 PROTHOMOLOGY_tags:
   - TREMBL: ""

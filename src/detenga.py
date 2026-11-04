@@ -13,9 +13,9 @@ from importlib.resources import files
 
 import subprocess
 
-REXDB_PFAMS = {"rexdb-plant": Path(files('GAQET').joinpath("docs/Viridiplantae_2.0_pfams.txt")),
-               "rexdb-metazoa": Path(files('GAQET').joinpath("docs/Metazoa_3.1_pfams.txt")),
-               "rexdb": Path(files('GAQET').joinpath("docs/Combined_pfams.txt"))}
+# TE-related Pfam families (Pfam-A 38.2, a priori rules on name/description plus published evidence), used with
+# every DETENGA_db; the REXdb-derived lists (docs/*_pfams.txt) are kept for reference only
+TE_PFAMS = Path(files('GAQET').joinpath("docs/TE_pfams_a_priori_GAQET.txt"))
 
 
 EXCLUDE = ["AntiFam", "CDD", "Coils", "FunFam",
@@ -156,10 +156,10 @@ def run_detenga(config, protein_sequences, mrna_sequences, excluded=None):
          
     try:
         with open(report["InterproScan"]["outfile"]) as interpro_fhand:
-            TE_pfams = get_pfams_from_db(REXDB_PFAMS[config["DETENGA_db"]])
+            TE_pfams = get_pfams_from_db(TE_PFAMS)
             intepro_pfams = get_pfams_from_interpro_query(interpro_fhand)
             classified_pfams = classify_pfams(intepro_pfams, TE_pfams)
-            msg = "DeTEnGA Parse Interpro step run succesfully"
+            msg = "DeTEnGA Parse Interpro step run succesfully ({} TE Pfams from {})".format(len(TE_pfams), TE_PFAMS.name)
     except Exception as error:
         msg = "DeTEnGA Parse Interpro step Failed: \n {}".format(error)
     report["classify_interpro"] = {"command": "",

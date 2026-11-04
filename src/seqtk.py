@@ -16,7 +16,7 @@ def reformat_fasta_file(config):
         if run_.returncode == 0:
             msg = "Assembly file reformatted successfully"
         else:
-            msg = "Assembly file reformating Failed: \n {}".format(run_.stdout)
+            msg = "Assembly file reformating Failed: \n {}".format(run_.stderr)
     report = {"command": cmd, "status": msg, 
               "outfile": outfile}
     return report

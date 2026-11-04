@@ -16,7 +16,7 @@ def get_longest_isoform(config):
         if run_.returncode == 0:
             msg = "AGAT longest isoform run successfully"
         else:
-            msg = "AGAT longest isoform Failed: \n {}".format(run_.stdout)
+            msg = "AGAT longest isoform Failed: \n {}".format(run_.stderr)
     report = {"command": cmd, "status": msg, 
               "outfile": outfile}
     return report
@@ -35,7 +35,7 @@ def split_annotation(config):
         if run_.returncode == 0:
             msg = "AGAT separate by type run successfully"
         else:
-            msg = "AGAT separate by type Failed: \n {}".format(run_.stdout)
+            msg = "AGAT separate by type Failed: \n {}".format(run_.stderr)
     report = {"command": cmd, "status": msg, 
               "outfile": outfile}
     return report
@@ -63,7 +63,7 @@ def run_agat(config):
             msg = "AGAT stats run successfully"
         #But if not
         else:
-            msg = "AGAT stats Failed: \n {}".format(run_.stdout)
+            msg = "AGAT stats Failed: \n {}".format(run_.stderr)
     
     report["AGAT stats"] = {"command": cmd, "status": msg, 
                             "outfile": stats_outfile}
@@ -84,7 +84,7 @@ def run_agat(config):
             msg = "AGAT premature stop codons analysis run successfully"
         #But if not
         else:
-            msg = "AGAT premature stop codons analysis Failed: \n {}".format(run_.stdout)
+            msg = "AGAT premature stop codons analysis Failed: \n {}".format(run_.stderr)
     
     report["AGAT stop codons"] = {"command": cmd, "status": msg, 
                                   "outfile": premature_stop_outfile}
@@ -105,7 +105,7 @@ def run_agat(config):
             msg = "AGAT incomplete CDS analysis run successfully"
         #But if not
         else:
-            msg = "AGAT incomplete CDS analysis Failed: \n {}".format(run_.stdout)
+            msg = "AGAT incomplete CDS analysis Failed: \n {}".format(run_.stderr)
     
     report["AGAT incomplete CDS"] = {"command": cmd, "status": msg, 
                                      "outfile": incomplete_cds_outfile}
@@ -125,7 +125,7 @@ def run_agat(config):
             msg = "AGAT add introns run successfully"
         #But if not
         else:
-            msg = "AGAT add introns Failed: \n {}".format(run_.stdout)
+            msg = "AGAT add introns Failed: \n {}".format(run_.stderr)
 
     report["AGAT introns"] = {"command": cmd, "status": msg,
                               "outfile": introns_outfile}
@@ -153,7 +153,7 @@ def run_agat_reviewer(features, basedir):
                 msg = f"AGAT stats for {feature} run successfully"
             #But if not
             else:
-                msg = f"AGAT stats for {feature} Failed: \n {run_.stdout}"
+                msg = f"AGAT stats for {feature} Failed: \n {run_.stderr}"
     
         report[feature] = {"command": cmd, "status": msg, 
                            "outfile": stats_outfile}

@@ -219,6 +219,12 @@ def main():
     end_time = time.time()
     emit_msg("#Changed transcript features to mRNA", log_fhand)
     emit_msg("The following transcripts have been changed:\n {}".format("\n".join(reformatted_annotation["transcripts_to_mRNA"])), log_fhand)
+    n_removed = reformatted_annotation["stats"]["Features removed for unknown strand (N)"]
+    if n_removed:
+        emit_msg("WARNING: {} features with unknown strand (\"?\", e.g. trans-spliced organelle genes) and their "
+                 "descendants have been removed ({} transcripts); gffread cannot read them. List: {}\n".format(
+                     n_removed, reformatted_annotation["stats"]["Transcripts removed for unknown strand (N)"],
+                     reformatted_annotation["removed_outfile"]), log_fhand)
     arguments["Annotation"] = reformatted_annotation["outfile"]
 
     start_time = time.time()
@@ -279,6 +285,12 @@ def main():
         else:
             emit_msg(BULLET_OK + status + "\n", log_fhand)
     emit_msg("Time consumed extracting CDS and proteins: {}s\n".format(round(end_time-start_time, 2)), log_fhand)
+    proteins = Path(gffread["proteins"]["outfile"])
+    if not proteins.is_file() or proteins.stat().st_size == 0:
+        msg = ("No protein sequence could be extracted from the annotation ({} is empty): check the gffread messages "
+               "above and the GFF file. GAQET has stopped working".format(proteins))
+        emit_msg(BULLET_FIX + msg + "\n", log_fhand)
+        raise RuntimeError(msg)
 
     excluded = excluded_transcripts(arguments, gffread)
     n_excluded = excluded["stats"]["Coding transcripts excluded from protein analyses (N)"]
@@ -418,6 +430,7 @@ def main():
         if analysis == "PROTHOMOLOGY":
             results.update(protein_homology_stats(protein_homology, results["Transcript_Models (N)"]))
     results.update(excluded["stats"])
+    results.update(reformatted_annotation["stats"])
 
 
     outfile = Path(arguments["Basedir"]) / "{}_GAQET.stats.tsv".format(arguments["ID"])
@@ -438,7 +451,7 @@ def main():
         keep = [outfile, log_fpath]
         keep += [path for path in (basedir / "{}_short_introns_transcripts.tsv".format(arguments["ID"]),
                                    basedir / "{}_short_introns_genes.tsv".format(arguments["ID"]),
-                                   excluded["outfile"]) if path.is_file()]
+                                   excluded["outfile"], reformatted_annotation["removed_outfile"]) if path.is_file()]
         detenga_summary = basedir / "DETENGA_run" / "{}_TE_summary.csv".format(arguments["ID"])
         if detenga_summary.is_file():
             kept_summary = basedir / detenga_summary.name

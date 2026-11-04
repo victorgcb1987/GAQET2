@@ -127,7 +127,7 @@ PROTHOMOLOGY_tags:
   - TREMBL: "/path/to/uniprot_trembl_db.dmnd"
   - SWISSPROT: "/path/to/uniprot_swssprot.dmnd"
   - MYDB: "/path/to/mydb.dmnd"
-DETENGA_db: "rexdb-plant"
+DETENGA_db: "rexdb-plant"   # TEsorter database: rexdb-plant, rexdb-metazoa or rexdb
 Intron_Artifact_Threshold: 30
 Intron_Floor_Threshold: 50
 
@@ -146,7 +146,7 @@ Intron_Floor_Threshold: 50
 | OMARK_taxid | NCBI taxid for OMARK. Only needed if OMARK is in Analysis     |
 | BUSCO_lineages | List of BUSCO clades to run. Only needed if BUSCO is in Analysis      |
 | PROTHOMOLOGY_tags | List of name and path to DIAMOND proteins database. Only needed if  PROTHOMOLOGY is in Analysis     |
-| DETENGA_db | DeTEnGA database for interpro checks. Only needed if DETENGA is in Analysis    |
+| DETENGA_db | REXdb database used by TEsorter in the mRNA step of DeTEnGA: `rexdb-plant` (Viridiplantae), `rexdb-metazoa` (Metazoa) or `rexdb` (both, e.g. for fungi). It does not change the protein step: the TE Pfam list is always [GAQET/docs/TE_pfams_a_priori_GAQET.txt](GAQET/docs/TE_pfams_a_priori_GAQET.txt). Only needed if DETENGA is in Analysis    |
 | Intron_Artifact_Threshold | (Optional) Introns with length (bp) equal or below this value are in the range of potential artifacts. Intron limits depend on the lineage. Only needed if AGAT is in Analysis. Defaults to 30 if omitted |
 | Intron_Floor_Threshold | (Optional) Introns with length (bp) equal or below this value are in the review band (suspicious introns, includes the potential artifacts). Only needed if AGAT is in Analysis. Defaults to 50 if omitted |
 
@@ -278,7 +278,7 @@ over the transcripts (longest isoforms for OMArk) with a complete CDS. Check the
 [🔝 Back to Table of Contents](#table-of-contents)
 
  ## DeTEnGA metrics explanation
-Detection of Transposable Elements as Genes on Annotations (DeTEnGA) is an in-house tool created for coding sequences **classification as a Transposable element (TE) or not**. This classification is at protein sequence level using interpro and at mRNA level using TEsorter. Table below describes the nomenclature used in DeTEnGA:
+Detection of Transposable Elements as Genes on Annotations (DeTEnGA) is an in-house tool created for coding sequences **classification as a Transposable element (TE) or not**. This classification is at protein sequence level using interpro and at mRNA level using TEsorter. A Pfam domain is TE-related if it is in [GAQET/docs/TE_pfams_a_priori_GAQET.txt](GAQET/docs/TE_pfams_a_priori_GAQET.txt): 236 Pfam-A 38.2 families whose name or description refers to TEs, or with published evidence of TE specificity. The same list is used whatever the `DETENGA_db`. Table below describes the nomenclature used in DeTEnGA:
 
  | Nomeclature     | Description                                  |
 |---------------|----------------------------------------------|
