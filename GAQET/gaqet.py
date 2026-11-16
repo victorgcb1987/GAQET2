@@ -32,6 +32,7 @@ from src.detenga_parsers import detenga_stats
 from src.homology_parsers import protein_homology_stats
 from src.omark_parsers import omark_stats
 from src.psauron_parsers import psauron_stats
+from src.longest_isoform_parsers import longest_isoform_stats
 
 
 BULLET_OK = "\t✓\t"
@@ -400,13 +401,13 @@ def main():
 
     #Get results from analysis
     results = {}
+    artifact_threshold = arguments.get("Intron_Artifact_Threshold", DEFAULT_INTRON_ARTIFACT_THRESHOLD)
+    review_threshold = arguments.get("Intron_Floor_Threshold", DEFAULT_INTRON_REVIEW_THRESHOLD)
     for analysis in arguments["Analysis"]:
         if analysis == "AGAT":
             results.update(parse_agat_stats(agat))
             results.update(parse_agat_premature(agat))
             results.update(parse_agat_incomplete(agat))
-            artifact_threshold = arguments.get("Intron_Artifact_Threshold", DEFAULT_INTRON_ARTIFACT_THRESHOLD)
-            review_threshold = arguments.get("Intron_Floor_Threshold", DEFAULT_INTRON_REVIEW_THRESHOLD)
             if "Intron_Artifact_Threshold" not in arguments or "Intron_Floor_Threshold" not in arguments:
                 emit_msg("WARNING: Intron_Artifact_Threshold and/or Intron_Floor_Threshold are not in the YAML, "
                          "using the defaults ({} and {} bp). Intron length limits "
@@ -429,6 +430,15 @@ def main():
                                          detenga["create_summary"]["outfile"]))
         if analysis == "PROTHOMOLOGY":
             results.update(protein_homology_stats(protein_homology, results["Transcript_Models (N)"]))
+    # Same model-quality metrics re-counted on one transcript per gene (longest isoform), from the
+    # files written above; used by gaqet_plot.py for the longest-isoform score
+    run = arguments["Analysis"]
+    results.update(longest_isoform_stats(longest_isoform, artifact_threshold,
+                                         agat=agat if "AGAT" in run else None,
+                                         psauron=psauron if "PSAURON" in run else None,
+                                         detenga=detenga if "DETENGA" in run else None,
+                                         protein_homology=protein_homology if "PROTHOMOLOGY" in run else None,
+                                         floor_threshold=review_threshold))
     results.update(excluded["stats"])
     results.update(reformatted_annotation["stats"])
 

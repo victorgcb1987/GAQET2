@@ -269,6 +269,8 @@ The ouput directories should be similar to this one:
 | OMArk Completeness Results| (OMARK) Taxonomic Completness results. Check table below for nomenclature explanation|
 | OMArk Species Composition | (OMARK) Species Composition in percentage|
 | ProteinsWith{db}Hits (%) | (DIAMOND) Percentage of proteins with a significant hit on database {db}|  
+| Longest isoform: Measured transcripts (N) | Number of longest isoforms (one per gene, from `agat_sp_keep_longest_isoform.pl`, the same ones given to BUSCO and OMArk). Denominator of the `Longest isoform:` columns |
+| Longest isoform: {column} | The model-quality columns `ProteinsWith{db}Hits (%)`, `PSAURON SCORE`, `DETENGA_FPV`, `DETENGA_FP%`, `Models START missing`, `Models STOP missing`, `Models START & STOP missing`, `Transcripts with introns <= {Intron_Artifact_Threshold}bp (potential artifacts) (N)`, `Transcripts with introns <= {Intron_Floor_Threshold}bp (floor) (N)` and their `%`, re-counted on the longest isoform of each gene (T and percentages over genes). Computed from the files the analyses already wrote, nothing is run twice. Used by GAQET_PLOT for the longest-isoform score |
 
 Transcripts with no START, no STOP or an in-frame STOP are not given to the protein analyses, and each analysis
 treats them differently: DIAMOND percentages and DeTEnGA classes are computed over all coding transcripts (excluded
@@ -329,32 +331,113 @@ The gene set is classified in hierarchical orthologous groups (**HOGs**). Each H
  ## Usage
 GAQET PLOT requires as input a TSV file as shown in [in the example included with this repository](GAQET/docs/Arabidopsis_seed_stats.tsv). Included example shows two columns for BUSCO and Protein Homology, but you can include more columns or even remove all columns of these two kinds. Then you can run GAQET_PLOT as:  
 ```bash
-GAQET_PLOT -i {input_tsv} -o output_figure.{extension}
+GAQET_PLOT -i {input_tsv} -p {prefix} -f {png|jpeg|svg}
 ```
-Figure format is defined by the extension. By default is ```jpeg```
+
+| Argument | Description |
+|---|---|
+| -i, --input | (Required) TSV with one row per annotation (`{species}_GAQET.stats.tsv` files concatenated) |
+| -p, --prefix | Prefix of the output files, it can include a directory (default `GAQET`). Two plots and two score tables are written (see below) |
+| -f, --format | Image format of the plots: `png` (default), `jpeg` or `svg` |
+| -r, --radial_min | Value (%) at the centre of the radar plot. Default: the lowest plotted value minus 10 (rounded down, 0 at least), so differences between annotations are visible and no value is clipped. With a manual value, values below it are drawn at the centre. `0` gives the full 0-100% axis |
+| -w, --weights | Share (%) of the score given to metrics, `key=percentage` separated by commas (e.g. `completeness=40` or `busco=40,omark=10`). A class key (`completeness`, `false_positives`, `accuracy`) or a role key (`homology`, `busco`, `omark_completeness`, `omark` (consistency only), `psauron`, `detenga`, `agat`, `introns`, `omark_fragments`) sets the total share of those metrics, split among them as the default shares (by analysis); any other key is matched as a substring of one metric name (e.g. `swissprot=15`). The rest is split among the metrics not mentioned in proportion to their default shares. Default: each class 33.33%, split equally among its analyses and then among the metrics of each analysis |
+| -e, --exclude | Keys (same matching as `--weights`) of metrics left out of the score. They are still drawn |
+
+Outputs, for `-p {prefix} -f {format}` (e.g. `-p Athaliana` gives `Athaliana_plot.png`, `Athaliana_longest_isoform_plot.png`, `Athaliana_GAS.tsv` and `Athaliana_longest_isoform_GAS.tsv`):
+
+| File | Content |
+|---|---|
+| `{prefix}_plot.{format}` | GAQET plot, model-quality metrics measured on every transcript |
+| `{prefix}_longest_isoform_plot.{format}` | GAQET plot, model-quality metrics measured on the longest isoform of each gene |
+| `{prefix}_GAS.tsv`, `{prefix}_longest_isoform_GAS.tsv` | Score tables: one row per annotation, sorted by GAS |
+| `{prefix}_GAS_weights.tsv`, `{prefix}_longest_isoform_GAS_weights.tsv` | Weights tables: one row per metric |
+| `{prefix}_GAS_breakdown.{format}`, `{prefix}_longest_isoform_GAS_breakdown.{format}` | GAS breakdown: one horizontal bar per annotation, sorted by GAS, split into the points given by each class (class share × sub-score), with the sub-score inside each segment and the GAS at the end |
+
+Columns of the score tables:
+
+| Column | Description |
+|---|---|
+| Species | Annotation (`Species` column of the input) |
+| Measured_transcripts | `all_transcripts` or `longest_isoform` |
+| Measured_transcripts_N | Transcripts on which the model-quality metrics are measured (all transcripts, or one per gene) |
+| GAS, GAS_rank | Global Annotation Score of the annotation and its rank in the table (1 = highest) |
+| Completeness / False positives / Accuracy score (share {S}%) | Class sub-scores (0-100, higher is better; a high false-positive score means few false positives), with the share of the GAS of each class in the column name. GAS = sum of share × sub-score |
+| {metric} (%) | Value of each metric (radial axis) whose analysis was run, e.g. `SWISSPROT hits (%)`, `BUSCO complete eudicots_odb10 (%)` |
+| {metric} points (share {S}%) | Points of the GAS coming from that metric (share × value), with the metric's share in the column name; the points of an annotation add up to its GAS (±0.01 from rounding); share and points 0 if the metric is excluded |
+
+Columns of the weights tables (the shares are the same for every annotation):
+
+| Column | Description |
+|---|---|
+| Metric | Metric, named as in the score table |
+| Class | Class of error it measures: `completeness`, `false_positives` or `accuracy` |
+| Role | Analysis it comes from (the role keys of `--weights` and `--exclude`) |
+| Measured_on | Transcripts used by this metric: `longest_isoform` always for BUSCO and OMArk |
+| Share_% | Share of the score given to the metric (`--weights`); 0 if excluded or missing |
+| Status | `scored`, `excluded` (`--exclude`) or `analysis missing` (not in the score table) |
+
+### Global Annotation Score (GAS)
+The GAS (0-100) is the weighted mean of the metrics drawn as radial axes: GAS = sum(share × metric), shares adding
+up to 100%. Every metric belongs to one class of error, and each class has its own sub-score (the share-weighted
+mean of its metrics):
+
+- **Completeness**: are the conserved gene families of the lineage present? (BUSCO, OMArk completeness). Only conserved genes are checked (e.g. 954-3,354 BUSCO genes, ~11,000 OMArk families for vertebrates), not lineage-specific ones
+- **False positives**: are the models real protein-coding genes, not spurious ORFs, TEs or contaminants? (DIAMOND homology, OMArk consistency, PSAURON, DeTEnGA)
+- **Accuracy**: are the models of real genes correctly built? (AGAT START/STOP, artifact introns, OMArk partial hits and fragments)
+
+By default the three classes have the same share (33.33% each), split equally among the analyses of each class and
+then among the metrics of each analysis, so the GAS is the mean of the three sub-scores and no class or analysis weighs
+more because it has more metrics: homology counts once in the false-positive class whatever the number of databases
+given (e.g. Swiss-Prot and TrEMBL 4.17% each, or one database 8.33%), and BUSCO counts once whatever the number of
+lineages. `--weights` and
+`--exclude` also accept the class names. A metric whose analysis was not run (or a column missing from older GAQET
+outputs) is drawn empty and left out of the score; the shares of the other metrics are rescaled (a class with no
+metric left is dropped and the other classes share the score). The accuracy metrics detect broken CDS ends, very
+short introns and, for proteins of known gene families only, truncated/split models (fragments) and partial matches
+(e.g. fusions); wrong exon boundaries and errors in genes of unknown families are not measured.
+
+| Metric (axis) | Class | Role | Value | Measured on |
+|---|---|---|---|---|
+| {db} Homology Hits (DIAMOND), one per database | false positives | homology | `ProteinsWith{db}Hits (%)` | model quality: all transcripts / longest isoform |
+| Proteins fitting their Taxonomic rank (OMARK) | false positives | omark | consistent proteins (%) | longest isoform of each gene (always) |
+| {lineage} Completeness (BUSCO), one per lineage | completeness | busco | Complete (%) | longest isoform of each gene (always) |
+| Proteins with non-TE Pfam domains and no TE mRNA signal (DeTEnGA) | false positives | detenga | PcpM0 (%): only non-TE Pfam domains (e-value ≤ 0.005) and no TE signal in the mRNA (TEsorter); transcripts with no Pfam hit, TE evidence or not analysed (invalid_CDS, with_Ns, longer_than_100kb) count against it | model quality: all transcripts / longest isoform |
+| Transcripts flagged as coding sequences (PSAURON) | false positives | psauron | PSAURON score | model quality: all transcripts / longest isoform |
+| No start/stop codon errors (AGAT) | accuracy | agat | 100 − % models with START and/or STOP missing | model quality: all transcripts / longest isoform |
+| Transcripts with no artifact (very short) introns (AGAT) | accuracy | introns | 100 − % transcripts with an intron ≤ `Intron_Artifact_Threshold` (potential artifacts) | model quality: all transcripts / longest isoform |
+| Conserved gene families found (OMArk) | completeness | omark_completeness | Single + Duplicated (%) of the conserved gene families (HOGs) of the lineage (`OMArk Completeness Results`) | longest isoform of each gene (always) |
+| Proteins not fragmented or partial (OMArk) | accuracy | omark_fragments | 100 − (partial hits + fragments) as % of the proteins placed in a known family (consistent + inconsistent + contaminant; `OMArk Consistency Results`). Fragments: < 50% of the family median length; partial hits: only part of the sequence matches the family. Unknown proteins are not evaluated and are not in the denominator | longest isoform of each gene (always) |
+
+**Unit of measure.** BUSCO and OMArk always receive one protein per gene (the longest isoform): given every isoform
+they would report multi-isoform genes as duplicated. The model-quality metrics evaluate each gene model, and
+GAQET_PLOT computes the score twice: measured on every transcript (a gene with many isoforms weighs more) and on
+the longest isoform of each gene (the `Longest isoform:` columns; every gene counts once, so annotations with and
+without alternative isoforms are compared on the same footing). Both come from the same GAQET run. For runs made
+before these columns existed only the all-transcripts outputs are written, with a warning: rerun `GAQET` on the same
+`Basedir` (finished analyses and compressed intermediate results are reused) to add them.
 
 ## Output figure and interpretation
 Running this script should generate a figure similar to this one:  
 ![GAQET_plot](GAQET/docs/Arabidopsis_plot.png)
 
-This figure is called GAQET plot and helps comparing multiple annotations. This plot has 3 levels:   
+This figure is called GAQET plot and helps comparing multiple annotations. This plot has 2 levels:   
 
-- **Inner radar plot**:  
-  Represents percentages for each of the metrics marked by the radial axis, for example, `No start/stop codon errors`. Higher percentages mean better.
+- **Inner radar plot (the score)**:  
+  Represents the value of each metric of the Global Annotation Score, one radial axis per metric, for example, `No start/stop codon errors`. Higher percentages mean better. The axes are grouped in three shaded sectors, one per class of error (Completeness, False positives, Accuracy), labelled with the share of the GAS of the class (see [Global Annotation Score](#global-annotation-score-gas)). The radial axis starts at the lowest plotted value minus 10 (or `--radial_min`; the first label of the scale), so the radar area is not proportional to the score. The GAS and the three class sub-scores of each annotation are given in the legend (`GAS: xx (Completeness: xx, False Positives: xx, Accuracy: xx)`) and in the breakdown plot.
 
-- **Inner ring**:  
-  Represents the area calculated from the radar plot for each annotation represented.  
-  - The area value is also shown as a numerical value in the legend.  
-  - This is the annotation quality's **global score** — higher means better.
-
-- **Outer Column sets**:  
-  Represent **in-depth annotation metrics**:  
+- **Outer Column sets (descriptors, not in the score)**:  
+  Represent **in-depth annotation metrics**. Each of these bars sits next to the axis it describes. Percentages use an absolute scale (100% = full bar):  
+  - **OMARK completeness / consistency / partial-fragmented**: Single, Duplicated and Missing conserved families; Consistent, Inconsistent, Contaminant and Unknown proteins (% of the proteome); partial hits and fragments (% of the proteins placed in a family).  
   - **BUSCO sections**: Higher % Complete (Single) means better.  
     - If there are no valid biological explanations (e.g., polyploidy), a high % Complete (Duplicated) could indicate assembly problems, such as redundant contigs generated by pooling DNA from multiple individuals.  
     - High % Fragmented could indicate genome assembly continuity problems, but this could also be explained by annotation errors if the average CDS length is low.
-  - **Transposons**: Here is represented the % of transcript models classified as PTeMte (potential TEs). Usually, higher values means worse, but sometimes these sequences are flagged as TEs because they are genes originated from TEs domestication. Check DeTEnGA output file ```{species}_TE_summary.csv```list of sequences IDs for further analysis on these sequences.
-  -  **Gene models and transcript models**: Represents how many models are in each annotation. This columns are **normalized by the highest number of models present in all annotations**. For example, if you are representing annotation A with 200 gene models and annotation B with 50 gene models, Annotation B's bar will be 4 times lower than A. Higher means better, but **extreme differences could be explained by annotation problems**, e.g. Helixer doesn't group isoforms into genes, so total number of gene models could be potentially higher than the actual number of organism's genes.
-  -  **Transcripts with both sides UTR**: Represents the % of each annotation's transcripts that have both UTR'5 and UTR'3 annotated. Higher means better.
-  -  **Average CDS length**: Represents the average CDS length. These values are **normalized by the highest Average CDS length**, so if Annotation A is 1000bp and annotation B is 250bp annotation A bar should be 4 times higher. Higher means better, but **extreme differences could be explained by annotation errors**, e.g. incorrect merging of genes as a single gene model.
+  - **Transposon related Transcripts**: Here is represented the % of transcript models with TE evidence in DeTEnGA, the sum of the classes PteM0, PchM0, PcpMte, PteMte, PchMte and P0Mte (TE Pfam domains and/or TE signal in the mRNA). Usually, higher values means worse, but sometimes these sequences are flagged as TEs because they are genes originated from TEs domestication. Check DeTEnGA output file ```{species}_TE_summary.csv```list of sequences IDs for further analysis on these sequences.
+  -  **Transcripts with intron length shorter than floor**: Represents the % of transcripts with at least one intron ≤ `Intron_Floor_Threshold` (the review band of suspicious introns, which includes the potential artifacts scored by the "Transcripts with no artifact (very short) introns" axis; in the longest-isoform plot, % of longest isoforms). 100% = full bar. Lower means better, but the floor is close to the shortest real introns of the lineage, so part of these introns can be genuine. The genes and transcripts are listed in `{species}_short_introns_genes.tsv` and `{species}_short_introns_transcripts.tsv`.
+
+- **Gene model descriptors (AGAT, not in the score)**:  
+  Four outer bars in the free slots of the axes without a bar of their own (PSAURON, START/STOP and the two homology databases); they do not describe those axes. Gene models, transcript models and mean CDS length are relative to the largest annotation of the plot (largest = full bar), so they change with the set of annotations; UTR is a % (100% = full bar):  
+  -  **Gene models and transcript models**: how many models are in each annotation. Extreme differences could be explained by annotation problems, e.g. Helixer doesn't group isoforms into genes, so its number of gene models can be higher than the actual number of genes.
+  -  **Transcripts with both sides UTR**: % of transcripts with both 5' and 3' UTR annotated. Higher means better.
+  -  **Average CDS length**: average CDS length. Extreme differences could be explained by annotation errors, e.g. genes merged into one model, or fragmented models.
 
  
