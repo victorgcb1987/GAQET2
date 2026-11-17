@@ -44,13 +44,13 @@ def parse_arguments():
     
     help_weights = ("Share (percentage) of the Global Annotation Score given to metrics, as key=percentage "
                     "separated by commas (e.g. completeness=40 or busco=40,omark=10). A class key "
-                    "(completeness, false_positives, accuracy) or a role key (homology, busco, omark_completeness, "
+                    "(completeness, precision, accuracy) or a role key (homology, busco, omark_completeness, "
                     "omark (consistency), psauron, detenga, agat, introns, omark_fragments) sets the total share of those metrics, split among them as the "
                     "default shares (by analysis). "
                     "Any other key is matched as a substring of one metric name (e.g. swissprot=15, "
                     "embryophyta=20). The remaining percentage is split among the metrics not mentioned in "
                     "proportion to their default shares. Default: the three classes have the same share "
-                    "(the GAS is the mean of the completeness, false-positive and accuracy sub-scores), "
+                    "(the GAS is the mean of the completeness, precision and accuracy sub-scores), "
                     "split equally among the analyses of each class (an analysis with several metrics, e.g. "
                     "homology against several databases, counts once)")
     parser.add_argument("--weights", "-w", type=str,
@@ -110,11 +110,11 @@ ROLES = ("homology", "busco", "omark_completeness", "omark", "psauron", "detenga
 
 # The GAS is the mean of three sub-scores, one per class of error, each the mean of its metrics
 # (by default each class has 1/3 of the score, split equally among its metrics)
-CLASSES = ("completeness", "false_positives", "accuracy")
-CLASS_LABELS = {"completeness": "Completeness", "false_positives": "False positives", "accuracy": "Accuracy"}
+CLASSES = ("completeness", "precision", "accuracy")
+CLASS_LABELS = {"completeness": "Completeness", "precision": "Precision", "accuracy": "Accuracy"}
 # Okabe-Ito blue, vermilion and bluish green: colour-blind safe and distinct in grayscale (checked with
 # the dataviz palette validator, all pairs)
-CLASS_COLORS = {"completeness": "#0072B2", "false_positives": "#D55E00", "accuracy": "#009E73"}
+CLASS_COLORS = {"completeness": "#0072B2", "precision": "#D55E00", "accuracy": "#009E73"}
 
 
 def _mix(color, other, fraction):
@@ -123,7 +123,7 @@ def _mix(color, other, fraction):
     return matplotlib.colors.to_hex(a * (1 - fraction) + b * fraction)
 
 
-_C, _F, _A = CLASS_COLORS["completeness"], CLASS_COLORS["false_positives"], CLASS_COLORS["accuracy"]
+_C, _F, _A = CLASS_COLORS["completeness"], CLASS_COLORS["precision"], CLASS_COLORS["accuracy"]
 # Outer bars: original GAQET colours; bars added later (OMArk consistency and fragments, floor introns)
 # take colours not used by the original ones
 DESCRIPTOR_COLORS = {
@@ -140,8 +140,8 @@ BAR_EDGE = {"edgecolor": "black"}
 # Annotation colours: original tab20 order (extended with tab20b/tab20c for more annotations)
 ANNOTATION_COLORS = []
 ROLE_CLASS = {"busco": "completeness", "omark_completeness": "completeness",
-              "homology": "false_positives", "omark": "false_positives", "psauron": "false_positives",
-              "detenga": "false_positives",
+              "homology": "precision", "omark": "precision", "psauron": "precision",
+              "detenga": "precision",
               "agat": "accuracy", "introns": "accuracy", "omark_fragments": "accuracy"}
 
 # Metrics of these roles are left out of the score when their analysis is missing
@@ -226,7 +226,7 @@ def metric_role(metric):
 
 
 def metric_class(metric):
-    """Class of error (completeness, false_positives, accuracy) a metric measures."""
+    """Class of error (completeness, precision, accuracy) a metric measures."""
     return ROLE_CLASS.get(metric_role(metric))
 
 
@@ -235,6 +235,7 @@ def normalize_key(text):
 
 
 CLASS_KEYS = {normalize_key(c): c for c in CLASSES}
+CLASS_KEYS[normalize_key("false_positives")] = "precision"  # former name of the precision class
 ROLE_KEYS = {normalize_key(r): r for r in ROLES}
 
 
@@ -269,7 +270,7 @@ def parse_weights(text):
 
 
 def match_metrics(key, metrics, available_text):
-    """Metrics selected by a class name (completeness, false_positives, accuracy), a role name
+    """Metrics selected by a class name (completeness, precision, accuracy), a role name
     (busco, omark...) or a substring of a metric name."""
     nkey = normalize_key(key)
     if nkey in CLASS_KEYS:
@@ -302,10 +303,10 @@ def default_shares(metrics):
 def resolve_shares(metrics, share_spec=None, exclude=None):
     """Share of the global annotation score (fraction, adding up to 1) of each scored metric.
 
-    GAS = sum(share_i * metric_i). By default the classes (completeness, false positives, accuracy)
+    GAS = sum(share_i * metric_i). By default the classes (completeness, precision, accuracy)
     have the same share and each class share is split equally among its metrics (default_shares),
     so the GAS is the mean of the three class sub-scores.
-    share_spec: [(key, percentage)]. A class key (completeness, false_positives, accuracy) or a role
+    share_spec: [(key, percentage)]. A class key (completeness, precision, accuracy) or a role
     key (busco, omark, psauron, detenga, agat, introns, homology) sets the total share of those
     metrics, split equally among them. Any other key is matched as a substring of one metric name
     and sets the share of that metric alone. The remaining percentage is split among the metrics
@@ -736,7 +737,7 @@ def make_plot(df, arguments, measured, measured_column="Transcript_Models (N)"):
         print("\033[31mWARNING: more than 2 Homology analyses found, showing only the first 2 columns\033[0m")
         proteins_with_cols = proteins_with_cols[0:2]
 
-    # Axes grouped by class: completeness, false positives, accuracy (one shaded sector per class)
+    # Axes grouped by class: completeness, precision, accuracy (one shaded sector per class)
     metrics = (
         [f"BUSCO_C_{bt}" for bt in busco_types] + [OMARK_COMPLETENESS_METRIC] +
         [
@@ -1110,10 +1111,10 @@ def make_plot(df, arguments, measured, measured_column="Transcript_Models (N)"):
     areas = df_metrics["__Score__"].tolist()
 
     def legend_scores(species):
-        """GAS and class sub-scores for the legend: GAS: xx (Completeness: xx, False Positives: xx, Accuracy: xx)."""
+        """GAS and class sub-scores for the legend: GAS: xx (Completeness: xx, Precision: xx, Accuracy: xx)."""
         row = df_metrics.loc[df_metrics["Species"] == species].iloc[0]
         parts = []
-        for error_class, name in zip(CLASSES, ("Completeness", "False Positives", "Accuracy")):
+        for error_class, name in zip(CLASSES, ("Completeness", "Precision", "Accuracy")):
             value = row["__Class_{}__".format(error_class)]
             parts.append("{}: {}".format(name, "NA" if pd.isna(value) else "{:.1f}".format(value)))
         return "GAS: {:.1f} ({})".format(area_map[species], ", ".join(parts))

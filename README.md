@@ -340,7 +340,7 @@ GAQET_PLOT -i {input_tsv} -p {prefix} -f {png|jpeg|svg}
 | -p, --prefix | Prefix of the output files, it can include a directory (default `GAQET`). Two plots and two score tables are written (see below) |
 | -f, --format | Image format of the plots: `png` (default), `jpeg` or `svg` |
 | -r, --radial_min | Value (%) at the centre of the radar plot. Default: the lowest plotted value minus 10 (rounded down, 0 at least), so differences between annotations are visible and no value is clipped. With a manual value, values below it are drawn at the centre. `0` gives the full 0-100% axis |
-| -w, --weights | Share (%) of the score given to metrics, `key=percentage` separated by commas (e.g. `completeness=40` or `busco=40,omark=10`). A class key (`completeness`, `false_positives`, `accuracy`) or a role key (`homology`, `busco`, `omark_completeness`, `omark` (consistency only), `psauron`, `detenga`, `agat`, `introns`, `omark_fragments`) sets the total share of those metrics, split among them as the default shares (by analysis); any other key is matched as a substring of one metric name (e.g. `swissprot=15`). The rest is split among the metrics not mentioned in proportion to their default shares. Default: each class 33.33%, split equally among its analyses and then among the metrics of each analysis |
+| -w, --weights | Share (%) of the score given to metrics, `key=percentage` separated by commas (e.g. `completeness=40` or `busco=40,omark=10`). A class key (`completeness`, `precision`, `accuracy`; `false_positives` is accepted as the former name of `precision`) or a role key (`homology`, `busco`, `omark_completeness`, `omark` (consistency only), `psauron`, `detenga`, `agat`, `introns`, `omark_fragments`) sets the total share of those metrics, split among them as the default shares (by analysis); any other key is matched as a substring of one metric name (e.g. `swissprot=15`). The rest is split among the metrics not mentioned in proportion to their default shares. Default: each class 33.33%, split equally among its analyses and then among the metrics of each analysis |
 | -e, --exclude | Keys (same matching as `--weights`) of metrics left out of the score. They are still drawn |
 
 Outputs, for `-p {prefix} -f {format}` (e.g. `-p Athaliana` gives `Athaliana_plot.png`, `Athaliana_longest_isoform_plot.png`, `Athaliana_GAS.tsv` and `Athaliana_longest_isoform_GAS.tsv`):
@@ -361,7 +361,7 @@ Columns of the score tables:
 | Measured_transcripts | `all_transcripts` or `longest_isoform` |
 | Measured_transcripts_N | Transcripts on which the model-quality metrics are measured (all transcripts, or one per gene) |
 | GAS, GAS_rank | Global Annotation Score of the annotation and its rank in the table (1 = highest) |
-| Completeness / False positives / Accuracy score (share {S}%) | Class sub-scores (0-100, higher is better; a high false-positive score means few false positives), with the share of the GAS of each class in the column name. GAS = sum of share × sub-score |
+| Completeness / Precision / Accuracy score (share {S}%) | Class sub-scores (0-100, higher is better; a high precision score means few false positives), with the share of the GAS of each class in the column name. GAS = sum of share × sub-score |
 | {metric} (%) | Value of each metric (radial axis) whose analysis was run, e.g. `SWISSPROT hits (%)`, `BUSCO complete eudicots_odb10 (%)` |
 | {metric} points (share {S}%) | Points of the GAS coming from that metric (share × value), with the metric's share in the column name; the points of an annotation add up to its GAS (±0.01 from rounding); share and points 0 if the metric is excluded |
 
@@ -370,7 +370,7 @@ Columns of the weights tables (the shares are the same for every annotation):
 | Column | Description |
 |---|---|
 | Metric | Metric, named as in the score table |
-| Class | Class of error it measures: `completeness`, `false_positives` or `accuracy` |
+| Class | Class of the metric: `completeness`, `precision` or `accuracy` |
 | Role | Analysis it comes from (the role keys of `--weights` and `--exclude`) |
 | Measured_on | Transcripts used by this metric: `longest_isoform` always for BUSCO and OMArk |
 | Share_% | Share of the score given to the metric (`--weights`); 0 if excluded or missing |
@@ -382,12 +382,12 @@ up to 100%. Every metric belongs to one class of error, and each class has its o
 mean of its metrics):
 
 - **Completeness**: are the conserved gene families of the lineage present? (BUSCO, OMArk completeness). Only conserved genes are checked (e.g. 954-3,354 BUSCO genes, ~11,000 OMArk families for vertebrates), not lineage-specific ones
-- **False positives**: are the models real protein-coding genes, not spurious ORFs, TEs or contaminants? (DIAMOND homology, OMArk consistency, PSAURON, DeTEnGA)
+- **Precision**: are the models real protein-coding genes, not spurious ORFs, TEs or contaminants? (DIAMOND homology, OMArk consistency, PSAURON, DeTEnGA)
 - **Accuracy**: are the models of real genes correctly built? (AGAT START/STOP, artifact introns, OMArk partial hits and fragments)
 
 By default the three classes have the same share (33.33% each), split equally among the analyses of each class and
 then among the metrics of each analysis, so the GAS is the mean of the three sub-scores and no class or analysis weighs
-more because it has more metrics: homology counts once in the false-positive class whatever the number of databases
+more because it has more metrics: homology counts once in the precision class whatever the number of databases
 given (e.g. Swiss-Prot and TrEMBL 4.17% each, or one database 8.33%), and BUSCO counts once whatever the number of
 lineages. `--weights` and
 `--exclude` also accept the class names. A metric whose analysis was not run (or a column missing from older GAQET
@@ -398,11 +398,11 @@ short introns and, for proteins of known gene families only, truncated/split mod
 
 | Metric (axis) | Class | Role | Value | Measured on |
 |---|---|---|---|---|
-| {db} Homology Hits (DIAMOND), one per database | false positives | homology | `ProteinsWith{db}Hits (%)` | model quality: all transcripts / longest isoform |
-| Proteins fitting their Taxonomic rank (OMARK) | false positives | omark | consistent proteins (%) | longest isoform of each gene (always) |
+| {db} Homology Hits (DIAMOND), one per database | precision | homology | `ProteinsWith{db}Hits (%)` | model quality: all transcripts / longest isoform |
+| Proteins fitting their Taxonomic rank (OMARK) | precision | omark | consistent proteins (%) | longest isoform of each gene (always) |
 | {lineage} Completeness (BUSCO), one per lineage | completeness | busco | Complete (%) | longest isoform of each gene (always) |
-| Proteins with non-TE Pfam domains and no TE mRNA signal (DeTEnGA) | false positives | detenga | PcpM0 (%): only non-TE Pfam domains (e-value ≤ 0.005) and no TE signal in the mRNA (TEsorter); transcripts with no Pfam hit, TE evidence or not analysed (invalid_CDS, with_Ns, longer_than_100kb) count against it | model quality: all transcripts / longest isoform |
-| Transcripts flagged as coding sequences (PSAURON) | false positives | psauron | PSAURON score | model quality: all transcripts / longest isoform |
+| Proteins with non-TE Pfam domains and no TE mRNA signal (DeTEnGA) | precision | detenga | PcpM0 (%): only non-TE Pfam domains (e-value ≤ 0.005) and no TE signal in the mRNA (TEsorter); transcripts with no Pfam hit, TE evidence or not analysed (invalid_CDS, with_Ns, longer_than_100kb) count against it | model quality: all transcripts / longest isoform |
+| Transcripts flagged as coding sequences (PSAURON) | precision | psauron | PSAURON score | model quality: all transcripts / longest isoform |
 | No start/stop codon errors (AGAT) | accuracy | agat | 100 − % models with START and/or STOP missing | model quality: all transcripts / longest isoform |
 | Transcripts with no artifact (very short) introns (AGAT) | accuracy | introns | 100 − % transcripts with an intron ≤ `Intron_Artifact_Threshold` (potential artifacts) | model quality: all transcripts / longest isoform |
 | Conserved gene families found (OMArk) | completeness | omark_completeness | Single + Duplicated (%) of the conserved gene families (HOGs) of the lineage (`OMArk Completeness Results`) | longest isoform of each gene (always) |
@@ -423,7 +423,7 @@ Running this script should generate a figure similar to this one:
 This figure is called GAQET plot and helps comparing multiple annotations. This plot has 2 levels:   
 
 - **Inner radar plot (the score)**:  
-  Represents the value of each metric of the Global Annotation Score, one radial axis per metric, for example, `No start/stop codon errors`. Higher percentages mean better. The axes are grouped in three shaded sectors, one per class of error (Completeness, False positives, Accuracy), labelled with the share of the GAS of the class (see [Global Annotation Score](#global-annotation-score-gas)). The radial axis starts at the lowest plotted value minus 10 (or `--radial_min`; the first label of the scale), so the radar area is not proportional to the score. The GAS and the three class sub-scores of each annotation are given in the legend (`GAS: xx (Completeness: xx, False Positives: xx, Accuracy: xx)`) and in the breakdown plot.
+  Represents the value of each metric of the Global Annotation Score, one radial axis per metric, for example, `No start/stop codon errors`. Higher percentages mean better. The axes are grouped in three shaded sectors, one per class (Completeness, Precision, Accuracy), labelled with the share of the GAS of the class (see [Global Annotation Score](#global-annotation-score-gas)). The radial axis starts at the lowest plotted value minus 10 (or `--radial_min`; the first label of the scale), so the radar area is not proportional to the score. The GAS and the three class sub-scores of each annotation are given in the legend (`GAS: xx (Completeness: xx, Precision: xx, Accuracy: xx)`) and in the breakdown plot.
 
 - **Outer Column sets (descriptors, not in the score)**:  
   Represent **in-depth annotation metrics**. Each of these bars sits next to the axis it describes. Percentages use an absolute scale (100% = full bar):  
