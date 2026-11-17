@@ -5,7 +5,8 @@ would report multi-isoform genes as duplicated. DIAMOND, DeTEnGA, PSAURON, AGAT 
 intron metrics are measured on every transcript. This module repeats those per-transcript counts
 on the longest isoform of each gene, from the files the analyses already wrote, so nothing is run
 twice. The longest isoforms are the ones selected by agat_sp_keep_longest_isoform.pl, the same
-representatives given to BUSCO and OMArk, and the denominator is their number (one per gene).
+representatives given to BUSCO and OMArk. The denominator is their number (one per gene): coding longest
+isoforms for the protein and CDS metrics, every longest isoform for the intron metrics.
 
 Every column is named LONGEST_PREFIX + <name of the per-transcript column>, so gaqet_plot.py can
 use them in place of the per-transcript columns for the longest-isoform score.
@@ -155,23 +156,27 @@ def introns_longest(agat, longest, artifact_threshold, floor_threshold=None):
     return results
 
 
-def longest_isoform_stats(longest_isoform, artifact_threshold, agat=None, psauron=None,
+def longest_isoform_stats(longest_isoform, artifact_threshold, coding_longest, agat=None, psauron=None,
                           detenga=None, protein_homology=None, floor_threshold=None):
     """Per-gene (longest isoform) versions of the model-quality metrics of the analyses that were run.
 
     longest_isoform: report of get_longest_isoform (agat_sp_keep_longest_isoform.pl output).
+    coding_longest: IDs of the longest isoforms with a CDS (gffread). As in the per-transcript columns, the
+    protein and CDS metrics (DIAMOND, DeTEnGA, PSAURON, AGAT START/STOP) are measured on the coding longest
+    isoforms (MEASURED_COLUMN) and the intron metrics on every longest isoform (mRNA).
     The other arguments are the reports of the analyses (None if the analysis was not run)."""
     if "Failed" in longest_isoform["status"] or not longest_isoform["outfile"].is_file():
         return {MEASURED_COLUMN: FAILED}
     longest = read_gff_transcripts(longest_isoform["outfile"])
-    results = {MEASURED_COLUMN: len(longest)}
+    coding = longest & set(coding_longest)
+    results = {MEASURED_COLUMN: len(coding)}
     if protein_homology is not None:
-        results.update(homology_longest(protein_homology, longest))
+        results.update(homology_longest(protein_homology, coding))
     if psauron is not None:
-        results.update(psauron_longest(psauron, longest))
+        results.update(psauron_longest(psauron, coding))
     if detenga is not None:
-        results.update(detenga_longest(detenga, longest))
+        results.update(detenga_longest(detenga, coding))
     if agat is not None:
-        results.update(agat_incomplete_longest(agat, longest))
+        results.update(agat_incomplete_longest(agat, coding))
         results.update(introns_longest(agat, longest, artifact_threshold, floor_threshold))
     return results

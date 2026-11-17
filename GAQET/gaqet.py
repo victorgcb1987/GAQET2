@@ -426,14 +426,15 @@ def main():
         if analysis == "PSAURON":
             results.update(psauron_stats(psauron))
         if analysis == "DETENGA":
-            results.update(detenga_stats(results["Transcript_Models (N)"], 
+            results.update(detenga_stats(len(excluded["coding"]),
                                          detenga["create_summary"]["outfile"]))
         if analysis == "PROTHOMOLOGY":
-            results.update(protein_homology_stats(protein_homology, results["Transcript_Models (N)"]))
+            # denominator: coding transcripts (mRNAs without CDS are not counted)
+            results.update(protein_homology_stats(protein_homology, len(excluded["coding"])))
     # Same model-quality metrics re-counted on one transcript per gene (longest isoform), from the
     # files written above; used by gaqet_plot.py for the longest-isoform score
     run = arguments["Analysis"]
-    results.update(longest_isoform_stats(longest_isoform, artifact_threshold,
+    results.update(longest_isoform_stats(longest_isoform, artifact_threshold, excluded["coding_longest"],
                                          agat=agat if "AGAT" in run else None,
                                          psauron=psauron if "PSAURON" in run else None,
                                          detenga=detenga if "DETENGA" in run else None,

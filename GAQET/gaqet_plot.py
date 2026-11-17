@@ -198,6 +198,7 @@ TE_CLASSES = ["PteM0", "PchM0", "PcpMte", "PteMte", "PchMte", "P0Mte"]
 # gene (src/longest_isoform_parsers.py): "Longest isoform: <per-transcript column name>"
 LONGEST_PREFIX = "Longest isoform: "
 LONGEST_MEASURED = LONGEST_PREFIX + "Measured transcripts (N)"
+CODING_COLUMN = "Coding transcripts (N)"
 SHORT_INTRON_COLUMN = re.compile(r"^% Transcripts with introns <= [\d.]+bp \(potential artifacts\)$")
 FLOOR_INTRON_COLUMN = re.compile(r"^% Transcripts with introns <= ([\d.]+)bp \(floor\)$")
 
@@ -217,6 +218,24 @@ def drop_empty_analysis_columns(df):
                  or SHORT_INTRON_COLUMN.match(col) or FLOOR_INTRON_COLUMN.match(col))
              and df[col].isna().all()]
     return df.drop(columns=empty)
+
+
+def failed_to_missing(df):
+    """gaqet.py writes FAILED in the columns of an analysis that failed: make those cells empty, so a failed
+    analysis is handled as a missing one (left out of the score if it failed in every annotation, otherwise
+    check_missing_values stops), and give back their numeric type to the columns that had them."""
+    failed = df.astype(str).apply(lambda column: column.str.strip().str.upper() == "FAILED")
+    if not failed.any().any():
+        return df
+    for column in df.columns[failed.any()]:
+        species = df.loc[failed[column], "Species"].astype(str).tolist()
+        print("\033[31mWARNING: {} FAILED in {} of {} annotations: {}\033[0m".format(
+            column, len(species), len(df), ", ".join(species)))
+        df[column] = df[column].mask(failed[column])
+        converted = pd.to_numeric(df[column], errors="coerce")
+        if converted.notna().sum() == df[column].notna().sum():
+            df[column] = converted
+    return df
 
 
 def check_missing_values(df_metrics, fill, measured):
@@ -616,6 +635,7 @@ def main():
     if arguments["radial_min"] is not None and not 0 <= arguments["radial_min"] < 100:
         sys.exit("\033[31mERROR: --radial_min must be between 0 and 100 (not included)\033[0m")
     df = pd.read_csv(arguments["input"], sep="\t")
+    df = failed_to_missing(df)
 
     # Longest-isoform columns in only some annotations: stop before writing anything (default)
     if LONGEST_MEASURED in df.columns:
@@ -635,11 +655,15 @@ def main():
     except ValueError as error:
         df_longest = None
         longest_error = error
+    # Denominator of AGAT START/STOP on all transcripts: coding transcripts (gaqet.py "Coding transcripts (N)";
+    # older outputs: AGAT "CDS_Models (N)", the number of mRNAs with a CDS). mRNAs without CDS are not counted
+    all_column = next((col for col in (CODING_COLUMN, "CDS_Models (N)") if col in df.columns),
+                      "Transcript_Models (N)")
     # missing values of both scores are checked before any output is written
-    make_plot(df.copy(), arguments, "all", check_only=True)
+    make_plot(df.copy(), arguments, "all", all_column, check_only=True)
     if df_longest is not None:
         make_plot(df_longest.copy(), arguments, "longest", measured_column, check_only=True)
-    make_plot(df.copy(), arguments, "all")
+    make_plot(df.copy(), arguments, "all", all_column)
     if df_longest is None:
         print("\033[31mWARNING: longest-isoform score not made: {}. Rerun gaqet.py on the same Basedir of "
               "those annotations (finished analyses are reused) to add them\033[0m".format(longest_error))

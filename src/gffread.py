@@ -214,9 +214,13 @@ def excluded_transcripts(config, gffread):
                                                   ",".join(reasons)))
 
     total = len(all_cds)
-    stats = {"Coding transcripts excluded from protein analyses (N)": len(excluded),
+    # coding transcripts (mRNAs with a CDS): denominator of the per-transcript protein and CDS metrics
+    # (DIAMOND, DeTEnGA, AGAT START/STOP); mRNAs without CDS (e.g. NCBI pseudogene mRNAs) are not counted
+    stats = {"Coding transcripts (N)": total,
+             "Coding transcripts excluded from protein analyses (N)": len(excluded),
              "% Coding transcripts excluded from protein analyses": round(100 * len(excluded) / total, 2) if total else 0.0}
     for reason, label in EXCLUSION_REASONS.items():
         stats["Excluded transcripts with {} (N)".format(label)] = sum(reason in reasons for reasons in excluded.values())
     stats["Longest isoforms excluded from OMArk (N)"] = len(longest_excluded)
-    return {"stats": stats, "transcripts": excluded, "outfile": outfile}
+    return {"stats": stats, "transcripts": excluded, "outfile": outfile,
+            "coding": set(all_cds), "coding_longest": longest_all}

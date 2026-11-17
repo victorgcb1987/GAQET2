@@ -221,8 +221,8 @@ The ouput directories should be similar to this one:
 | Assembly_md5                   | md5sum of the assembly file given by the user, to identify it exactly                            |
 | Annotation_md5                 | md5sum of the original annotation file given by the user, to identify it exactly                    |
 | Gene_Models (N)                | (AGAT) Number of coding genes found in the annotation     |
-| Transcript_Models (N)          | (AGAT) Number of coding transcripts found in the annotation     |
-| CDS_Models (N)                 | (AGAT) Number of CDS found in the annotation     |
+| Transcript_Models (N)          | (AGAT) Number of mRNA features in the annotation (it includes mRNAs without CDS, e.g. NCBI pseudogene mRNAs; see `Coding transcripts (N)`)     |
+| CDS_Models (N)                 | (AGAT) Number of mRNAs with a CDS     |
 | UTR5' (N)                      | (AGAT) Number of UTR5' annotated on coding transcripts     |
 | UTR3' (N)                      | (AGAT) Number of UTR3' annotated on coding transcripts     |
 | Both sides UTR' (N)            | (AGAT) Number of coding transcripts models with both UTR's annotated    |
@@ -257,6 +257,7 @@ The ouput directories should be similar to this one:
 | Models START missing             | (AGAT) Number of coding transcripts lacking start codon     |
 | Models STOP missing              | (AGAT) Number of coding transcripts lacking stop codon     |
 | Models START & STOP missing      | (AGAT) Number of coding transcripts lacking stop and start codon     |
+| Coding transcripts (N) | (gffread) Transcripts with a CDS. Denominator of `ProteinsWith{db}Hits (%)`, `DETENGA_FP%` and, in GAQET_PLOT, of the AGAT START/STOP metric; mRNAs without CDS are not counted. The intron columns use every transcript (mRNA) |
 | Coding transcripts excluded from protein analyses (N) | (gffread) Coding transcripts left out of DeTEnGA, DIAMOND, PSAURON and OMArk because their CDS has no START, no STOP or an in-frame STOP (`gffread -J`). BUSCO uses them. Listed in `{species}_excluded_from_protein_analyses.tsv` |
 | % Coding transcripts excluded from protein analyses | Same, as a percentage of all coding transcripts |
 | Excluded transcripts with {reason} (N) | Excluded transcripts by reason: no START, no STOP, in-frame STOP, CDS length not multiple of 3, other. A transcript can have more than one reason |
@@ -269,7 +270,7 @@ The ouput directories should be similar to this one:
 | OMArk Completeness Results| (OMARK) Taxonomic Completness results. Check table below for nomenclature explanation|
 | OMArk Species Composition | (OMARK) Species Composition in percentage|
 | ProteinsWith{db}Hits (%) | (DIAMOND) Percentage of proteins with a significant hit on database {db}|  
-| Longest isoform: Measured transcripts (N) | Number of longest isoforms (one per gene, from `agat_sp_keep_longest_isoform.pl`, the same ones given to BUSCO and OMArk). Denominator of the `Longest isoform:` columns |
+| Longest isoform: Measured transcripts (N) | Number of coding longest isoforms (one per gene, from `agat_sp_keep_longest_isoform.pl`, the same ones given to BUSCO and OMArk; longest isoforms without CDS are not counted). Denominator of the protein and START/STOP `Longest isoform:` columns; the intron columns use every longest isoform |
 | Longest isoform: {column} | The model-quality columns `ProteinsWith{db}Hits (%)`, `PSAURON SCORE`, `DETENGA_FPV`, `DETENGA_FP%`, `Models START missing`, `Models STOP missing`, `Models START & STOP missing`, `Transcripts with introns <= {Intron_Artifact_Threshold}bp (potential artifacts) (N)`, `Transcripts with introns <= {Intron_Floor_Threshold}bp (floor) (N)` and their `%`, re-counted on the longest isoform of each gene (T and percentages over genes). Computed from the files the analyses already wrote, nothing is run twice. Used by GAQET_PLOT for the longest-isoform score |
 
 Transcripts with no START, no STOP or an in-frame STOP are not given to the protein analyses, and each analysis
