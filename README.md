@@ -342,6 +342,7 @@ GAQET_PLOT -i {input_tsv} -p {prefix} -f {png|jpeg|svg}
 | -r, --radial_min | Value (%) at the centre of the radar plot. Default: the lowest plotted value minus 10 (rounded down, 0 at least), so differences between annotations are visible and no value is clipped. With a manual value, values below it are drawn at the centre. `0` gives the full 0-100% axis |
 | -w, --weights | Share (%) of the score given to metrics, `key=percentage` separated by commas (e.g. `completeness=40` or `busco=40,omark=10`). A class key (`completeness`, `precision`, `accuracy`; `false_positives` is accepted as the former name of `precision`) or a role key (`homology`, `busco`, `omark_completeness`, `omark` (consistency only), `psauron`, `detenga`, `agat`, `introns`, `omark_fragments`) sets the total share of those metrics, split among them as the default shares (by analysis); any other key is matched as a substring of one metric name (e.g. `swissprot=15`). The rest is split among the metrics not mentioned in proportion to their default shares. Default: each class 33.33%, split equally among its analyses and then among the metrics of each analysis |
 | -e, --exclude | Keys (same matching as `--weights`) of metrics left out of the score. They are still drawn |
+| --fill_missing_with_zero | When some annotations lack a value that the other annotations have, score it as 0 and go on (behaviour of earlier versions; annotations without longest-isoform columns then make the longest-isoform score be skipped). By default GAQET_PLOT lists the missing values (metric and annotations) and stops before writing any output |
 
 Outputs, for `-p {prefix} -f {format}` (e.g. `-p Athaliana` gives `Athaliana_plot.png`, `Athaliana_longest_isoform_plot.png`, `Athaliana_GAS.tsv` and `Athaliana_longest_isoform_GAS.tsv`):
 
@@ -390,9 +391,11 @@ then among the metrics of each analysis, so the GAS is the mean of the three sub
 more because it has more metrics: homology counts once in the precision class whatever the number of databases
 given (e.g. Swiss-Prot and TrEMBL 4.17% each, or one database 8.33%), and BUSCO counts once whatever the number of
 lineages. `--weights` and
-`--exclude` also accept the class names. A metric whose analysis was not run (or a column missing from older GAQET
-outputs) is drawn empty and left out of the score; the shares of the other metrics are rescaled (a class with no
-metric left is dropped and the other classes share the score). The accuracy metrics detect broken CDS ends, very
+`--exclude` also accept the class names. A metric whose analysis was not run in any annotation of the input (or a
+column missing from older GAQET outputs) is drawn empty and left out of the score; the shares of the other metrics are
+rescaled (a class with no metric left is dropped and the other classes share the score). A value missing in only some
+annotations stops GAQET_PLOT, since those annotations would be scored on fewer metrics than the others; rerun GAQET on
+them, remove them from the input or use `--fill_missing_with_zero`. The accuracy metrics detect broken CDS ends, very
 short introns and, for proteins of known gene families only, truncated/split models (fragments) and partial matches
 (e.g. fusions); wrong exon boundaries and errors in genes of unknown families are not measured.
 

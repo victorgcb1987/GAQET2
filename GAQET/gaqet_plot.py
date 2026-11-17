@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 import argparse
+import contextlib
+import os
 import numpy as np
 import matplotlib
 import matplotlib.colors
@@ -66,6 +68,13 @@ def parse_arguments():
                    "clipped. Values below a manual centre are drawn at the centre. Use 0 for the full 0-100%% axis")
     parser.add_argument("--radial_min", "-r", type=float, help=help_radial, default=None)
 
+    help_fill = ("When some annotations lack a value that the other annotations have (e.g. one of ten has no "
+                 "PSAURON result), give them 0 for that value and go on (behaviour of earlier versions). "
+                 "Without this option GAQET_PLOT lists the missing values and stops. With it, annotations "
+                 "without longest-isoform columns make the longest-isoform score be skipped, as before. An "
+                 "analysis missing in every annotation is always left out of the score")
+    parser.add_argument("--fill_missing_with_zero", action="store_true", help=help_fill)
+
     help_version = "Print version and exit"
     parser.add_argument("--version", "-v", type=str,
                         help=help_version, default="")
@@ -83,6 +92,7 @@ def get_arguments():
             "format": parser.format,
             "radial_min": parser.radial_min,
             "weights": parser.weights,
+            "fill_missing": parser.fill_missing_with_zero,
             "exclude": [key.strip() for key in parser.exclude.split(",") if key.strip()]}
 
 
@@ -190,6 +200,47 @@ LONGEST_PREFIX = "Longest isoform: "
 LONGEST_MEASURED = LONGEST_PREFIX + "Measured transcripts (N)"
 SHORT_INTRON_COLUMN = re.compile(r"^% Transcripts with introns <= [\d.]+bp \(potential artifacts\)$")
 FLOOR_INTRON_COLUMN = re.compile(r"^% Transcripts with introns <= ([\d.]+)bp \(floor\)$")
+
+# Input columns of the analyses in the stats table. A column empty in every annotation is treated as an
+# analysis that was not run (placeholder, left out of the score); one empty in only some annotations is a
+# missing value (check_missing_values)
+ANALYSIS_INPUT_COLUMNS = ["DETENGA_FP%", "OMArk Species Composition", "OMArk Completeness Results",
+                          "OMArk Consistency Results", "PSAURON SCORE", "Models START missing",
+                          "Models STOP missing", "Models START & STOP missing"]
+ANALYSIS_INPUT_PREFIXES = ("Annotation_BUSCO_", "ProteinsWith")
+
+
+def drop_empty_analysis_columns(df):
+    """Remove the analysis input columns that have no value in any annotation."""
+    empty = [col for col in df.columns
+             if (col in ANALYSIS_INPUT_COLUMNS or col.startswith(ANALYSIS_INPUT_PREFIXES)
+                 or SHORT_INTRON_COLUMN.match(col) or FLOOR_INTRON_COLUMN.match(col))
+             and df[col].isna().all()]
+    return df.drop(columns=empty)
+
+
+def check_missing_values(df_metrics, fill, measured):
+    """Stop if some annotations lack a value that other annotations have. An analysis missing in every
+    annotation already has a placeholder and is left out of the score, so any value still empty here is
+    missing in only some annotations. With fill=True the empty values are set to 0 (behaviour of earlier
+    versions) and a warning is printed."""
+    values = df_metrics.drop(columns="Species")
+    empty = values.isna()
+    if not empty.any().any():
+        return
+    lines = []
+    for column in values.columns[empty.any()]:
+        species = df_metrics.loc[empty[column], "Species"].astype(str).tolist()
+        lines.append("  {} ({} of {} annotations): {}".format(column.replace("\n", " "), len(species),
+                                                             len(df_metrics), ", ".join(species)))
+    unit = "the longest isoform of each gene" if measured == "longest" else "all transcripts"
+    report = "values missing in some annotations (model-quality metrics on {}):\n{}".format(unit, "\n".join(lines))
+    if not fill:
+        sys.exit("\033[31mERROR: {}\nCheck the GAQET runs of those annotations (rerun gaqet.py on the same "
+                 "Basedir; finished analyses are reused), remove them from the input, or use "
+                 "--fill_missing_with_zero to score the missing values as 0\033[0m".format(report))
+    print("\033[31mWARNING: {}\nThey are scored as 0 (--fill_missing_with_zero)\033[0m".format(report))
+    df_metrics[values.columns] = values.fillna(0.0)
 
 
 def use_longest_isoform_columns(df):
@@ -391,7 +442,8 @@ def metric_column_name(metric):
 
 def measured_on_label(metric, measured):
     role = metric_role(metric)
-    if role in ("busco", "omark"):
+    # BUSCO and every OMArk metric (consistency, completeness, fragments) use the longest isoform of each gene
+    if role in ("busco", "omark", "omark_completeness", "omark_fragments"):
         return "longest_isoform"
     if role is None:
         return "NA"
@@ -565,28 +617,50 @@ def main():
         sys.exit("\033[31mERROR: --radial_min must be between 0 and 100 (not included)\033[0m")
     df = pd.read_csv(arguments["input"], sep="\t")
 
+    # Longest-isoform columns in only some annotations: stop before writing anything (default)
+    if LONGEST_MEASURED in df.columns:
+        lacking = df.loc[pd.to_numeric(df[LONGEST_MEASURED], errors="coerce").isna(), "Species"].astype(str)
+        if 0 < len(lacking) < len(df) and not arguments["fill_missing"]:
+            sys.exit("\033[31mERROR: no longest-isoform values for {} of {} annotations: {}\nRerun gaqet.py on "
+                     "the same Basedir of those annotations (finished analyses are reused) or use "
+                     "--fill_missing_with_zero to skip the longest-isoform score\033[0m".format(
+                         len(lacking), len(df), ", ".join(lacking)))
+
     # The model-quality metrics (DIAMOND, DeTEnGA, PSAURON, AGAT START/STOP, short introns) are measured
     # on every transcript and on the longest isoform of each gene: one plot and one table for each.
     # BUSCO and OMArk use the longest isoform of each gene in both.
-    make_plot(df.copy(), arguments, "all")
     try:
         df_longest = df.copy()
         measured_column = use_longest_isoform_columns(df_longest)
     except ValueError as error:
+        df_longest = None
+        longest_error = error
+    # missing values of both scores are checked before any output is written
+    make_plot(df.copy(), arguments, "all", check_only=True)
+    if df_longest is not None:
+        make_plot(df_longest.copy(), arguments, "longest", measured_column, check_only=True)
+    make_plot(df.copy(), arguments, "all")
+    if df_longest is None:
         print("\033[31mWARNING: longest-isoform score not made: {}. Rerun gaqet.py on the same Basedir of "
-              "those annotations (finished analyses are reused) to add them\033[0m".format(error))
+              "those annotations (finished analyses are reused) to add them\033[0m".format(longest_error))
         return
     make_plot(df_longest, arguments, "longest", measured_column)
 
 
-def make_plot(df, arguments, measured, measured_column="Transcript_Models (N)"):
-    """GAQET plot and score table of one unit of measure (measured: 'all' or 'longest')."""
+def make_plot(df, arguments, measured, measured_column="Transcript_Models (N)", check_only=False):
+    """GAQET plot and score table of one unit of measure (measured: 'all' or 'longest').
+    check_only: only read the metrics and stop if values are missing (nothing written; the messages are
+    printed by the real run)."""
+    if check_only is True:
+        with open(os.devnull, "w") as devnull, contextlib.redirect_stdout(devnull):
+            return make_plot(df, arguments, measured, measured_column, check_only="silenced")
     plot_path, table_path, weights_path, breakdown_path = output_paths(arguments["prefix"], arguments["format"],
                                                                        measured)
     plot_path.parent.mkdir(parents=True, exist_ok=True)
     print("\n#### Model-quality metrics measured on: {}".format(
         "the longest isoform of each gene" if measured == "longest" else "all transcripts"))
 
+    df = drop_empty_analysis_columns(df)
     missing_analises = []
     ## Data Reading
     # BUSCO
@@ -622,9 +696,12 @@ def make_plot(df, arguments, measured, measured_column="Transcript_Models (N)"):
 
     # DeTEnGA
     try:
+        # a class absent from DETENGA_FP% is 0%; an annotation without DETENGA_FP% stays empty (missing value)
+        detenga_present = df["DETENGA_FP%"].notna()
         for detenga_class in ["PcpM0"] + TE_CLASSES:
             df[f"DETENGA_{detenga_class}"] = df["DETENGA_FP%"].str.extract(
-                r"(?:^|;)\s*{}:\s*([\d.]+)".format(detenga_class)).astype(float).fillna(0.0)
+                r"(?:^|;)\s*{}:\s*([\d.]+)".format(detenga_class))[0].astype(float).fillna(0.0).where(
+                    detenga_present)
     except KeyError:
         print("\033[31mWARNING: DeTEnGA analysis not found, placeholder will be generated\033[0m")
         for detenga_class in ["PcpM0"] + TE_CLASSES:
@@ -650,7 +727,8 @@ def make_plot(df, arguments, measured, measured_column="Transcript_Models (N)"):
         df["OMARK_partial_placed"] = 100 * consistency["partial"] / placed
         df["OMARK_fragmented_placed"] = 100 * consistency["fragmented"] / placed
         df[OMARK_FRAGMENTS_METRIC] = 100 - df["OMARK_partial_placed"] - df["OMARK_fragmented_placed"]
-        if df[[OMARK_COMPLETENESS_METRIC, OMARK_FRAGMENTS_METRIC]].isna().any().any():
+        # not parsed in any annotation: analysis missing; in only some: missing values (checked below)
+        if df[[OMARK_COMPLETENESS_METRIC, OMARK_FRAGMENTS_METRIC]].isna().all(axis=0).any():
             raise KeyError("OMArk results could not be parsed")
     except KeyError:
         print("\033[31mWARNING: Omark analysis not found, placeholder will be generated\033[0m")
@@ -690,7 +768,7 @@ def make_plot(df, arguments, measured, measured_column="Transcript_Models (N)"):
     if intron_columns:
         short_introns = pd.to_numeric(df[intron_columns].bfill(axis=1).iloc[:, 0], errors="coerce")
         df[INTRON_METRIC] = 100 - short_introns
-    if not intron_columns or df[INTRON_METRIC].isna().any():
+    if not intron_columns or df[INTRON_METRIC].isna().all():
         print("\033[31mWARNING: short intron metrics not found (older GAQET output?), placeholder will be "
               "generated and the metric is left out of the score\033[0m")
         df[INTRON_METRIC] = 0.0
@@ -702,7 +780,7 @@ def make_plot(df, arguments, measured, measured_column="Transcript_Models (N)"):
     floor_label = "Transcripts with intron\nlength shorter\nthan floor"
     if floor_columns:
         df["Transcripts with introns under the floor (%)"] = pd.to_numeric(
-            df[floor_columns].bfill(axis=1).iloc[:, 0], errors="coerce").fillna(0.0)
+            df[floor_columns].bfill(axis=1).iloc[:, 0], errors="coerce")
     else:
         print("\033[31mWARNING: floor intron metrics not found (older GAQET output?), the bar is left empty"
               "\033[0m")
@@ -810,6 +888,9 @@ def make_plot(df, arguments, measured, measured_column="Transcript_Models (N)"):
     for bt in busco_types:
         columns_needed += [f"BUSCO_S_{bt}", f"BUSCO_D_{bt}", f"BUSCO_F_{bt}", f"BUSCO_M_{bt}"]
     df_metrics = df[columns_needed].copy()
+    check_missing_values(df_metrics, arguments["fill_missing"], measured)
+    if check_only:
+        return
     
 
     ## Annotation Colors
