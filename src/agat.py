@@ -8,12 +8,17 @@ def get_longest_isoform(config):
     if not outdir.exists():
         outdir.mkdir(parents=True, exist_ok=True)
     outfile = outdir / "{}.longest_isoform.gff3".format(Path(config["Assembly"]).stem)
-    cmd = "agat_sp_keep_longest_isoform.pl --gff {} -o {}".format(Path(config["Annotation"]), outfile)
+    # AGAT writes to a temporary file, renamed only when it finishes: a run killed halfway must not leave a
+    # partial longest-isoform GFF that later runs would reuse (BUSCO and OMArk use it)
+    tmp_outfile = outfile.with_name(outfile.name + ".tmp.gff3")
+    cmd = "agat_sp_keep_longest_isoform.pl --gff {} -o {}".format(Path(config["Annotation"]), tmp_outfile)
     if outfile.exists():
         msg = "Longest isoform from annotation file selected already"
     else:
-        run_ = subprocess.run(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.DEVNULL)   
-        if run_.returncode == 0:
+        tmp_outfile.unlink(missing_ok=True)
+        run_ = subprocess.run(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.DEVNULL)
+        if run_.returncode == 0 and tmp_outfile.is_file() and tmp_outfile.stat().st_size > 0:
+            tmp_outfile.rename(outfile)
             msg = "AGAT longest isoform run successfully"
         else:
             msg = "AGAT longest isoform Failed: \n {}".format(run_.stderr)

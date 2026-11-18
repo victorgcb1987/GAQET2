@@ -24,17 +24,17 @@ FAILED = "FAILED"
 
 
 def read_gff_transcripts(gff_fpath):
-    """IDs of the mRNA features of a GFF3 file."""
+    """IDs of the transcripts of a GFF3 file: the parents of its exon and CDS features, whatever the type of
+    the transcript feature (mRNA, transcript, ...)."""
     transcripts = set()
     with open(gff_fpath) as fhand:
         for line in fhand:
             if line.startswith("#"):
                 continue
             fields = line.rstrip("\n").split("\t")
-            if len(fields) == 9 and fields[2] == "mRNA":
-                transcript_id = parse_attributes(fields[8]).get("ID")
-                if transcript_id:
-                    transcripts.add(transcript_id)
+            if len(fields) == 9 and fields[2] in ("exon", "CDS"):
+                parents = parse_attributes(fields[8]).get("Parent", "")
+                transcripts.update(parent for parent in parents.split(",") if parent)
     return transcripts
 
 
@@ -167,8 +167,10 @@ def longest_isoform_stats(longest_isoform, artifact_threshold, coding_longest, a
     The other arguments are the reports of the analyses (None if the analysis was not run)."""
     if "Failed" in longest_isoform["status"] or not longest_isoform["outfile"].is_file():
         return {MEASURED_COLUMN: FAILED}
-    longest = read_gff_transcripts(longest_isoform["outfile"])
-    coding = longest & set(coding_longest)
+    # coding longest isoforms: the CDS gffread extracted from the longest-isoform GFF (the proteins the
+    # analyses received); every longest isoform: those plus the transcripts without CDS
+    coding = set(coding_longest)
+    longest = read_gff_transcripts(longest_isoform["outfile"]) | coding
     results = {MEASURED_COLUMN: len(coding)}
     if protein_homology is not None:
         results.update(homology_longest(protein_homology, coding))

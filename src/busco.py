@@ -27,6 +27,10 @@ def run_busco(arguments, protein_sequences):
         if outfile.exists():
             msg = "Busco on lineage {} done already".format(lineage)
         else:
+            # a run directory without short_summary.txt is an earlier run that did not finish: BUSCO refuses to
+            # reuse its name, so it is overwritten (-f)
+            if Path(outname).exists():
+                cmd += " -f"
             run_ = subprocess.run(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.DEVNULL)
             if run_.returncode == 0:
                 msg = "BUSCO analysis with lineage {} run successfully".format(lineage)

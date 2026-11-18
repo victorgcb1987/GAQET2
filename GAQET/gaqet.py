@@ -305,6 +305,14 @@ def main():
                                      excluded["outfile"]), log_fhand)
     else:
         emit_msg(BULLET_OK + "No coding transcript left out of the protein analyses\n", log_fhand)
+    # A longest-isoform set far smaller than the coding transcripts means a broken longest-isoform GFF (e.g. a
+    # partial file from a killed AGAT run): BUSCO, OMArk and the longest-isoform metrics would be wrong
+    n_coding, n_longest = len(excluded["coding"]), len(excluded["coding_longest"])
+    if n_coding and n_longest < 0.2 * n_coding:
+        emit_msg(BULLET_FIX + "WARNING: only {} coding longest isoforms for {} coding transcripts. The longest-isoform "
+                 "GFF ({}) is probably incomplete: delete it and the files made from it (input_sequences/*longest*, "
+                 "BUSCOCompleteness_run, OMARK_run) and run GAQET again\n".format(
+                     n_longest, n_coding, longest_isoform["outfile"]), log_fhand)
 
 
     for analysis in arguments["Analysis"]:
