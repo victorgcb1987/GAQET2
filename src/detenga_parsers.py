@@ -49,6 +49,8 @@ NOT_ANALYZED = ["with_Ns", "longer_than_100kb", "invalid_CDS"]
 # InterProScan only the proteins: these transcripts are not in the classes above (all of them coding
 # transcripts, T), they are counted apart (NONCODING_TE_COLUMNS)
 NONCODING_TE = "ncMte"
+# transcripts without CDS whose mRNA was not given to TEsorter (Ns, >= 100 kb): not counted
+NONCODING_NOT_ANALYZED = "ncNA"
 NONCODING_TE_COLUMNS = ("DeTEnGA mRNAs without CDS with TE signal (N)",
                         "DeTEnGA mRNAs without CDS with TE signal (% of mRNAs)")
 
@@ -198,8 +200,12 @@ def create_summary(interpro_classified, tesort_output, all_transcripts=None, not
                             "tesort_class": "NA", "tesort_strand": "NA"})
     coding = set(all_transcripts) if all_transcripts is not None else None
     for row in summary:
+        noncoding = coding is not None and row["transcript"] not in coding
         if row["transcript"] in not_analyzed_status:
-            row["detenga_status"] = not_analyzed_status[row["transcript"]]
+            status = not_analyzed_status[row["transcript"]]
+            # with_Ns / longer_than_100kb are statuses of the coding transcripts (T); a transcript without CDS
+            # not given to TEsorter is left out (invalid_CDS transcripts are coding, not in the protein FASTA)
+            row["detenga_status"] = NONCODING_NOT_ANALYZED if noncoding and status != "invalid_CDS" else status
         elif coding is not None and row["detenga_status"] == "P0Mte" and row["transcript"] not in coding:
             # mRNA without CDS (annotated as a gene model, no protein) with a TE signal: TE contamination of
             # the annotation, reported apart from the classes of the coding transcripts
@@ -251,7 +257,8 @@ def detenga_stats(num_transcripts, summary, num_mrnas=None):
     stats = {"PcpM0": 0, "PteM0": 0, "PchM0": 0,
              "PcpMte": 0, "PteMte": 0, "PchMte": 0,
              "P0Mte":0, "P0M0": 0, "with_Ns": 0,
-             "longer_than_100kb": 0, "invalid_CDS": 0, NONCODING_TE: 0, "num_transcripts": num_transcripts}
+             "longer_than_100kb": 0, "invalid_CDS": 0, NONCODING_TE: 0, NONCODING_NOT_ANALYZED: 0,
+             "num_transcripts": num_transcripts}
     try:
         for row in DictReader(open(summary), delimiter=";"):
             stats[row["DeTEnGA_status"]] += 1
