@@ -45,6 +45,12 @@ def create_header():
 
 
 NOT_ANALYZED = ["with_Ns", "longer_than_100kb", "invalid_CDS"]
+# mRNAs without CDS whose sequence has a TE signal (TEsorter). TEsorter receives every mRNA of the annotation,
+# InterProScan only the proteins: these transcripts are not in the classes above (all of them coding
+# transcripts, T), they are counted apart (NONCODING_TE_COLUMNS)
+NONCODING_TE = "ncMte"
+NONCODING_TE_COLUMNS = ("DeTEnGA mRNAs without CDS with TE signal (N)",
+                        "DeTEnGA mRNAs without CDS with TE signal (% of mRNAs)")
 
 
 def get_row(stats):
@@ -190,9 +196,14 @@ def create_summary(interpro_classified, tesort_output, all_transcripts=None, not
             summary.append({"transcript": transcript, "interpro_status": "NA", "pfams_ids": "NA",
                             "pfams_descriptions": "NA", "tesort_domains": "NA", "tesort_complete": "NA",
                             "tesort_class": "NA", "tesort_strand": "NA"})
+    coding = set(all_transcripts) if all_transcripts is not None else None
     for row in summary:
         if row["transcript"] in not_analyzed_status:
             row["detenga_status"] = not_analyzed_status[row["transcript"]]
+        elif coding is not None and row["detenga_status"] == "P0Mte" and row["transcript"] not in coding:
+            # mRNA without CDS (annotated as a gene model, no protein) with a TE signal: TE contamination of
+            # the annotation, reported apart from the classes of the coding transcripts
+            row["detenga_status"] = NONCODING_TE
     return summary
         
 
@@ -233,15 +244,26 @@ def write_summary(summary, out_fhand):
         out_fhand.flush()
 
 
-def detenga_stats(num_transcripts, summary):
-    stats = {"PcpM0": 0, "PteM0": 0, "PchM0": 0, 
-             "PcpMte": 0, "PteMte": 0, "PchMte": 0, 
+def detenga_stats(num_transcripts, summary, num_mrnas=None):
+    """DETENGA_FPV / DETENGA_FP% over the coding transcripts (num_transcripts) and, if num_mrnas (every
+    mRNA of the annotation) is given, the mRNAs without CDS with TE signal (NONCODING_TE_COLUMNS, % of
+    every mRNA)."""
+    stats = {"PcpM0": 0, "PteM0": 0, "PchM0": 0,
+             "PcpMte": 0, "PteMte": 0, "PchMte": 0,
              "P0Mte":0, "P0M0": 0, "with_Ns": 0,
-             "longer_than_100kb": 0, "invalid_CDS": 0, "num_transcripts": num_transcripts}
+             "longer_than_100kb": 0, "invalid_CDS": 0, NONCODING_TE: 0, "num_transcripts": num_transcripts}
     try:
         for row in DictReader(open(summary), delimiter=";"):
             stats[row["DeTEnGA_status"]] += 1
-        return get_row(stats)
+        results = get_row(stats)
     except FileNotFoundError:
-        return {"DETENGA_FPV":  "FAILED",
-                "DETENGA_FP%": "FAILED"}
+        results = {"DETENGA_FPV":  "FAILED",
+                   "DETENGA_FP%": "FAILED"}
+        if num_mrnas is not None:
+            results.update({column: "FAILED" for column in NONCODING_TE_COLUMNS})
+        return results
+    if num_mrnas is not None:
+        noncoding_te = stats[NONCODING_TE]
+        results[NONCODING_TE_COLUMNS[0]] = noncoding_te
+        results[NONCODING_TE_COLUMNS[1]] = round(noncoding_te / num_mrnas * 100, 2) if num_mrnas else 0.0
+    return results

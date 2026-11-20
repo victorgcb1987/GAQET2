@@ -14,7 +14,7 @@ use them in place of the per-transcript columns for the longest-isoform score.
 import csv
 
 from src.agat_parsers import parse_attributes
-from src.detenga_parsers import get_row, CATEGORIES
+from src.detenga_parsers import get_row, CATEGORIES, NONCODING_TE
 from src.error_check import operation_failed
 
 
@@ -88,7 +88,7 @@ def detenga_longest(detenga, longest):
     summary = detenga.get("create_summary", {})
     if not summary or operation_failed(summary):
         return {column: FAILED for column in columns}
-    stats = {key: 0 for key in CATEGORIES.values()}
+    stats = {key: 0 for key in list(CATEGORIES.values()) + [NONCODING_TE]}
     stats["num_transcripts"] = len(longest)
     try:
         with open(summary["outfile"]) as fhand:

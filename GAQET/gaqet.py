@@ -28,7 +28,7 @@ from src.YAML import report_yaml_file
 from src.homology import run_protein_homology
 from src.agat_parsers import parse_agat_stats, parse_agat_incomplete, parse_agat_premature, parse_agat_introns
 from src.busco_parsers import busco_stats
-from src.detenga_parsers import detenga_stats
+from src.detenga_parsers import detenga_stats, get_transcript_ids
 from src.homology_parsers import protein_homology_stats
 from src.omark_parsers import omark_stats
 from src.psauron_parsers import psauron_stats
@@ -434,8 +434,10 @@ def main():
         if analysis == "PSAURON":
             results.update(psauron_stats(psauron))
         if analysis == "DETENGA":
+            # classes over the coding transcripts; mRNAs without CDS with TE signal apart, as % of every mRNA
             results.update(detenga_stats(len(excluded["coding"]),
-                                         detenga["create_summary"]["outfile"]))
+                                         detenga["create_summary"]["outfile"],
+                                         num_mrnas=len(get_transcript_ids(gffread["mrna"]["outfile"]))))
         if analysis == "PROTHOMOLOGY":
             # denominator: coding transcripts (mRNAs without CDS are not counted)
             results.update(protein_homology_stats(protein_homology, len(excluded["coding"])))

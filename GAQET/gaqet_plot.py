@@ -5,6 +5,7 @@ import contextlib
 import os
 import numpy as np
 import matplotlib
+import matplotlib.collections
 import matplotlib.colors
 import matplotlib.transforms
 import matplotlib.pyplot as plt
@@ -149,6 +150,7 @@ DESCRIPTOR_COLORS = {
 BAR_EDGE = {"edgecolor": "black"}
 # Annotation colours: original tab20 order (extended with tab20b/tab20c for more annotations)
 ANNOTATION_COLORS = []
+ANNOTATION_LEGEND_ROWS = 10      # annotation legend in two columns above this number of annotations
 ROLE_CLASS = {"busco": "completeness", "omark_completeness": "completeness",
               "homology": "precision", "omark": "precision", "psauron": "precision",
               "detenga": "precision",
@@ -193,6 +195,8 @@ INTRON_METRIC = "Transcripts with no artifact (very short) introns (AGAT introns
 # DeTEnGA classes with TE evidence (TE Pfam domains and/or TE signal in the mRNA): their sum is the
 # "Transposon related Transcripts" bar
 TE_CLASSES = ["PteM0", "PchM0", "PcpMte", "PteMte", "PchMte", "P0Mte"]
+# mRNAs without CDS with TE signal (gaqet.py, apart from the classes of the coding transcripts)
+NONCODING_TE_N = "DeTEnGA mRNAs without CDS with TE signal (N)"
 
 # Columns written by gaqet.py with the model-quality metrics measured on the longest isoform of each
 # gene (src/longest_isoform_parsers.py): "Longest isoform: <per-transcript column name>"
@@ -562,6 +566,22 @@ def place_class_label(ax, fig, label, start, end, margin=3, centre_clearance=10,
     label.set_position((middle, radius))
 
 
+def fit_annotation_dots(fig, ax, angular_step, radius, max_diameter=20, gap=0.85):
+    """Shrink the annotation dots (scatter markers) so neighbouring dots of a slot do not overlap.
+
+    Neighbouring dots are angular_step radians apart at the given radius: their distance on the
+    figure (in points) caps the dot diameter (gap leaves some space between them). With few
+    annotations the dots keep max_diameter points (scatter size 400)."""
+    fig.canvas.draw()
+    start, end = ax.transData.transform([(0, radius), (angular_step, radius)])
+    spacing = np.hypot(*(end - start)) * 72 / fig.dpi          # pixels -> points
+    diameter = min(max_diameter, spacing * gap)
+    for dots in ax.collections:
+        if isinstance(dots, matplotlib.collections.PathCollection):
+            dots.set_sizes([diameter ** 2])
+            dots.set_linewidths([max(0.5, diameter / 20)])
+
+
 def push_axis_labels_out(fig, axis_label_groups, obstacles, step=6, max_steps=30):
     """Move each axis label (and its tool line) outwards along its axis direction, in steps of `step`
     points, until it no longer overlaps any of the obstacles (the outer-bar labels)."""
@@ -732,6 +752,14 @@ def make_plot(df, arguments, measured, measured_column="Transcript_Models (N)", 
             df[f"DETENGA_{detenga_class}"] = 0.0
         missing_analises.append("DETENGA")
     df["DETENGA_TE_related"] = sum(df[f"DETENGA_{c}"] for c in TE_CLASSES)
+    # outer bar on all transcripts: the coding transcripts with TE evidence plus the mRNAs without CDS with TE
+    # signal (counted apart by GAQET), over every mRNA. Older outputs (no such column) keep the coding classes
+    if measured == "all" and {NONCODING_TE_N, CODING_COLUMN, "Transcript_Models (N)"} <= set(df.columns):
+        noncoding_te = pd.to_numeric(df[NONCODING_TE_N], errors="coerce")
+        coding = pd.to_numeric(df[CODING_COLUMN], errors="coerce")
+        mrnas = pd.to_numeric(df["Transcript_Models (N)"], errors="coerce")
+        combined = (df["DETENGA_TE_related"] * coding / 100 + noncoding_te) / mrnas * 100
+        df["DETENGA_TE_related"] = combined.where(noncoding_te.notna() & (mrnas > 0), df["DETENGA_TE_related"])
     df["Proteins with non-TE Pfam domains and no TE mRNA signal (DeTEnGA)"] = df["DETENGA_PcpM0"]
 
 
@@ -952,7 +980,7 @@ def make_plot(df, arguments, measured, measured_column="Transcript_Models (N)", 
     inner_radius = 100
 
 
-    fig, ax = plt.subplots(figsize=(26, 20), subplot_kw=dict(polar=True))
+    fig, ax = plt.subplots(figsize=(28, 27), subplot_kw=dict(polar=True))
     fig.subplots_adjust(left=0.20)
     ax.set_ylim(0, 220)
 
@@ -1205,55 +1233,65 @@ def make_plot(df, arguments, measured, measured_column="Transcript_Models (N)", 
                   ("utr", "Both sides UTR' (%)"),
                   ("cds_length", "Mean CDS Model Length (bp, relative to max)")]),
     ]
-    metric_handles, header_labels = [], set()
+    header_labels = {header for header, _ in legend_groups}
+    blocks = []
     for header, items in legend_groups:
-        metric_handles.append(Rectangle((0, 0), 1, 1, facecolor="none", edgecolor="none", label=header))
-        header_labels.add(header)
-        metric_handles += [Rectangle((0, 0), 1, 1, facecolor=DESCRIPTOR_COLORS[key], edgecolor="black", label=label)
-                           for key, label in items]
-    # Reuse already computed scores from df_metrics
+        blocks.append([Rectangle((0, 0), 1, 1, facecolor="none", edgecolor="none", label=header)] +
+                      [Rectangle((0, 0), 1, 1, facecolor=DESCRIPTOR_COLORS[key], edgecolor="black", label=label)
+                       for key, label in items])
+    # two columns, split between tool groups (a group is never cut): the split that gives the most even
+    # columns; the shorter column is padded with blank entries (matplotlib fills the columns in order)
+    sizes = [len(block) for block in blocks]
+    split = min(range(1, len(blocks)), key=lambda k: abs(sum(sizes[:k]) - sum(sizes[k:])))
+    left = [h for block in blocks[:split] for h in block]
+    right = [h for block in blocks[split:] for h in block]
+    rows = max(len(left), len(right))
+
+    def blank():
+        return Rectangle((0, 0), 1, 1, facecolor="none", edgecolor="none", label=" ")
+    metric_handles = (left + [blank() for _ in range(rows - len(left))] +
+                      right + [blank() for _ in range(rows - len(right))])
+    # Annotation legend: "<annotation> (GAS)", ranked by GAS (class sub-scores are in the breakdown plot);
+    # two columns from ANNOTATION_LEGEND_ROWS annotations on, read down the first column first
     area_map = dict(zip(df_metrics["Species"], df_metrics["__Score__"]))
-    areas = df_metrics["__Score__"].tolist()
-
-    def legend_scores(species):
-        """GAS and class sub-scores for the legend: GAS: xx (Completeness: xx, Precision: xx, Accuracy: xx)."""
-        row = df_metrics.loc[df_metrics["Species"] == species].iloc[0]
-        parts = []
-        for error_class, name in zip(CLASSES, ("Completeness", "Precision", "Accuracy")):
-            value = row["__Class_{}__".format(error_class)]
-            parts.append("{}: {}".format(name, "NA" if pd.isna(value) else "{:.1f}".format(value)))
-        return "GAS: {:.1f} ({})".format(area_map[species], ", ".join(parts))
-
-    # Anot legends
-    reverse_df_metrics = df_metrics.sort_values(by="__Score__", ascending=False).reset_index(drop=True)
-
+    ranked = df_metrics.sort_values(by="__Score__", ascending=False)["Species"].tolist()
     annotation_handles = [
-    plt.Line2D([0], [0], marker='o', linestyle='None',
-               markerfacecolor=annot_colors[species],
-               markeredgecolor='black',
-               markersize=15,
-               label=f"{species} - {legend_scores(species)}")
-    for species in reverse_df_metrics["Species"]]
-    # descriptors legend from the top, annotations legend below it (no overlap whatever their lengths)
-    legend1 = ax.legend(handles=metric_handles, title="Descriptors (outer bars)\nNOT used in the GAS",
-                        loc='upper left', bbox_to_anchor=(1.20, 1.05), fontsize=26, frameon=False,
-                        title_fontproperties={'size': 30, 'weight': 'bold'}, alignment='left')
+        plt.Line2D([0], [0], marker='o', linestyle='None', markerfacecolor=annot_colors[species],
+                   markeredgecolor='black', markersize=15, label="{} ({:.1f})".format(species, area_map[species]))
+        for species in ranked]
+    annotation_columns = 1 if len(ranked) <= ANNOTATION_LEGEND_ROWS else 2
+
+    # Radar first: the layout is made without the legends, so they do not shrink the radar; they are
+    # placed afterwards to the right of the radar and its axis labels (bbox_inches='tight' widens the image)
+    plt.tight_layout()
+    fit_annotation_dots(fig, ax, bar_width / len(df_metrics), bar_bottom + 50 + 3 + cap_height / 2)
+    # after the final layout: axis labels overlapping an outer-bar label are moved outwards
+    push_axis_labels_out(fig, axis_label_groups, ring_texts)
+
+    fig.canvas.draw()
+    renderer = fig.canvas.get_renderer()
+    to_fig = fig.transFigure.inverted()
+    radar_box = ax.get_tightbbox(renderer).transformed(to_fig)
+    legend_x = radar_box.x1 + 0.02
+    legend1 = fig.legend(handles=metric_handles, title="Descriptors (outer bars)\nNOT used in the GAS",
+                         loc='upper left', bbox_to_anchor=(legend_x, 1.0), fontsize=26, frameon=False, ncol=2,
+                         columnspacing=2.5, title_fontproperties={'size': 30, 'weight': 'bold'}, alignment='left')
     for text in legend1.get_texts():
         if text.get_text() in header_labels:
             text.set_fontweight("bold")
             text.set_color("#333333")
-    ax.add_artist(legend1)
+    legend2 = fig.legend(handles=annotation_handles, title="Annotations (GAS)", loc='upper left',
+                         bbox_to_anchor=(legend_x, 1.0), fontsize=26, frameon=False, ncol=annotation_columns,
+                         columnspacing=2.5, title_fontproperties={'size': 30, 'weight': 'bold'}, alignment='left')
+    # the two legends stacked (gap between them) and the block centred on the radar height
     fig.canvas.draw()
-    box = legend1.get_window_extent().transformed(ax.transAxes.inverted())
-    legend2 = ax.legend(handles=annotation_handles, title="Annotations", loc='upper left',
-                        bbox_to_anchor=(1.20, box.y0 - 0.03), fontsize=26, frameon=False,
-                        title_fontproperties={'size': 30, 'weight': 'bold'}, alignment='left')
-    ax.add_artist(legend2)
+    height1 = legend1.get_window_extent(renderer).transformed(to_fig).height
+    height2 = legend2.get_window_extent(renderer).transformed(to_fig).height
+    gap = 0.04
+    top = (radar_box.y0 + radar_box.y1) / 2 + (height1 + gap + height2) / 2
+    legend1.set_bbox_to_anchor((legend_x, top), transform=fig.transFigure)
+    legend2.set_bbox_to_anchor((legend_x, top - height1 - gap), transform=fig.transFigure)
 
-
-    plt.tight_layout()
-    # after the final layout: axis labels overlapping an outer-bar label are moved outwards
-    push_axis_labels_out(fig, axis_label_groups, ring_texts)
     title = fig.suptitle("Model-quality metrics measured on: {}".format(
         "longest isoform of each gene" if measured == "longest" else "all transcripts"),
         fontsize=34, fontweight="bold", y=1.04)
