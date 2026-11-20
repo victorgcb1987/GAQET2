@@ -226,6 +226,13 @@ def main():
                  "descendants have been removed ({} transcripts); gffread cannot read them. List: {}\n".format(
                      n_removed, reformatted_annotation["stats"]["Transcripts removed for unknown strand (N)"],
                      reformatted_annotation["removed_outfile"]), log_fhand)
+    n_removed = reformatted_annotation["stats"]["Features removed beyond sequence end (N)"]
+    if n_removed:
+        emit_msg("WARNING: {} features ending past the end of their sequence (e.g. genes across the origin of a "
+                 "circular organelle genome) and their descendants have been removed ({} transcripts); gffread "
+                 "stops at them and extracts no sequence after them. List: {}\n".format(
+                     n_removed, reformatted_annotation["stats"]["Transcripts removed beyond sequence end (N)"],
+                     reformatted_annotation["removed_outfile"]), log_fhand)
     arguments["Annotation"] = reformatted_annotation["outfile"]
 
     start_time = time.time()

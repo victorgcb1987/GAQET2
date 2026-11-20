@@ -24,11 +24,43 @@ def gff_attribute(attributes, key):
     return ""
 
 
-def unknown_strand_features(annotation):
-    """IDs of the features with strand "?" (e.g. trans-spliced organelle genes in NCBI GFFs) and of all their
-    descendants. gffread stops at the first "?" strand and writes no sequence at all, so they are removed."""
+UNKNOWN_STRAND = "unknown_strand"
+BEYOND_SEQUENCE_END = "beyond_sequence_end"
+
+
+def sequence_lengths(assembly):
+    """{seqid: length} of the assembly FASTA."""
+    lengths, seq_id = {}, None
+    with open(assembly) as fhand:
+        for line in fhand:
+            if line.startswith(">"):
+                seq_id = line[1:].split()[0]
+                lengths[seq_id] = 0
+            elif seq_id is not None:
+                lengths[seq_id] += len(line.strip())
+    return lengths
+
+
+def feature_problem(fields, lengths):
+    """Why gffread cannot read the feature: strand "?" (e.g. trans-spliced organelle genes in NCBI GFFs) or
+    an end past the end of its sequence (e.g. genes across the origin of a circular organelle genome)."""
+    if fields[6] == "?":
+        return UNKNOWN_STRAND
+    length = lengths.get(fields[0]) if lengths else None
+    try:
+        if length is not None and int(fields[4]) > length:
+            return BEYOND_SEQUENCE_END
+    except ValueError:
+        pass
+    return None
+
+
+def unreadable_features(annotation, lengths=None):
+    """{ID: reason} of the features gffread cannot read and of all their descendants. gffread stops at the
+    first of them (strand "?": no sequence at all; coordinate past the sequence end: no sequence after it),
+    so they are removed. A child feature (exon, CDS) with a problem removes its parent transcript."""
     children = defaultdict(list)
-    unknown = set()
+    flagged = {}
     with open(annotation) as annot_fhand:
         for line in annot_fhand:
             if line.startswith("#"):
@@ -37,33 +69,43 @@ def unknown_strand_features(annotation):
             if fields is None:
                 continue
             feature_id = gff_attribute(fields[8], "ID")
-            for parent in filter(None, gff_attribute(fields[8], "Parent").split(",")):
+            parents = [parent for parent in gff_attribute(fields[8], "Parent").split(",") if parent]
+            for parent in parents:
                 children[parent].append(feature_id)
-            if fields[6] == "?" and feature_id:
-                unknown.add(feature_id)
-    removed, pending = set(), list(unknown)
+            problem = feature_problem(fields, lengths)
+            if problem is None:
+                continue
+            if feature_id:
+                flagged.setdefault(feature_id, problem)
+            if fields[2] not in ("gene", "mRNA", "transcript"):
+                for parent in parents:
+                    flagged.setdefault(parent, problem)
+    removed, pending = {}, list(flagged.items())
     while pending:
-        feature_id = pending.pop()
+        feature_id, reason = pending.pop()
         if feature_id in removed:
             continue
-        removed.add(feature_id)
-        pending.extend(child for child in children.get(feature_id, []) if child)
+        removed[feature_id] = reason
+        pending.extend((child, reason) for child in children.get(feature_id, []) if child)
     return removed
 
 
 def reformat_annotation(config):
     """Writes the annotation with tab-separated columns, "transcript" features renamed to mRNA and the
-    features with unknown strand ("?") removed together with their descendants (listed in
-    {ID}_unknown_strand_features.tsv)."""
+    features gffread cannot read (unknown strand "?", end past the sequence end) removed together with
+    their descendants (listed in {ID}_removed_features.tsv)."""
     outdir = Path(config["Basedir"]) / "reformatted_annotation"
     annotation = config["Annotation"]
     outfile = outdir / "reformatted_annotation.gff3"
-    removed_file = Path(config["Basedir"]) / "{}_unknown_strand_features.tsv".format(config["ID"])
+    removed_file = Path(config["Basedir"]) / "{}_removed_features.tsv".format(config["ID"])
     report = {"transcripts_to_mRNA": [], "outfile": outfile, "removed_outfile": removed_file,
-              "stats": {"Features removed for unknown strand (N)": 0, "Transcripts removed for unknown strand (N)": 0}}
+              "stats": {"Features removed for unknown strand (N)": 0, "Transcripts removed for unknown strand (N)": 0,
+                        "Features removed beyond sequence end (N)": 0,
+                        "Transcripts removed beyond sequence end (N)": 0}}
     if not outdir.exists():
         outdir.mkdir(parents=True, exist_ok=True)
-    to_remove = unknown_strand_features(annotation)
+    lengths = sequence_lengths(config["Assembly"])
+    to_remove = unreadable_features(annotation, lengths)
     removed = []
     with open(outfile, "w") as out_fhand:
         with open(annotation) as annot_fhand:
@@ -77,9 +119,12 @@ def reformat_annotation(config):
                 description = line[8]
                 feature_id = gff_attribute(description, "ID")
                 parents = [parent for parent in gff_attribute(description, "Parent").split(",") if parent]
-                if (line[6] == "?" or (feature_id and feature_id in to_remove)
-                        or any(parent in to_remove for parent in parents)):
-                    removed.append((line[0], line[2], line[3], line[4], line[6], feature_id or ",".join(parents)))
+                reason = (to_remove.get(feature_id) if feature_id else None) \
+                    or next((to_remove[parent] for parent in parents if parent in to_remove), None) \
+                    or feature_problem(line, lengths)
+                if reason:
+                    removed.append((line[0], line[2], line[3], line[4], line[6], feature_id or ",".join(parents),
+                                    reason))
                     continue
                 if line[2] == "transcript":
                     line[2] = "mRNA"
@@ -87,12 +132,15 @@ def reformat_annotation(config):
                 line = "\t".join(line[0:8]) + "\t" + description + "\n"
                 out_fhand.write(line)
     with open(removed_file, "w") as out_fhand:
-        out_fhand.write("Seqid\tType\tStart\tEnd\tStrand\tID\n")
+        out_fhand.write("Seqid\tType\tStart\tEnd\tStrand\tID\tReason\n")
         for row in removed:
             out_fhand.write("\t".join(row) + "\n")
     report["removed"] = removed
-    report["stats"]["Features removed for unknown strand (N)"] = len(removed)
-    report["stats"]["Transcripts removed for unknown strand (N)"] = sum(row[1] in ("mRNA", "transcript") for row in removed)
+    for reason, label in ((UNKNOWN_STRAND, "for unknown strand"), (BEYOND_SEQUENCE_END, "beyond sequence end")):
+        rows = [row for row in removed if row[6] == reason]
+        report["stats"]["Features removed {} (N)".format(label)] = len(rows)
+        report["stats"]["Transcripts removed {} (N)".format(label)] = sum(row[1] in ("mRNA", "transcript")
+                                                                          for row in rows)
     return report
 
 STOP_CODONS = {"TAA", "TAG", "TGA"}
